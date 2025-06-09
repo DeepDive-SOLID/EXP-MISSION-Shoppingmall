@@ -5,7 +5,12 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <h1>Dashboard</h1>
-      <p onClick={() => navigate("/")}>Go to Home</p>
+      <p
+        onClick={() => navigate("/")}
+        style={{ cursor: "pointer", textDecoration: "underline" }}
+      >
+        Go to Home
+      </p>
     </div>
   );
 };
