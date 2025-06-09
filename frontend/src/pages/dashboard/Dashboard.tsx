@@ -1,16 +1,11 @@
+import Header from "../../components/common/Header/Header";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   return (
     <div className="dashboard">
-      <h1>Dashboard</h1>
-      <p
-        onClick={() => navigate("/")}
-        style={{ cursor: "pointer", textDecoration: "underline" }}
-      >
-        Go to Home
-      </p>
+      <Header />
     </div>
   );
 };
