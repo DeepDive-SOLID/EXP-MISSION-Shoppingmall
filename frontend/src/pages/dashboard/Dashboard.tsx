@@ -1,11 +1,12 @@
 import Header from "../../components/common/Header/Header";
-import { useNavigate } from "react-router-dom";
+import styles from "./Dashboard.module.scss";
+import Sidebar from "../../components/common/Sidebar/Sidebar";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   return (
-    <div className="dashboard">
+    <div className={styles.dashboard}>
       <Header />
+      <Sidebar />
     </div>
   );
 };
