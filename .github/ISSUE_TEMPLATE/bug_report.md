@@ -1,9 +1,10 @@
 ---
-name: 버그 리포트
-about: 발견한 버그를 보고하기 위한 템플릿
-title: '[BUG] '
-labels: bug
+name: "\U0001F41B 버그 리포트"
+about: 버그 및 오류 제보
+title: "[\U0001F41BBUG]"
+labels: bug, documentation
 assignees: ''
+
 ---
 
 ## 버그 설명
