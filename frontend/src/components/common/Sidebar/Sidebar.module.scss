@@ -24,6 +24,20 @@
     &:hover {
       background-color: #e8edf6;
     }
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+      width: 100%;
+
+      &.active {
+        color: #4a6cf7;
+        font-weight: 500;
+      }
+    }
   }
 
   .subMenu {
