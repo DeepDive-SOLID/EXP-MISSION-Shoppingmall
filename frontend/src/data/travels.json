@@ -1,0 +1,72 @@
+[
+  {
+    "travel_id": 1,
+    "travel_name": "부산",
+    "travel_price": 200000,
+    "travel_amount": 10,
+    "travel_sold": false,
+    "travel_comment": "부산 여행 최고",
+    "travel_label": "부산, 바다, 해운대",
+    "travel_start_dt": "2025-06-10",
+    "travel_end_dt": "2025-06-11",
+    "travel_upload_dt": "2025-06-09",
+    "travel_update_dt": "2025-06-09",
+    "travel_img": "https://www.visitbusan.net/uploadImgs/files/cntnts/20200101173014369"
+  },
+  {
+    "travel_id": 2,
+    "travel_name": "제주도 3박 4일 패키지",
+    "travel_price": 450000,
+    "travel_amount": 20,
+    "travel_sold": false,
+    "travel_comment": "제주도의 아름다운 해변과 자연을 만끽할 수 있는 패키지 여행입니다.",
+    "travel_label": "제주도, 한라산, 바다",
+    "travel_start_dt": "2025-07-15",
+    "travel_end_dt": "2025-07-18",
+    "travel_upload_dt": "2025-06-10",
+    "travel_update_dt": "2025-06-10",
+    "travel_img": "https://api.cdn.visitjeju.net/photomng/imgpath/202110/20/1e8ce9e3-96a6-4b3e-8afb-9af35e3c6c4e.jpg"
+  },
+  {
+    "travel_id": 3,
+    "travel_name": "강원도 1박 2일 패키지",
+    "travel_price": 250000,
+    "travel_amount": 25,
+    "travel_sold": false,
+    "travel_comment": "강원도의 맑은 공기와 아름다운 자연을 즐길 수 있는 주말 패키지입니다.",
+    "travel_label": "강원도, 산, 자연",
+    "travel_start_dt": "2025-08-05",
+    "travel_end_dt": "2025-08-06",
+    "travel_upload_dt": "2025-06-11",
+    "travel_update_dt": "2025-06-11",
+    "travel_img": "https://www.gangwon.to/upload/board/BDCCCC02/2022/20220125112905_75912.jpg"
+  },
+  {
+    "travel_id": 4,
+    "travel_name": "경주 역사 탐방 2박 3일",
+    "travel_price": 380000,
+    "travel_amount": 20,
+    "travel_sold": false,
+    "travel_comment": "경주의 불국사, 첨성대 등 역사 유적지를 탐방하는 여행입니다.",
+    "travel_label": "경주, 역사, 불국사",
+    "travel_start_dt": "2025-08-12",
+    "travel_end_dt": "2025-08-14",
+    "travel_upload_dt": "2025-06-12",
+    "travel_update_dt": "2025-06-12",
+    "travel_img": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Bulguksa_Temple_in_Gyeongju-Bulguksa_and_Seokguram-Korea-01.jpg/1200px-Bulguksa_Temple_in_Gyeongju-Bulguksa_and_Seokguram-Korea-01.jpg"
+  },
+  {
+    "travel_id": 5,
+    "travel_name": "거제도 바다여행 2박 3일",
+    "travel_price": 420000,
+    "travel_amount": 15,
+    "travel_sold": false,
+    "travel_comment": "거제도의 아름다운 해수욕장과 관광지를 둘러보는 여름 휴가 패키지입니다.",
+    "travel_label": "거제도, 바다, 해수욕장",
+    "travel_start_dt": "2025-08-18",
+    "travel_end_dt": "2025-08-20",
+    "travel_upload_dt": "2025-06-15",
+    "travel_update_dt": "2025-06-15",
+    "travel_img": "https://www.geojemarket.com/data/editor/2106/thumb-20210624111926_1843733344_xvYkbf0Qw4_700x467.jpg"
+  }
+]

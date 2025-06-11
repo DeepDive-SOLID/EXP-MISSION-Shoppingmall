@@ -135,12 +135,14 @@
 
   th,
   td {
-    padding: 16px;
+    padding: 14px 16px;
     text-align: center;
     border-bottom: 1px solid #f1f5f9;
     vertical-align: middle;
     word-break: break-word;
     overflow-wrap: break-word;
+    height: 28px;
+    line-height: 28px;
   }
 
   th {
@@ -164,7 +166,7 @@
   } /* 금액 */
   th:nth-child(4) {
     width: 10%;
-  } /* 정원 */
+  } /* 수량 */
   th:nth-child(5) {
     width: 20%;
   } /* 품절여부 */
@@ -178,6 +180,7 @@
   }
 
   tbody tr {
+    height: 56px;
     transition: background-color 0.2s;
 
     &:hover {
@@ -211,7 +214,7 @@
     display: inline-block;
     width: 40px;
     height: 22px;
-    background-color: #16a34a;
+    background-color: #d1d5db;
     border-radius: 34px;
     transition: 0.4s;
     margin-right: 10px;
@@ -399,33 +402,7 @@
   }
 
   input[type="text"],
-  input[type="number"] {
-    width: 100%;
-    padding: 10px 16px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-
-    &:focus {
-      border-color: #4a6cf7;
-    }
-  }
-}
-
-.dateRangeContainer {
-  display: flex;
-  gap: 16px;
-
-  .formGroup {
-    flex: 1;
-  }
-}
-
-.dateInputWrapper {
-  position: relative;
-
+  input[type="number"],
   input[type="date"] {
     width: 100%;
     padding: 10px 16px;
@@ -434,31 +411,19 @@
     font-size: 14px;
     outline: none;
     transition: border-color 0.2s;
-    appearance: none;
-    background-color: white;
 
     &:focus {
       border-color: #4a6cf7;
     }
-
-    &::-webkit-calendar-picker-indicator {
-      opacity: 0;
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      cursor: pointer;
-    }
   }
+}
 
-  .calendarIcon {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
-    pointer-events: none;
+.formRow {
+  display: flex;
+  gap: 16px;
+
+  .formGroup {
+    flex: 1;
   }
 }
 
@@ -519,12 +484,18 @@ textarea {
   cursor: pointer;
   font-size: 14px;
   color: #334155;
+  height: 20px;
 
   input[type="checkbox"] {
     margin-right: 8px;
     width: 16px;
     height: 16px;
     cursor: pointer;
+    vertical-align: middle;
+    margin-top: 0;
+    margin-bottom: 0;
+    position: relative;
+    top: 0;
   }
 }
 
@@ -565,5 +536,222 @@ textarea {
 
   &:hover {
     background-color: #3a5ce5;
+  }
+}
+
+.saveButton,
+.editCancelButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.saveButton {
+  background-color: #dcfce7;
+  color: #16a34a;
+  font-size: 18px;
+
+  &:hover {
+    background-color: #bbf7d0;
+  }
+}
+
+.editCancelButton {
+  background-color: #fee2e2;
+  color: #ef4444;
+  font-size: 18px;
+
+  &:hover {
+    background-color: #fecaca;
+  }
+}
+
+// 로딩 컨테이너 스타일
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.loadingText {
+  margin-top: 16px;
+  font-size: 16px;
+  color: #4b5563;
+}
+
+// 로딩 스피너 애니메이션
+.loadingSpinner {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+
+  div {
+    position: absolute;
+    top: 33px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #4a6cf7;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+
+    &:nth-child(1) {
+      left: 8px;
+      animation: loadingSpinner1 0.6s infinite;
+    }
+
+    &:nth-child(2) {
+      left: 8px;
+      animation: loadingSpinner2 0.6s infinite;
+    }
+
+    &:nth-child(3) {
+      left: 32px;
+      animation: loadingSpinner2 0.6s infinite;
+    }
+
+    &:nth-child(4) {
+      left: 56px;
+      animation: loadingSpinner3 0.6s infinite;
+    }
+  }
+}
+
+@keyframes loadingSpinner1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes loadingSpinner3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+
+@keyframes loadingSpinner2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
+}
+
+.editInput {
+  width: 100%;
+  height: 28px;
+  box-sizing: border-box;
+  padding: 4px 6px;
+  border: 1px solid #4a6cf7;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #f0f4ff;
+  text-align: center;
+  margin: 0;
+}
+
+// 삭제 모달 스타일
+.deleteModal {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 400px;
+  max-width: 90%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.deleteModalHeader {
+  background-color: #f8f8f8;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #eaeaea;
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .alertIcon {
+    color: #ff4d4f;
+    font-size: 22px;
+    margin-right: 10px;
+  }
+}
+
+.deleteModalContent {
+  padding: 20px;
+
+  p {
+    margin: 0 0 10px;
+    font-size: 15px;
+  }
+
+  .deleteWarning {
+    color: #ff4d4f;
+    font-size: 14px;
+    margin-top: 15px;
+  }
+}
+
+.deleteModalActions {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #eaeaea;
+}
+
+.cancelDeleteButton {
+  padding: 8px 16px;
+  border: 1px solid #d9d9d9;
+  background-color: white;
+  color: rgba(0, 0, 0, 0.85);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: #bfbfbf;
+    background-color: #f5f5f5;
+  }
+}
+
+.confirmDeleteButton {
+  padding: 8px 16px;
+  border: 1px solid #ff4d4f;
+  background-color: #ff4d4f;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: #ff7875;
+    border-color: #ff7875;
   }
 }

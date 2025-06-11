@@ -1,193 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../../components/common/Header/Header";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import styles from "./ManageOrder.module.scss";
 import { FiSearch } from "react-icons/fi";
+import { orderApi, Order } from "../../api/mockApi";
 
 const ManageOrder = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchType, setSearchType] = useState<
-    | "orderNumber"
+    | "orderId"
     | "orderDate"
     | "orderStatus"
-    | "userId"
+    | "memberId"
     | "product"
-    | "price"
+    | "address"
     | "quantity"
-    | "packageOrderNumber"
+    | "payment"
     | "all"
   >("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 10;
 
-  // Mock data for orders
-  const orders = [
-    {
-      orderNumber: "1",
-      travelProductName: "제주도 3박 4일 패키지",
-      productName: "여행용 캐리어 20인치",
-      userId: "user001",
-      paymentMethod: "신용카드",
-      travelQuantity: 2,
-      productQuantity: 1,
-      orderDate: "2023-05-01",
-      orderStatus: "결제완료",
-    },
-    {
-      orderNumber: "2",
-      travelProductName: "부산 2박 3일 패키지",
-      productName: "여행용 목베개",
-      userId: "user002",
-      paymentMethod: "무통장입금",
-      travelQuantity: 1,
-      productQuantity: 2,
-      orderDate: "2023-05-02",
-      orderStatus: "배송중",
-    },
-    {
-      orderNumber: "3",
-      travelProductName: "강원도 스키 패키지",
-      productName: "방수 파우치 세트",
-      userId: "user003",
-      paymentMethod: "카카오페이",
-      travelQuantity: 4,
-      productQuantity: 2,
-      orderDate: "2023-05-03",
-      orderStatus: "배송완료",
-    },
-    {
-      orderNumber: "4",
-      travelProductName: "일본 오사카 5박 6일",
-      productName: "여행용 어댑터",
-      userId: "user004",
-      paymentMethod: "신용카드",
-      travelQuantity: 2,
-      productQuantity: 3,
-      orderDate: "2023-05-04",
-      orderStatus: "결제완료",
-    },
-    {
-      orderNumber: "5",
-      travelProductName: "태국 방콕 패키지",
-      productName: "휴대용 공기청정기",
-      userId: "user005",
-      paymentMethod: "네이버페이",
-      travelQuantity: 2,
-      productQuantity: 1,
-      orderDate: "2023-05-05",
-      orderStatus: "취소요청",
-    },
-    {
-      orderNumber: "6",
-      travelProductName: "하와이 일주일 패키지",
-      productName: "여행용 세면도구 세트",
-      userId: "user006",
-      paymentMethod: "신용카드",
-      travelQuantity: 2,
-      productQuantity: 2,
-      orderDate: "2023-05-06",
-      orderStatus: "결제완료",
-    },
-    {
-      orderNumber: "7",
-      travelProductName: "홍콩 3박 4일 패키지",
-      productName: "접이식 여행 가방",
-      userId: "user007",
-      paymentMethod: "무통장입금",
-      travelQuantity: 1,
-      productQuantity: 1,
-      orderDate: "2023-05-07",
-      orderStatus: "배송중",
-    },
-    {
-      orderNumber: "8",
-      travelProductName: "유럽 10일 패키지",
-      productName: "여행용 디지털 저울",
-      userId: "user008",
-      paymentMethod: "카카오페이",
-      travelQuantity: 2,
-      productQuantity: 1,
-      orderDate: "2023-05-08",
-      orderStatus: "결제완료",
-    },
-    {
-      orderNumber: "9",
-      travelProductName: "베트남 다낭 패키지",
-      productName: "휴대용 선풍기",
-      userId: "user009",
-      paymentMethod: "신용카드",
-      travelQuantity: 3,
-      productQuantity: 3,
-      orderDate: "2023-05-09",
-      orderStatus: "배송완료",
-    },
-    {
-      orderNumber: "10",
-      travelProductName: "싱가포르 4박 5일",
-      productName: "여권 케이스",
-      userId: "user010",
-      paymentMethod: "네이버페이",
-      travelQuantity: 2,
-      productQuantity: 2,
-      orderDate: "2023-05-10",
-      orderStatus: "결제완료",
-    },
-    {
-      orderNumber: "11",
-      travelProductName: "대만 3박 4일 패키지",
-      productName: "여행용 멀티 충전기",
-      userId: "user011",
-      paymentMethod: "카카오페이",
-      travelQuantity: 1,
-      productQuantity: 1,
-      orderDate: "2023-05-11",
-      orderStatus: "배송중",
-    },
-    {
-      orderNumber: "12",
-      travelProductName: "호주 시드니 패키지",
-      productName: "목걸이형 카메라",
-      userId: "user012",
-      paymentMethod: "신용카드",
-      travelQuantity: 2,
-      productQuantity: 1,
-      orderDate: "2023-05-12",
-      orderStatus: "결제완료",
-    },
-    {
-      orderNumber: "13",
-      travelProductName: "뉴질랜드 패키지",
-      productName: "여행용 슬리퍼",
-      userId: "user013",
-      paymentMethod: "무통장입금",
-      travelQuantity: 2,
-      productQuantity: 2,
-      orderDate: "2023-05-13",
-      orderStatus: "취소완료",
-    },
-    {
-      orderNumber: "14",
-      travelProductName: "중국 상하이 패키지",
-      productName: "휴대용 세탁비누",
-      userId: "user014",
-      paymentMethod: "네이버페이",
-      travelQuantity: 4,
-      productQuantity: 4,
-      orderDate: "2023-05-14",
-      orderStatus: "결제완료",
-    },
-    {
-      orderNumber: "15",
-      travelProductName: "필리핀 세부 패키지",
-      productName: "여행용 압축팩",
-      userId: "user015",
-      paymentMethod: "카카오페이",
-      travelQuantity: 2,
-      productQuantity: 2,
-      orderDate: "2023-05-15",
-      orderStatus: "배송완료",
-    },
-  ];
+  // API에서 주문 데이터 가져오기
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const data = await orderApi.getAll();
+        setOrders(data);
+      } catch (error) {
+        console.error("주문 데이터를 가져오는 중 오류 발생:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -196,18 +47,34 @@ const ManageOrder = () => {
 
   const handleSearchTypeChange = (
     type:
-      | "orderNumber"
+      | "orderId"
       | "orderDate"
       | "orderStatus"
-      | "userId"
+      | "memberId"
       | "product"
-      | "price"
+      | "address"
       | "quantity"
-      | "packageOrderNumber"
+      | "payment"
       | "all",
   ) => {
     setSearchType(type);
     setCurrentPage(1); // 검색 유형 변경 시 첫 페이지로 이동
+  };
+
+  // 주문 상태 번호를 텍스트로 변환
+  const getOrderStatusText = (status: number): string => {
+    switch (status) {
+      case 0:
+        return "주문완료";
+      case 1:
+        return "주문취소";
+      case 2:
+        return "배송중";
+      case 3:
+        return "배송완료";
+      default:
+        return "알 수 없음";
+    }
   };
 
   // 검색어로 필터링
@@ -218,32 +85,55 @@ const ManageOrder = () => {
     let quantityStr;
 
     switch (searchType) {
-      case "orderNumber":
-        return order.orderNumber.toLowerCase().includes(searchTermLower);
+      case "orderId":
+        return order.order_id.toString().includes(searchTerm);
       case "orderDate":
-        return order.orderDate.includes(searchTerm);
+        return order.order_dt.includes(searchTerm);
       case "orderStatus":
-        return order.orderStatus.toLowerCase().includes(searchTermLower);
-      case "userId":
-        return order.userId.toLowerCase().includes(searchTermLower);
+        return getOrderStatusText(order.order_state)
+          .toLowerCase()
+          .includes(searchTermLower);
+      case "memberId":
+        return order.member_id.toLowerCase().includes(searchTermLower);
       case "product":
         return (
-          order.productName.toLowerCase().includes(searchTermLower) ||
-          order.travelProductName.toLowerCase().includes(searchTermLower)
+          (order.product?.product_name || "")
+            .toLowerCase()
+            .includes(searchTermLower) ||
+          (order.travel_product?.travel_name || "")
+            .toLowerCase()
+            .includes(searchTermLower)
         );
+      case "address":
+        return (
+          order.order_addr.toLowerCase().includes(searchTermLower) ||
+          order.order_addr_detail.toLowerCase().includes(searchTermLower)
+        );
+      case "payment":
+        return (order.payment_name || "")
+          .toLowerCase()
+          .includes(searchTermLower);
       case "quantity":
-        quantityStr = `${order.productQuantity}` + `${order.travelQuantity}`;
+        quantityStr = `${order.travel_product?.order_travel_amount || 0}${order.product?.order_product_amount || 0}`;
         return quantityStr.includes(searchTerm);
       case "all":
       default:
         return (
-          order.orderNumber.toLowerCase().includes(searchTermLower) ||
-          order.orderDate.includes(searchTerm) ||
-          order.orderStatus.toLowerCase().includes(searchTermLower) ||
-          order.userId.toLowerCase().includes(searchTermLower) ||
-          order.productName.toLowerCase().includes(searchTermLower) ||
-          order.travelProductName.toLowerCase().includes(searchTermLower) ||
-          order.paymentMethod.toLowerCase().includes(searchTermLower)
+          order.order_id.toString().includes(searchTerm) ||
+          order.order_dt.includes(searchTerm) ||
+          getOrderStatusText(order.order_state)
+            .toLowerCase()
+            .includes(searchTermLower) ||
+          order.member_id.toLowerCase().includes(searchTermLower) ||
+          (order.product?.product_name || "")
+            .toLowerCase()
+            .includes(searchTermLower) ||
+          (order.travel_product?.travel_name || "")
+            .toLowerCase()
+            .includes(searchTermLower) ||
+          order.order_addr.toLowerCase().includes(searchTermLower) ||
+          order.order_addr_detail.toLowerCase().includes(searchTermLower) ||
+          (order.payment_name || "").toLowerCase().includes(searchTermLower)
         );
     }
   });
@@ -280,17 +170,15 @@ const ManageOrder = () => {
   };
 
   // 주문 상태에 따른 스타일 클래스 반환
-  const getOrderStatusClass = (status: string) => {
+  const getOrderStatusClass = (status: number) => {
     switch (status) {
-      case "결제완료":
+      case 0:
         return styles.statusPaid;
-      case "배송중":
+      case 2:
         return styles.statusShipping;
-      case "배송완료":
+      case 3:
         return styles.statusDelivered;
-      case "취소요청":
-        return styles.statusCancelRequested;
-      case "취소완료":
+      case 1:
         return styles.statusCancelled;
       default:
         return "";
@@ -317,8 +205,8 @@ const ManageOrder = () => {
                   전체
                 </button>
                 <button
-                  className={`${styles.searchTypeButton} ${searchType === "orderNumber" ? styles.active : ""}`}
-                  onClick={() => handleSearchTypeChange("orderNumber")}
+                  className={`${styles.searchTypeButton} ${searchType === "orderId" ? styles.active : ""}`}
+                  onClick={() => handleSearchTypeChange("orderId")}
                 >
                   주문번호
                 </button>
@@ -337,8 +225,8 @@ const ManageOrder = () => {
               </div>
               <div className={styles.searchTypeButtons}>
                 <button
-                  className={`${styles.searchTypeButton} ${searchType === "userId" ? styles.active : ""}`}
-                  onClick={() => handleSearchTypeChange("userId")}
+                  className={`${styles.searchTypeButton} ${searchType === "memberId" ? styles.active : ""}`}
+                  onClick={() => handleSearchTypeChange("memberId")}
                 >
                   주문자ID
                 </button>
@@ -349,16 +237,16 @@ const ManageOrder = () => {
                   물품
                 </button>
                 <button
-                  className={`${styles.searchTypeButton} ${searchType === "quantity" ? styles.active : ""}`}
-                  onClick={() => handleSearchTypeChange("quantity")}
+                  className={`${styles.searchTypeButton} ${searchType === "payment" ? styles.active : ""}`}
+                  onClick={() => handleSearchTypeChange("payment")}
                 >
-                  수량
+                  결제수단
                 </button>
                 <button
-                  className={`${styles.searchTypeButton} ${searchType === "packageOrderNumber" ? styles.active : ""}`}
-                  onClick={() => handleSearchTypeChange("packageOrderNumber")}
+                  className={`${styles.searchTypeButton} ${searchType === "address" ? styles.active : ""}`}
+                  onClick={() => handleSearchTypeChange("address")}
                 >
-                  패키지번호
+                  주소
                 </button>
               </div>
               <div className={styles.searchBox}>
@@ -374,44 +262,60 @@ const ManageOrder = () => {
           </div>
 
           <div className={styles.tableContainer}>
-            <div className={styles.tableWrapper}>
-              <table className={styles.orderTable}>
-                <thead>
-                  <tr>
-                    <th>주문번호</th>
-                    <th>여행 상품명</th>
-                    <th>물품명</th>
-                    <th>주문자 ID</th>
-                    <th>결제수단</th>
-                    <th>여행 상품 수량</th>
-                    <th>물품 수량</th>
-                    <th>주문 일자</th>
-                    <th>주문 상태</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentItems.map(order => (
-                    <tr key={order.orderNumber}>
-                      <td>{order.orderNumber}</td>
-                      <td>{order.travelProductName}</td>
-                      <td>{order.productName}</td>
-                      <td>{order.userId}</td>
-                      <td>{order.paymentMethod}</td>
-                      <td>{order.travelQuantity}</td>
-                      <td>{order.productQuantity}</td>
-                      <td>{order.orderDate}</td>
-                      <td>
-                        <span
-                          className={`${styles.statusTag} ${getOrderStatusClass(order.orderStatus)}`}
-                        >
-                          {order.orderStatus}
-                        </span>
-                      </td>
+            {loading ? (
+              <div className={styles.loadingContainer}>
+                <div className={styles.loadingSpinner}>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+                <p className={styles.loadingText}>
+                  데이터를 불러오는 중입니다...
+                </p>
+              </div>
+            ) : (
+              <div className={styles.tableWrapper}>
+                <table className={styles.orderTable}>
+                  <thead>
+                    <tr>
+                      <th>주문번호</th>
+                      <th>여행 상품명</th>
+                      <th>물품명</th>
+                      <th>주문자 ID</th>
+                      <th>결제수단</th>
+                      <th>여행 상품 수량</th>
+                      <th>물품 수량</th>
+                      <th>주문 일자</th>
+                      <th>주문 상태</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {currentItems.map(order => (
+                      <tr key={order.order_id}>
+                        <td>{order.order_id}</td>
+                        <td>{order.travel_product?.travel_name || "-"}</td>
+                        <td>{order.product?.product_name || "-"}</td>
+                        <td>{order.member_id}</td>
+                        <td>{order.payment_name || "-"}</td>
+                        <td>
+                          {order.travel_product?.order_travel_amount || 0}
+                        </td>
+                        <td>{order.product?.order_product_amount || 0}</td>
+                        <td>{order.order_dt}</td>
+                        <td>
+                          <span
+                            className={`${styles.statusTag} ${getOrderStatusClass(order.order_state)}`}
+                          >
+                            {getOrderStatusText(order.order_state)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           {totalPages > 0 && (

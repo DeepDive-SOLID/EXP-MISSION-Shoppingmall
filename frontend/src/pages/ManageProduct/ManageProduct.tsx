@@ -1,21 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../../components/common/Header/Header";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import styles from "./ManageProduct.module.scss";
-import { FiSearch, FiPlus, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
+import {
+  FiSearch,
+  FiPlus,
+  FiEdit2,
+  FiTrash2,
+  FiX,
+  FiCheck,
+  FiAlertTriangle,
+} from "react-icons/fi";
 import { product1 } from "../../assets";
+import { productApi, Product as ProductType } from "../../api/mockApi";
 
 const ManageProduct = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchType, setSearchType] = useState<"name" | "code" | "all">("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<ProductType | null>(
+    null,
+  );
+  const [products, setProducts] = useState<ProductType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    product_name: "",
+    product_price: "",
+    product_amount: "",
+  });
   const [newProduct, setNewProduct] = useState({
-    name: "",
-    price: "",
-    stock: "",
-    soldOut: false,
-    image: "",
+    product_name: "",
+    product_price: "",
+    product_amount: "",
+    product_sold: false,
+    product_img: "",
+    product_upload_dt: new Date().toISOString().split("T")[0],
+    product_update_dt: new Date().toISOString().split("T")[0],
   });
   const itemsPerPage = 10;
 
@@ -28,170 +51,22 @@ const ManageProduct = () => {
     { id: "product5", src: product1, name: "휴대용 공기청정기" },
   ];
 
-  // Mock data for products
-  const products = [
-    {
-      id: 1,
-      name: "여행용 캐리어 20인치",
-      price: 59000,
-      stock: 25,
-      soldOut: false,
-      image: "product1",
-    },
-    {
-      id: 2,
-      name: "여행용 목베개",
-      price: 15000,
-      stock: 42,
-      soldOut: false,
-      image: "product2",
-    },
-    {
-      id: 3,
-      name: "방수 파우치 세트",
-      price: 12000,
-      stock: 30,
-      soldOut: false,
-      image: "product3",
-    },
-    {
-      id: 4,
-      name: "여행용 어댑터",
-      price: 25000,
-      stock: 15,
-      soldOut: false,
-      image: "product4",
-    },
-    {
-      id: 5,
-      name: "휴대용 공기청정기",
-      price: 89000,
-      stock: 0,
-      soldOut: true,
-      image: "product5",
-    },
-    {
-      id: 6,
-      name: "여행용 세면도구 세트",
-      price: 18000,
-      stock: 50,
-      soldOut: false,
-      image: "product1",
-    },
-    {
-      id: 7,
-      name: "접이식 여행 가방",
-      price: 32000,
-      stock: 0,
-      soldOut: true,
-      image: "product2",
-    },
-    {
-      id: 8,
-      name: "여행용 디지털 저울",
-      price: 15000,
-      stock: 22,
-      soldOut: false,
-      image: "product3",
-    },
-    {
-      id: 9,
-      name: "휴대용 선풍기",
-      price: 24000,
-      stock: 18,
-      soldOut: false,
-      image: "product4",
-    },
-    {
-      id: 10,
-      name: "여권 케이스",
-      price: 9000,
-      stock: 40,
-      soldOut: false,
-      image: "product5",
-    },
-    {
-      id: 11,
-      name: "여행용 멀티 충전기",
-      price: 35000,
-      stock: 0,
-      soldOut: true,
-      image: "product1",
-    },
-    {
-      id: 12,
-      name: "목걸이형 카메라",
-      price: 120000,
-      stock: 5,
-      soldOut: false,
-      image: "product2",
-    },
-    // 추가 데이터 (페이지네이션 테스트용)
-    {
-      id: 13,
-      name: "여행용 슬리퍼",
-      price: 8000,
-      stock: 60,
-      soldOut: false,
-      image: "product3",
-    },
-    {
-      id: 14,
-      name: "휴대용 세탁비누",
-      price: 3000,
-      stock: 100,
-      soldOut: false,
-      image: "product4",
-    },
-    {
-      id: 15,
-      name: "여행용 압축팩",
-      price: 12000,
-      stock: 45,
-      soldOut: false,
-      image: "product5",
-    },
-    {
-      id: 16,
-      name: "접이식 모자",
-      price: 15000,
-      stock: 30,
-      soldOut: false,
-      image: "product1",
-    },
-    {
-      id: 17,
-      name: "여행용 우산",
-      price: 12000,
-      stock: 0,
-      soldOut: true,
-      image: "product2",
-    },
-    {
-      id: 18,
-      name: "미니 손전등",
-      price: 9000,
-      stock: 25,
-      soldOut: false,
-      image: "product3",
-    },
-    {
-      id: 19,
-      name: "여행용 구급함",
-      price: 18000,
-      stock: 15,
-      soldOut: false,
-      image: "product4",
-    },
-    {
-      id: 20,
-      name: "넥 파우치",
-      price: 7000,
-      stock: 50,
-      soldOut: false,
-      image: "product5",
-    },
-  ];
+  // API에서 물품 데이터 가져오기
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await productApi.getAll();
+        setProducts(data);
+      } catch (error) {
+        console.error("물품 데이터를 가져오는 중 오류 발생:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -203,9 +78,28 @@ const ManageProduct = () => {
     setCurrentPage(1); // 검색 유형 변경 시 첫 페이지로 이동
   };
 
-  const handleToggleSoldOut = (id: number) => {
-    // 실제 구현에서는 API 호출 등으로 처리
-    console.log(`상품 ID ${id}의 품절 상태 변경`);
+  const handleToggleSoldOut = async (id: number) => {
+    try {
+      // 현재 제품 찾기
+      const product = products.find(p => p.product_id === id);
+      if (!product) return;
+
+      // API 호출하여 품절 상태 업데이트
+      const updatedProduct = await productApi.update(id, {
+        product_sold: !product.product_sold,
+      });
+
+      // 상태 업데이트
+      if (updatedProduct) {
+        setProducts(prevProducts =>
+          prevProducts.map(p =>
+            p.product_id === id ? { ...p, product_sold: !p.product_sold } : p,
+          ),
+        );
+      }
+    } catch (error) {
+      console.error("품절 상태 변경 중 오류 발생:", error);
+    }
   };
 
   const openModal = () => {
@@ -215,11 +109,13 @@ const ManageProduct = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setNewProduct({
-      name: "",
-      price: "",
-      stock: "",
-      soldOut: false,
-      image: "",
+      product_name: "",
+      product_price: "",
+      product_amount: "",
+      product_sold: false,
+      product_img: "",
+      product_upload_dt: new Date().toISOString().split("T")[0],
+      product_update_dt: new Date().toISOString().split("T")[0],
     });
   };
 
@@ -234,15 +130,126 @@ const ManageProduct = () => {
   const handleImageSelect = (imageId: string) => {
     setNewProduct(prev => ({
       ...prev,
-      image: imageId,
+      product_img: imageId,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 실제 구현에서는 API 호출 등으로 처리
-    console.log("새 물품 추가:", newProduct);
-    closeModal();
+
+    try {
+      // 폼 데이터를 API 형식에 맞게 변환
+      const productData = {
+        product_name: newProduct.product_name,
+        product_price: parseInt(newProduct.product_price),
+        product_amount: parseInt(newProduct.product_amount),
+        product_sold: newProduct.product_sold,
+        product_img: newProduct.product_img || "product1", // 기본 이미지 설정
+        product_upload_dt: newProduct.product_upload_dt,
+        product_update_dt: newProduct.product_update_dt,
+      };
+
+      // API 호출하여 새 물품 추가
+      const createdProduct = await productApi.create(productData);
+
+      // 상태 업데이트
+      if (createdProduct) {
+        setProducts(prevProducts => [...prevProducts, createdProduct]);
+        console.log("새 물품 추가 성공:", createdProduct);
+      }
+
+      // 모달 닫기
+      closeModal();
+    } catch (error) {
+      console.error("물품 추가 중 오류 발생:", error);
+    }
+  };
+
+  // 수정 모드 시작
+  const handleEditClick = (product: ProductType) => {
+    setEditingId(product.product_id);
+    setEditFormData({
+      product_name: product.product_name,
+      product_price: product.product_price.toString(),
+      product_amount: product.product_amount.toString(),
+    });
+  };
+
+  // 수정 중인 입력값 변경 처리
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // 수정 취소
+  const handleCancelEdit = () => {
+    setEditingId(null);
+  };
+
+  // 수정 저장
+  const handleSaveEdit = async (id: number) => {
+    try {
+      // 업데이트할 데이터 준비
+      const updatedData = {
+        product_name: editFormData.product_name,
+        product_price: parseInt(editFormData.product_price),
+        product_amount: parseInt(editFormData.product_amount),
+        product_update_dt: new Date().toISOString().split("T")[0],
+      };
+
+      // API 호출하여 데이터 업데이트
+      const updatedProduct = await productApi.update(id, updatedData);
+
+      // 상태 업데이트
+      if (updatedProduct) {
+        setProducts(prevProducts =>
+          prevProducts.map(p =>
+            p.product_id === id ? { ...p, ...updatedData } : p,
+          ),
+        );
+        setEditingId(null);
+      }
+    } catch (error) {
+      console.error("물품 수정 중 오류 발생:", error);
+    }
+  };
+
+  // 삭제 모달 열기
+  const handleDeleteClick = (product: ProductType) => {
+    setProductToDelete(product);
+    setIsDeleteModalOpen(true);
+  };
+
+  // 삭제 모달 닫기
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setProductToDelete(null);
+  };
+
+  // 삭제 확인
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+
+    try {
+      // API 호출하여 데이터 삭제
+      const success = await productApi.delete(productToDelete.product_id);
+
+      // 상태 업데이트
+      if (success) {
+        setProducts(prevProducts =>
+          prevProducts.filter(p => p.product_id !== productToDelete.product_id),
+        );
+        console.log(`물품 ID ${productToDelete.product_id} 삭제 성공`);
+      }
+
+      // 모달 닫기
+      handleCloseDeleteModal();
+    } catch (error) {
+      console.error("물품 삭제 중 오류 발생:", error);
+    }
   };
 
   // 검색어로 필터링
@@ -250,8 +257,10 @@ const ManageProduct = () => {
     if (searchTerm === "") return true;
 
     const searchTermLower = searchTerm.toLowerCase();
-    const nameMatch = product.name.toLowerCase().includes(searchTermLower);
-    const codeMatch = product.id.toString().includes(searchTerm);
+    const nameMatch = product.product_name
+      .toLowerCase()
+      .includes(searchTermLower);
+    const codeMatch = product.product_id.toString().includes(searchTerm);
 
     switch (searchType) {
       case "name":
@@ -334,13 +343,7 @@ const ManageProduct = () => {
                 <FiSearch className={styles.searchIcon} />
                 <input
                   type="text"
-                  placeholder={
-                    searchType === "name"
-                      ? "물품명을 검색하세요"
-                      : searchType === "code"
-                        ? "물품코드를 검색하세요"
-                        : "물품명 또는 코드를 검색하세요"
-                  }
+                  placeholder="검색어를 입력하세요"
                   value={searchTerm}
                   onChange={handleSearch}
                 />
@@ -352,51 +355,134 @@ const ManageProduct = () => {
           </div>
 
           <div className={styles.tableContainer}>
-            <table className={styles.productTable}>
-              <thead>
-                <tr>
-                  <th>물품코드</th>
-                  <th>물품명</th>
-                  <th>금액</th>
-                  <th>수량</th>
-                  <th>품절여부</th>
-                  <th>관리</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentItems.map(product => (
-                  <tr key={product.id}>
-                    <td>{product.id}</td>
-                    <td>{product.name}</td>
-                    <td>{product.price.toLocaleString()}원</td>
-                    <td>{product.stock}</td>
-                    <td>
-                      <label className={styles.toggleSwitch}>
-                        <input
-                          type="checkbox"
-                          checked={product.soldOut}
-                          onChange={() => handleToggleSoldOut(product.id)}
-                        />
-                        <span className={styles.slider}></span>
-                        <span className={styles.statusText}>
-                          {product.soldOut ? "품절" : "판매중"}
-                        </span>
-                      </label>
-                    </td>
-                    <td>
-                      <div className={styles.actionButtons}>
-                        <button className={styles.editButton}>
-                          <FiEdit2 />
-                        </button>
-                        <button className={styles.deleteButton}>
-                          <FiTrash2 />
-                        </button>
-                      </div>
-                    </td>
+            {loading ? (
+              <div className={styles.loadingContainer}>
+                <div className={styles.loadingSpinner}>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+                <p className={styles.loadingText}>
+                  데이터를 불러오는 중입니다...
+                </p>
+              </div>
+            ) : (
+              <table className={styles.productTable}>
+                <thead>
+                  <tr>
+                    <th>물품코드</th>
+                    <th>물품명</th>
+                    <th>금액</th>
+                    <th>수량</th>
+                    <th>품절여부</th>
+                    <th>관리</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {currentItems.map(product => (
+                    <tr key={product.product_id}>
+                      <td>{product.product_id}</td>
+                      <td>
+                        {editingId === product.product_id ? (
+                          <input
+                            type="text"
+                            name="product_name"
+                            value={editFormData.product_name}
+                            onChange={handleEditInputChange}
+                            className={styles.editInput}
+                            style={{ minWidth: "150px" }}
+                          />
+                        ) : (
+                          product.product_name
+                        )}
+                      </td>
+                      <td>
+                        {editingId === product.product_id ? (
+                          <input
+                            type="number"
+                            name="product_price"
+                            value={editFormData.product_price}
+                            onChange={handleEditInputChange}
+                            className={styles.editInput}
+                            style={{ minWidth: "80px" }}
+                          />
+                        ) : (
+                          `${product.product_price.toLocaleString()}원`
+                        )}
+                      </td>
+                      <td>
+                        {editingId === product.product_id ? (
+                          <input
+                            type="number"
+                            name="product_amount"
+                            value={editFormData.product_amount}
+                            onChange={handleEditInputChange}
+                            className={styles.editInput}
+                            style={{ minWidth: "60px" }}
+                          />
+                        ) : (
+                          product.product_amount
+                        )}
+                      </td>
+                      <td>
+                        <label className={styles.toggleSwitch}>
+                          <input
+                            type="checkbox"
+                            checked={product.product_sold}
+                            onChange={() =>
+                              handleToggleSoldOut(product.product_id)
+                            }
+                          />
+                          <span className={styles.slider}></span>
+                        </label>
+                      </td>
+                      <td>
+                        <div className={styles.actionButtons}>
+                          {editingId === product.product_id ? (
+                            <>
+                              <button
+                                className={styles.saveButton}
+                                onClick={() =>
+                                  handleSaveEdit(product.product_id)
+                                }
+                                title="저장"
+                              >
+                                <FiCheck />
+                              </button>
+                              <button
+                                className={styles.editCancelButton}
+                                onClick={handleCancelEdit}
+                                title="취소"
+                              >
+                                <FiX />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                className={styles.editButton}
+                                onClick={() => handleEditClick(product)}
+                                title="수정"
+                              >
+                                <FiEdit2 />
+                              </button>
+                              <button
+                                className={styles.deleteButton}
+                                onClick={() => handleDeleteClick(product)}
+                                title="삭제"
+                              >
+                                <FiTrash2 />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
           {totalPages > 0 && (
@@ -442,36 +528,36 @@ const ManageProduct = () => {
                 </div>
                 <form onSubmit={handleSubmit} className={styles.modalForm}>
                   <div className={styles.formGroup}>
-                    <label htmlFor="name">물품명</label>
+                    <label htmlFor="product_name">물품명</label>
                     <input
                       type="text"
-                      id="name"
-                      name="name"
-                      value={newProduct.name}
+                      id="product_name"
+                      name="product_name"
+                      value={newProduct.product_name}
                       onChange={handleInputChange}
                       placeholder="물품명을 입력하세요"
                       required
                     />
                   </div>
                   <div className={styles.formGroup}>
-                    <label htmlFor="price">금액</label>
+                    <label htmlFor="product_price">금액</label>
                     <input
                       type="number"
-                      id="price"
-                      name="price"
-                      value={newProduct.price}
+                      id="product_price"
+                      name="product_price"
+                      value={newProduct.product_price}
                       onChange={handleInputChange}
                       placeholder="금액을 입력하세요"
                       required
                     />
                   </div>
                   <div className={styles.formGroup}>
-                    <label htmlFor="stock">수량</label>
+                    <label htmlFor="product_amount">수량</label>
                     <input
                       type="number"
-                      id="stock"
-                      name="stock"
-                      value={newProduct.stock}
+                      id="product_amount"
+                      name="product_amount"
+                      value={newProduct.product_amount}
                       onChange={handleInputChange}
                       placeholder="수량을 입력하세요"
                       required
@@ -483,7 +569,7 @@ const ManageProduct = () => {
                       {productImages.map(img => (
                         <div
                           key={img.id}
-                          className={`${styles.imageOption} ${newProduct.image === img.id ? styles.selected : ""}`}
+                          className={`${styles.imageOption} ${newProduct.product_img === img.id ? styles.selected : ""}`}
                           onClick={() => handleImageSelect(img.id)}
                         >
                           <img src={img.src} alt={img.name} />
@@ -495,8 +581,8 @@ const ManageProduct = () => {
                     <label className={styles.checkboxLabel}>
                       <input
                         type="checkbox"
-                        name="soldOut"
-                        checked={newProduct.soldOut}
+                        name="product_sold"
+                        checked={newProduct.product_sold}
                         onChange={handleInputChange}
                       />
                       품절 상태로 등록
@@ -515,6 +601,41 @@ const ManageProduct = () => {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {/* 삭제 확인 모달 */}
+          {isDeleteModalOpen && productToDelete && (
+            <div className={styles.modalOverlay}>
+              <div className={styles.deleteModal}>
+                <div className={styles.deleteModalHeader}>
+                  <FiAlertTriangle className={styles.alertIcon} />
+                  <h2>물품 삭제</h2>
+                </div>
+                <div className={styles.deleteModalContent}>
+                  <p>
+                    <strong>{productToDelete.product_name}</strong> 물품을
+                    삭제하시겠습니까?
+                  </p>
+                  <p className={styles.deleteWarning}>
+                    삭제된 데이터는 복구할 수 없습니다.
+                  </p>
+                </div>
+                <div className={styles.deleteModalActions}>
+                  <button
+                    className={styles.cancelDeleteButton}
+                    onClick={handleCloseDeleteModal}
+                  >
+                    취소
+                  </button>
+                  <button
+                    className={styles.confirmDeleteButton}
+                    onClick={handleConfirmDelete}
+                  >
+                    삭제
+                  </button>
+                </div>
               </div>
             </div>
           )}

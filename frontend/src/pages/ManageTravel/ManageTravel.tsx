@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../../components/common/Header/Header";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import styles from "./ManageTravel.module.scss";
@@ -9,25 +9,58 @@ import {
   FiTrash2,
   FiX,
   FiCalendar,
+  FiCheck,
+  FiAlertTriangle,
 } from "react-icons/fi";
 import { product1 } from "../../assets";
+import { travelApi, Travel } from "../../api/mockApi";
 
 const ManageTravel = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchType, setSearchType] = useState<"name" | "code" | "all">("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [travelToDelete, setTravelToDelete] = useState<Travel | null>(null);
+  const [travels, setTravels] = useState<Travel[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    travel_name: "",
+    travel_price: "",
+    travel_amount: "",
+  });
   const [newTravel, setNewTravel] = useState({
-    name: "",
-    price: "",
-    capacity: "",
-    soldOut: false,
-    image: "",
-    startDate: "",
-    endDate: "",
-    description: "",
+    travel_name: "",
+    travel_price: "",
+    travel_amount: "",
+    travel_sold: false,
+    travel_img: "",
+    travel_start_dt: "",
+    travel_end_dt: "",
+    travel_comment: "",
+    travel_label: "",
+    travel_upload_dt: new Date().toISOString().split("T")[0],
+    travel_update_dt: new Date().toISOString().split("T")[0],
   });
   const itemsPerPage = 10;
+
+  // API에서 여행상품 데이터 가져오기
+  useEffect(() => {
+    const fetchTravels = async () => {
+      try {
+        setLoading(true);
+        const data = await travelApi.getAll();
+        setTravels(data);
+      } catch (error) {
+        console.error("여행상품 데이터를 가져오는 중 오류 발생:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTravels();
+  }, []);
 
   // 이미지 목록
   const travelImages = [
@@ -36,242 +69,6 @@ const ManageTravel = () => {
     { id: "product3", src: product1, name: "강원도 여행" },
     { id: "product4", src: product1, name: "서울 여행" },
     { id: "product5", src: product1, name: "경주 여행" },
-  ];
-
-  // Mock data for travel products
-  const travels = [
-    {
-      id: 1,
-      name: "제주도 3박 4일 패키지",
-      price: 590000,
-      capacity: 25,
-      soldOut: false,
-      image: "product1",
-      startDate: "2023-07-15",
-      endDate: "2023-07-18",
-      description: "아름다운 제주도의 자연을 만끽할 수 있는 패키지 여행입니다.",
-    },
-    {
-      id: 2,
-      name: "부산 해운대 2박 3일",
-      price: 350000,
-      capacity: 42,
-      soldOut: false,
-      image: "product2",
-      startDate: "2023-08-05",
-      endDate: "2023-08-07",
-      description:
-        "해운대 해수욕장과 광안리 등 부산의 핵심 관광지를 둘러봅니다.",
-    },
-    {
-      id: 3,
-      name: "강원도 스키 여행",
-      price: 420000,
-      capacity: 30,
-      soldOut: false,
-      image: "product3",
-      startDate: "2023-12-20",
-      endDate: "2023-12-22",
-      description:
-        "겨울 시즌 강원도 최고의 스키장에서 스키와 스노보드를 즐겨보세요.",
-    },
-    {
-      id: 4,
-      name: "서울 시티투어 1일",
-      price: 150000,
-      capacity: 15,
-      soldOut: false,
-      image: "product4",
-      startDate: "2023-09-15",
-      endDate: "2023-09-15",
-      description:
-        "서울의 주요 관광지를 하루 동안 효율적으로 둘러보는 투어입니다.",
-    },
-    {
-      id: 5,
-      name: "경주 역사 탐방 2박 3일",
-      price: 390000,
-      capacity: 0,
-      soldOut: true,
-      image: "product5",
-      startDate: "2023-10-02",
-      endDate: "2023-10-04",
-      description: "신라 천년 고도 경주의 역사와 문화를 체험하는 여행입니다.",
-    },
-    {
-      id: 6,
-      name: "여수 밤바다 2박 3일",
-      price: 380000,
-      capacity: 50,
-      soldOut: false,
-      image: "product1",
-      startDate: "2023-08-12",
-      endDate: "2023-08-14",
-      description: "아름다운 여수 밤바다와 오동도, 향일암 등을 관광합니다.",
-    },
-    {
-      id: 7,
-      name: "울릉도 독도 3박 4일",
-      price: 620000,
-      capacity: 0,
-      soldOut: true,
-      image: "product2",
-      startDate: "2023-07-25",
-      endDate: "2023-07-28",
-      description: "울릉도와 독도의 아름다운 자연 경관을 감상하는 여행입니다.",
-    },
-    {
-      id: 8,
-      name: "전주 한옥마을 1박 2일",
-      price: 250000,
-      capacity: 22,
-      soldOut: false,
-      image: "product3",
-      startDate: "2023-09-22",
-      endDate: "2023-09-23",
-      description: "전통 한옥에서 하룻밤을 보내고 전주의 맛과 멋을 즐겨보세요.",
-    },
-    {
-      id: 9,
-      name: "설악산 트레킹 2박 3일",
-      price: 340000,
-      capacity: 18,
-      soldOut: false,
-      image: "product4",
-      startDate: "2023-10-13",
-      endDate: "2023-10-15",
-      description:
-        "가을 단풍이 아름다운 설악산에서 트레킹을 즐기는 여행입니다.",
-    },
-    {
-      id: 10,
-      name: "통영 케이블카 당일치기",
-      price: 190000,
-      capacity: 40,
-      soldOut: false,
-      image: "product5",
-      startDate: "2023-08-20",
-      endDate: "2023-08-20",
-      description:
-        "통영의 아름다운 바다 전경을 케이블카에서 감상하는 당일 여행입니다.",
-    },
-    {
-      id: 11,
-      name: "대구 근대골목 투어",
-      price: 220000,
-      capacity: 0,
-      soldOut: true,
-      image: "product1",
-      startDate: "2023-09-05",
-      endDate: "2023-09-05",
-      description: "대구의 근대 역사를 담은 골목을 탐방하는 당일 투어입니다.",
-    },
-    {
-      id: 12,
-      name: "인천 차이나타운 당일치기",
-      price: 120000,
-      capacity: 35,
-      soldOut: false,
-      image: "product2",
-      startDate: "2023-08-15",
-      endDate: "2023-08-15",
-      description: "인천 차이나타운과 월미도를 방문하는 당일 여행입니다.",
-    },
-    // 추가 데이터 (페이지네이션 테스트용)
-    {
-      id: 13,
-      name: "남해 다랭이마을 1박 2일",
-      price: 280000,
-      capacity: 60,
-      soldOut: false,
-      image: "product3",
-      startDate: "2023-10-21",
-      endDate: "2023-10-22",
-      description:
-        "남해의 아름다운 다랭이마을과 독일마을을 방문하는 여행입니다.",
-    },
-    {
-      id: 14,
-      name: "순천만 생태공원 당일치기",
-      price: 130000,
-      capacity: 100,
-      soldOut: false,
-      image: "product4",
-      startDate: "2023-09-10",
-      endDate: "2023-09-10",
-      description:
-        "순천만 생태공원과 순천만 국가정원을 방문하는 당일 여행입니다.",
-    },
-    {
-      id: 15,
-      name: "안동 하회마을 1박 2일",
-      price: 220000,
-      capacity: 45,
-      soldOut: false,
-      image: "product5",
-      startDate: "2023-10-07",
-      endDate: "2023-10-08",
-      description:
-        "안동 하회마을과 도산서원을 방문하는 전통문화 체험 여행입니다.",
-    },
-    {
-      id: 16,
-      name: "포항 호미곶 일출 투어",
-      price: 150000,
-      capacity: 30,
-      soldOut: false,
-      image: "product1",
-      startDate: "2024-01-01",
-      endDate: "2024-01-01",
-      description: "새해 첫날 호미곶에서 일출을 감상하는 특별한 투어입니다.",
-    },
-    {
-      id: 17,
-      name: "태안 해안도로 드라이브",
-      price: 320000,
-      capacity: 0,
-      soldOut: true,
-      image: "product2",
-      startDate: "2023-08-26",
-      endDate: "2023-08-27",
-      description:
-        "태안 해안도로를 드라이브하며 아름다운 해변을 감상하는 여행입니다.",
-    },
-    {
-      id: 18,
-      name: "속초 해변 2박 3일",
-      price: 290000,
-      capacity: 25,
-      soldOut: false,
-      image: "product3",
-      startDate: "2023-07-28",
-      endDate: "2023-07-30",
-      description:
-        "속초 해변에서 휴양하고 설악산과 속초 관광지를 둘러보는 여행입니다.",
-    },
-    {
-      id: 19,
-      name: "담양 죽녹원 당일치기",
-      price: 180000,
-      capacity: 15,
-      soldOut: false,
-      image: "product4",
-      startDate: "2023-09-17",
-      endDate: "2023-09-17",
-      description: "담양 죽녹원과 메타세쿼이아길을 방문하는 당일 여행입니다.",
-    },
-    {
-      id: 20,
-      name: "거제도 해수욕장 2박 3일",
-      price: 370000,
-      capacity: 50,
-      soldOut: false,
-      image: "product5",
-      startDate: "2023-08-18",
-      endDate: "2023-08-20",
-      description:
-        "거제도의 아름다운 해수욕장과 관광지를 둘러보는 여름 휴가 패키지입니다.",
-    },
   ];
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -284,9 +81,115 @@ const ManageTravel = () => {
     setCurrentPage(1); // 검색 유형 변경 시 첫 페이지로 이동
   };
 
-  const handleToggleSoldOut = (id: number) => {
-    // 실제 구현에서는 API 호출 등으로 처리
-    console.log(`여행 상품 ID ${id}의 품절 상태 변경`);
+  const handleToggleSoldOut = async (id: number) => {
+    try {
+      // 현재 여행상품 찾기
+      const travel = travels.find(t => t.travel_id === id);
+      if (!travel) return;
+
+      // API 호출하여 품절 상태 업데이트
+      const updatedTravel = await travelApi.update(id, {
+        travel_sold: !travel.travel_sold,
+      });
+
+      // 상태 업데이트
+      if (updatedTravel) {
+        setTravels(prevTravels =>
+          prevTravels.map(t =>
+            t.travel_id === id ? { ...t, travel_sold: !t.travel_sold } : t,
+          ),
+        );
+      }
+    } catch (error) {
+      console.error("품절 상태 변경 중 오류 발생:", error);
+    }
+  };
+
+  // 수정 모드 시작
+  const handleEditClick = (travel: Travel) => {
+    setEditingId(travel.travel_id);
+    setEditFormData({
+      travel_name: travel.travel_name,
+      travel_price: travel.travel_price.toString(),
+      travel_amount: travel.travel_amount.toString(),
+    });
+  };
+
+  // 수정 중인 입력값 변경 처리
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // 수정 취소
+  const handleCancelEdit = () => {
+    setEditingId(null);
+  };
+
+  // 수정 저장
+  const handleSaveEdit = async (id: number) => {
+    try {
+      // 업데이트할 데이터 준비
+      const updatedData = {
+        travel_name: editFormData.travel_name,
+        travel_price: parseInt(editFormData.travel_price),
+        travel_amount: parseInt(editFormData.travel_amount),
+        travel_update_dt: new Date().toISOString().split("T")[0],
+      };
+
+      // API 호출하여 데이터 업데이트
+      const updatedTravel = await travelApi.update(id, updatedData);
+
+      // 상태 업데이트
+      if (updatedTravel) {
+        setTravels(prevTravels =>
+          prevTravels.map(t =>
+            t.travel_id === id ? { ...t, ...updatedData } : t,
+          ),
+        );
+        setEditingId(null);
+      }
+    } catch (error) {
+      console.error("여행상품 수정 중 오류 발생:", error);
+    }
+  };
+
+  // 삭제 모달 열기
+  const handleDeleteClick = (travel: Travel) => {
+    setTravelToDelete(travel);
+    setIsDeleteModalOpen(true);
+  };
+
+  // 삭제 모달 닫기
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setTravelToDelete(null);
+  };
+
+  // 삭제 확인
+  const handleConfirmDelete = async () => {
+    if (!travelToDelete) return;
+
+    try {
+      // API 호출하여 데이터 삭제
+      const success = await travelApi.delete(travelToDelete.travel_id);
+
+      // 상태 업데이트
+      if (success) {
+        setTravels(prevTravels =>
+          prevTravels.filter(t => t.travel_id !== travelToDelete.travel_id),
+        );
+        console.log(`여행상품 ID ${travelToDelete.travel_id} 삭제 성공`);
+      }
+
+      // 모달 닫기
+      handleCloseDeleteModal();
+    } catch (error) {
+      console.error("여행상품 삭제 중 오류 발생:", error);
+    }
   };
 
   const openModal = () => {
@@ -296,14 +199,17 @@ const ManageTravel = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setNewTravel({
-      name: "",
-      price: "",
-      capacity: "",
-      soldOut: false,
-      image: "",
-      startDate: "",
-      endDate: "",
-      description: "",
+      travel_name: "",
+      travel_price: "",
+      travel_amount: "",
+      travel_sold: false,
+      travel_img: "",
+      travel_start_dt: "",
+      travel_end_dt: "",
+      travel_comment: "",
+      travel_label: "",
+      travel_upload_dt: new Date().toISOString().split("T")[0],
+      travel_update_dt: new Date().toISOString().split("T")[0],
     });
   };
 
@@ -322,15 +228,43 @@ const ManageTravel = () => {
   const handleImageSelect = (imageId: string) => {
     setNewTravel(prev => ({
       ...prev,
-      image: imageId,
+      travel_img: imageId,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 실제 구현에서는 API 호출 등으로 처리
-    console.log("새 여행 상품 추가:", newTravel);
-    closeModal();
+
+    try {
+      // 폼 데이터를 API 형식에 맞게 변환
+      const travelData = {
+        travel_name: newTravel.travel_name,
+        travel_price: parseInt(newTravel.travel_price),
+        travel_amount: parseInt(newTravel.travel_amount),
+        travel_sold: newTravel.travel_sold,
+        travel_img: newTravel.travel_img || "product1", // 기본 이미지 설정
+        travel_start_dt: newTravel.travel_start_dt,
+        travel_end_dt: newTravel.travel_end_dt,
+        travel_comment: newTravel.travel_comment,
+        travel_label: newTravel.travel_label,
+        travel_upload_dt: newTravel.travel_upload_dt,
+        travel_update_dt: newTravel.travel_update_dt,
+      };
+
+      // API 호출하여 새 여행상품 추가
+      const createdTravel = await travelApi.create(travelData);
+
+      // 상태 업데이트
+      if (createdTravel) {
+        setTravels(prevTravels => [...prevTravels, createdTravel]);
+        console.log("새 여행상품 추가 성공:", createdTravel);
+      }
+
+      // 모달 닫기
+      closeModal();
+    } catch (error) {
+      console.error("여행상품 추가 중 오류 발생:", error);
+    }
   };
 
   // 검색어로 필터링
@@ -338,8 +272,10 @@ const ManageTravel = () => {
     if (searchTerm === "") return true;
 
     const searchTermLower = searchTerm.toLowerCase();
-    const nameMatch = travel.name.toLowerCase().includes(searchTermLower);
-    const codeMatch = travel.id.toString().includes(searchTerm);
+    const nameMatch = travel.travel_name
+      .toLowerCase()
+      .includes(searchTermLower);
+    const codeMatch = travel.travel_id.toString().includes(searchTerm);
 
     switch (searchType) {
       case "name":
@@ -419,13 +355,7 @@ const ManageTravel = () => {
                 <FiSearch className={styles.searchIcon} />
                 <input
                   type="text"
-                  placeholder={
-                    searchType === "name"
-                      ? "상품명을 검색하세요"
-                      : searchType === "code"
-                        ? "상품코드를 검색하세요"
-                        : "상품명 또는 코드를 검색하세요"
-                  }
+                  placeholder="검색어를 입력하세요"
                   value={searchTerm}
                   onChange={handleSearch}
                 />
@@ -437,51 +367,132 @@ const ManageTravel = () => {
           </div>
 
           <div className={styles.tableContainer}>
-            <table className={styles.productTable}>
-              <thead>
-                <tr>
-                  <th>상품코드</th>
-                  <th>상품명</th>
-                  <th>금액</th>
-                  <th>정원</th>
-                  <th>품절여부</th>
-                  <th>관리</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentItems.map(travel => (
-                  <tr key={travel.id}>
-                    <td>{travel.id}</td>
-                    <td>{travel.name}</td>
-                    <td>{travel.price.toLocaleString()}원</td>
-                    <td>{travel.capacity}명</td>
-                    <td>
-                      <label className={styles.toggleSwitch}>
-                        <input
-                          type="checkbox"
-                          checked={travel.soldOut}
-                          onChange={() => handleToggleSoldOut(travel.id)}
-                        />
-                        <span className={styles.slider}></span>
-                        <span className={styles.statusText}>
-                          {travel.soldOut ? "품절" : "판매중"}
-                        </span>
-                      </label>
-                    </td>
-                    <td>
-                      <div className={styles.actionButtons}>
-                        <button className={styles.editButton}>
-                          <FiEdit2 />
-                        </button>
-                        <button className={styles.deleteButton}>
-                          <FiTrash2 />
-                        </button>
-                      </div>
-                    </td>
+            {loading ? (
+              <div className={styles.loadingContainer}>
+                <div className={styles.loadingSpinner}>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+                <p className={styles.loadingText}>
+                  데이터를 불러오는 중입니다...
+                </p>
+              </div>
+            ) : (
+              <table className={styles.productTable}>
+                <thead>
+                  <tr>
+                    <th>상품코드</th>
+                    <th>상품명</th>
+                    <th>금액</th>
+                    <th>수량</th>
+                    <th>품절여부</th>
+                    <th>관리</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {currentItems.map(travel => (
+                    <tr key={travel.travel_id}>
+                      <td>{travel.travel_id}</td>
+                      <td>
+                        {editingId === travel.travel_id ? (
+                          <input
+                            type="text"
+                            name="travel_name"
+                            value={editFormData.travel_name}
+                            onChange={handleEditInputChange}
+                            className={styles.editInput}
+                            style={{ minWidth: "150px" }}
+                          />
+                        ) : (
+                          travel.travel_name
+                        )}
+                      </td>
+                      <td>
+                        {editingId === travel.travel_id ? (
+                          <input
+                            type="number"
+                            name="travel_price"
+                            value={editFormData.travel_price}
+                            onChange={handleEditInputChange}
+                            className={styles.editInput}
+                            style={{ minWidth: "80px" }}
+                          />
+                        ) : (
+                          `${travel.travel_price.toLocaleString()}원`
+                        )}
+                      </td>
+                      <td>
+                        {editingId === travel.travel_id ? (
+                          <input
+                            type="number"
+                            name="travel_amount"
+                            value={editFormData.travel_amount}
+                            onChange={handleEditInputChange}
+                            className={styles.editInput}
+                            style={{ minWidth: "60px" }}
+                          />
+                        ) : (
+                          `${travel.travel_amount}명`
+                        )}
+                      </td>
+                      <td>
+                        <label className={styles.toggleSwitch}>
+                          <input
+                            type="checkbox"
+                            checked={travel.travel_sold}
+                            onChange={() =>
+                              handleToggleSoldOut(travel.travel_id)
+                            }
+                          />
+                          <span className={styles.slider}></span>
+                        </label>
+                      </td>
+                      <td>
+                        <div className={styles.actionButtons}>
+                          {editingId === travel.travel_id ? (
+                            <>
+                              <button
+                                className={styles.saveButton}
+                                onClick={() => handleSaveEdit(travel.travel_id)}
+                                title="저장"
+                              >
+                                <FiCheck />
+                              </button>
+                              <button
+                                className={styles.editCancelButton}
+                                onClick={handleCancelEdit}
+                                title="취소"
+                              >
+                                <FiX />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                className={styles.editButton}
+                                onClick={() => handleEditClick(travel)}
+                                title="수정"
+                              >
+                                <FiEdit2 />
+                              </button>
+                              <button
+                                className={styles.deleteButton}
+                                onClick={() => handleDeleteClick(travel)}
+                                title="삭제"
+                              >
+                                <FiTrash2 />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
           {totalPages > 0 && (
@@ -527,95 +538,98 @@ const ManageTravel = () => {
                 </div>
                 <form onSubmit={handleSubmit} className={styles.modalForm}>
                   <div className={styles.formGroup}>
-                    <label htmlFor="name">상품명</label>
+                    <label htmlFor="travel_name">상품명</label>
                     <input
                       type="text"
-                      id="name"
-                      name="name"
-                      value={newTravel.name}
+                      id="travel_name"
+                      name="travel_name"
+                      value={newTravel.travel_name}
                       onChange={handleInputChange}
                       placeholder="상품명을 입력하세요"
                       required
                     />
                   </div>
-
-                  <div className={styles.dateRangeContainer}>
-                    <div className={styles.formGroup}>
-                      <label htmlFor="startDate">시작 날짜</label>
-                      <div className={styles.dateInputWrapper}>
-                        <input
-                          type="date"
-                          id="startDate"
-                          name="startDate"
-                          value={newTravel.startDate}
-                          onChange={handleInputChange}
-                          required
-                        />
-                        <FiCalendar className={styles.calendarIcon} />
-                      </div>
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label htmlFor="endDate">종료 날짜</label>
-                      <div className={styles.dateInputWrapper}>
-                        <input
-                          type="date"
-                          id="endDate"
-                          name="endDate"
-                          value={newTravel.endDate}
-                          onChange={handleInputChange}
-                          required
-                        />
-                        <FiCalendar className={styles.calendarIcon} />
-                      </div>
-                    </div>
-                  </div>
-
                   <div className={styles.formGroup}>
-                    <label htmlFor="price">금액</label>
+                    <label htmlFor="travel_price">금액</label>
                     <input
                       type="number"
-                      id="price"
-                      name="price"
-                      value={newTravel.price}
+                      id="travel_price"
+                      name="travel_price"
+                      value={newTravel.travel_price}
                       onChange={handleInputChange}
                       placeholder="금액을 입력하세요"
                       required
                     />
                   </div>
-
                   <div className={styles.formGroup}>
-                    <label htmlFor="capacity">정원</label>
+                    <label htmlFor="travel_amount">수량</label>
                     <input
                       type="number"
-                      id="capacity"
-                      name="capacity"
-                      value={newTravel.capacity}
+                      id="travel_amount"
+                      name="travel_amount"
+                      value={newTravel.travel_amount}
                       onChange={handleInputChange}
-                      placeholder="정원을 입력하세요"
+                      placeholder="수량을 입력하세요"
                       required
                     />
                   </div>
-
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label htmlFor="travel_start_dt">
+                        <FiCalendar /> 시작일
+                      </label>
+                      <input
+                        type="date"
+                        id="travel_start_dt"
+                        name="travel_start_dt"
+                        value={newTravel.travel_start_dt}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label htmlFor="travel_end_dt">
+                        <FiCalendar /> 종료일
+                      </label>
+                      <input
+                        type="date"
+                        id="travel_end_dt"
+                        name="travel_end_dt"
+                        value={newTravel.travel_end_dt}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                  </div>
                   <div className={styles.formGroup}>
-                    <label htmlFor="description">상품 설명</label>
-                    <textarea
-                      id="description"
-                      name="description"
-                      value={newTravel.description}
+                    <label htmlFor="travel_label">태그</label>
+                    <input
+                      type="text"
+                      id="travel_label"
+                      name="travel_label"
+                      value={newTravel.travel_label}
                       onChange={handleInputChange}
-                      placeholder="상품에 대한 설명을 입력하세요"
-                      rows={4}
+                      placeholder="태그를 입력하세요 (예: 서울, 관광)"
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label htmlFor="travel_comment">상품 설명</label>
+                    <textarea
+                      id="travel_comment"
+                      name="travel_comment"
+                      value={newTravel.travel_comment}
+                      onChange={handleInputChange}
+                      placeholder="상품 설명을 입력하세요"
                       required
                     />
                   </div>
-
                   <div className={styles.formGroup}>
                     <label>이미지 선택</label>
                     <div className={styles.imageSelector}>
                       {travelImages.map(img => (
                         <div
                           key={img.id}
-                          className={`${styles.imageOption} ${newTravel.image === img.id ? styles.selected : ""}`}
+                          className={`${styles.imageOption} ${newTravel.travel_img === img.id ? styles.selected : ""}`}
                           onClick={() => handleImageSelect(img.id)}
                         >
                           <img src={img.src} alt={img.name} />
@@ -623,19 +637,17 @@ const ManageTravel = () => {
                       ))}
                     </div>
                   </div>
-
                   <div className={styles.formGroup}>
                     <label className={styles.checkboxLabel}>
                       <input
                         type="checkbox"
-                        name="soldOut"
-                        checked={newTravel.soldOut}
+                        name="travel_sold"
+                        checked={newTravel.travel_sold}
                         onChange={handleInputChange}
                       />
                       품절 상태로 등록
                     </label>
                   </div>
-
                   <div className={styles.modalActions}>
                     <button
                       type="button"
@@ -649,6 +661,41 @@ const ManageTravel = () => {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {/* 삭제 확인 모달 */}
+          {isDeleteModalOpen && travelToDelete && (
+            <div className={styles.modalOverlay}>
+              <div className={styles.deleteModal}>
+                <div className={styles.deleteModalHeader}>
+                  <FiAlertTriangle className={styles.alertIcon} />
+                  <h2>여행 상품 삭제</h2>
+                </div>
+                <div className={styles.deleteModalContent}>
+                  <p>
+                    <strong>{travelToDelete.travel_name}</strong> 상품을
+                    삭제하시겠습니까?
+                  </p>
+                  <p className={styles.deleteWarning}>
+                    삭제된 데이터는 복구할 수 없습니다.
+                  </p>
+                </div>
+                <div className={styles.deleteModalActions}>
+                  <button
+                    className={styles.cancelDeleteButton}
+                    onClick={handleCloseDeleteModal}
+                  >
+                    취소
+                  </button>
+                  <button
+                    className={styles.confirmDeleteButton}
+                    onClick={handleConfirmDelete}
+                  >
+                    삭제
+                  </button>
+                </div>
               </div>
             </div>
           )}

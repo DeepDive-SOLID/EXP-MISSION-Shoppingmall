@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import styles from "./Sidebar.module.scss";
 import {
   FiAirplay,
@@ -11,22 +10,12 @@ import {
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
-  const [open, setOpen] = useState<string | null>(null);
   const location = useLocation();
 
-  // 현재 경로가 물품관리나 여행상품관리 페이지일 경우 상품관리 메뉴를 자동으로 열기
-  useEffect(() => {
-    if (
-      location.pathname === "/manage-product" ||
-      location.pathname === "/manage-travel"
-    ) {
-      setOpen("product");
-    }
-  }, [location.pathname]);
-
-  const toggle = (menu: string) => {
-    setOpen(open === menu ? null : menu);
-  };
+  // 현재 경로가 물품관리나 여행상품관리 페이지인지 확인
+  const isProductPage =
+    location.pathname === "/manage-product" ||
+    location.pathname === "/manage-travel";
 
   return (
     <aside className={styles.sidebar}>
@@ -53,14 +42,27 @@ const Sidebar = () => {
           </Link>
         </li>
 
-        <li className={styles.item} onClick={() => toggle("product")}>
-          <FiBox />
-          <span>상품관리</span>
+        <li className={styles.item}>
+          <Link
+            to="/manage-user"
+            className={
+              location.pathname === "/manage-user" ? styles.active : ""
+            }
+          >
+            <FiUsers />
+            <span>사용자관리</span>
+          </Link>
         </li>
 
-        {open === "product" && (
+        <li
+          className={`${styles.item} ${styles.productMenu} ${isProductPage ? styles.activeParent : ""}`}
+        >
+          <div className={styles.menuTitle}>
+            <FiBox />
+            <span>상품관리</span>
+          </div>
           <ul className={styles.subMenu}>
-            <li className={styles.item}>
+            <li className={styles.subItem}>
               <Link
                 to="/manage-product"
                 className={
@@ -71,7 +73,7 @@ const Sidebar = () => {
                 <span>물품 관리</span>
               </Link>
             </li>
-            <li className={styles.item}>
+            <li className={styles.subItem}>
               <Link
                 to="/manage-travel"
                 className={
@@ -83,18 +85,6 @@ const Sidebar = () => {
               </Link>
             </li>
           </ul>
-        )}
-
-        <li className={styles.item}>
-          <Link
-            to="/manage-user"
-            className={
-              location.pathname === "/manage-user" ? styles.active : ""
-            }
-          >
-            <FiUsers />
-            <span>사용자관리</span>
-          </Link>
         </li>
       </ul>
     </aside>
