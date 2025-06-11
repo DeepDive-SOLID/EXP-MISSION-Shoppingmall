@@ -88,7 +88,6 @@ const ManageProduct = () => {
         // 응답 데이터가 있고, 배열인지 확인
         if (response.data) {
           if (Array.isArray(response.data)) {
-            // camelCase(API)에서 snake_case(프론트)로 필드명 변환
             const transformedData = response.data.map((item: ApiProduct) => ({
               product_id: item.productId,
               product_name: item.productName,
@@ -101,7 +100,6 @@ const ManageProduct = () => {
             }));
             setProducts(transformedData);
           } else if (response.data.data && Array.isArray(response.data.data)) {
-            // 일반적인 API 응답 패턴: { data: [...], status: 200, message: "success" }
             const transformedData = response.data.data.map(
               (item: ApiProduct) => ({
                 product_id: item.productId,
@@ -116,7 +114,6 @@ const ManageProduct = () => {
             );
             setProducts(transformedData);
           } else if (typeof response.data === "object") {
-            // 객체인 경우 값들의 배열로 변환 시도
             const extractedArray = Object.values(response.data);
             if (Array.isArray(extractedArray) && extractedArray.length > 0) {
               const transformedData = extractedArray.map((item: unknown) => {
@@ -189,58 +186,24 @@ const ManageProduct = () => {
 
       console.log("품절 상태 변경 요청 데이터:", productDto);
 
-      // 다양한 요청 형식 시도
-      try {
-        // 첫 번째 시도: POST 요청
-        const response = await api.post(
-          "/admin/product/updateProductDto",
-          productDto,
-        );
-        console.log("품절 상태 변경 응답:", response.data);
+      // API 요청 (성공 방식만 유지)
+      const response = await api.post(
+        "/admin/product/updateProductDto",
+        productDto,
+      );
+      console.log("품절 상태 변경 응답:", response.data);
 
-        // 물품 목록 다시 불러오기
-        await refreshProductList();
-      } catch (error1) {
-        console.error("POST 요청 실패:", error1);
-
-        try {
-          // 두 번째 시도: PUT 요청
-          const response = await api.put(
-            "/admin/product/updateProductDto",
-            productDto,
-          );
-          console.log("품절 상태 변경 응답 (PUT 요청):", response.data);
-
-          // 물품 목록 다시 불러오기
-          await refreshProductList();
-        } catch (error2) {
-          console.error("PUT 요청 실패:", error2);
-
-          try {
-            // 세 번째 시도: productDto 키로 감싸기
-            const response = await api.post("/admin/product/updateProductDto", {
-              productDto,
-            });
-            console.log("품절 상태 변경 응답 (productDto 키):", response.data);
-
-            // 물품 목록 다시 불러오기
-            await refreshProductList();
-          } catch (error3) {
-            console.error("productDto 키 시도 실패:", error3);
-
-            // 임시 상태 업데이트 (API 실패 시에도 UI 반응성 유지)
-            setProducts(prevProducts =>
-              prevProducts.map(p =>
-                p.product_id === id
-                  ? { ...p, product_sold: !p.product_sold }
-                  : p,
-              ),
-            );
-          }
-        }
-      }
+      // 물품 목록 다시 불러오기
+      await refreshProductList();
     } catch (error) {
       console.error("품절 상태 변경 중 오류 발생:", error);
+
+      // 임시 상태 업데이트 (API 실패 시에도 UI 반응성 유지)
+      setProducts(prevProducts =>
+        prevProducts.map(p =>
+          p.product_id === id ? { ...p, product_sold: !p.product_sold } : p,
+        ),
+      );
     }
   };
 
@@ -293,81 +256,14 @@ const ManageProduct = () => {
 
       console.log("물품 추가 요청 데이터:", productData);
 
-      // 다양한 요청 형식 시도
-      try {
-        // 첫 번째 시도: 기본 JSON 요청
-        const response = await api.post(
-          "/admin/product/addProductDto",
-          productData,
-        );
-        console.log("물품 추가 응답:", response.data);
-        await refreshProductList();
-      } catch (error1) {
-        console.error("첫 번째 시도 실패:", error1);
+      const response = await api.post(
+        "/admin/product/addProductDto",
+        productData,
+      );
+      console.log("물품 추가 응답:", response.data);
 
-        try {
-          // 두 번째 시도: productDto 키로 감싸기
-          const response = await api.post("/admin/product/addProductDto", {
-            productDto: productData,
-          });
-          console.log("물품 추가 응답 (두 번째 시도):", response.data);
-          await refreshProductList();
-        } catch (error2) {
-          console.error("두 번째 시도 실패:", error2);
-
-          try {
-            // 세 번째 시도: form-urlencoded 형식
-            const params = new URLSearchParams();
-            params.append("productName", productData.productName);
-            params.append("productPrice", productData.productPrice.toString());
-            params.append(
-              "productAmount",
-              productData.productAmount.toString(),
-            );
-            params.append("productSold", productData.productSold.toString());
-            params.append("productImg", productData.productImg);
-            params.append("productUploadDt", productData.productUploadDt);
-            params.append("productUpdateDt", productData.productUpdateDt);
-
-            const response = await api.post(
-              "/admin/product/addProductDto",
-              params,
-              {
-                headers: {
-                  "Content-Type": "application/x-www-form-urlencoded",
-                },
-              },
-            );
-            console.log("물품 추가 응답 (세 번째 시도):", response.data);
-            await refreshProductList();
-          } catch (error3) {
-            console.error("세 번째 시도 실패:", error3);
-
-            // 네 번째 시도: multipart/form-data
-            try {
-              const formData = new FormData();
-              Object.entries(productData).forEach(([key, value]) => {
-                formData.append(key, value.toString());
-              });
-
-              const response = await api.post(
-                "/admin/product/addProductDto",
-                formData,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                  },
-                },
-              );
-              console.log("물품 추가 응답 (네 번째 시도):", response.data);
-              await refreshProductList();
-            } catch (error4) {
-              console.error("네 번째 시도 실패:", error4);
-              throw error4;
-            }
-          }
-        }
-      }
+      // 물품 목록 다시 불러오기
+      await refreshProductList();
 
       // 모달 닫기
       closeModal();
@@ -382,7 +278,6 @@ const ManageProduct = () => {
       const productsResponse = await api.get("/admin/product/getProductList");
 
       if (Array.isArray(productsResponse.data)) {
-        // camelCase(API)에서 snake_case(프론트)로 필드명 변환
         const transformedData = productsResponse.data.map(
           (item: ApiProduct) => ({
             product_id: item.productId,
@@ -435,62 +330,27 @@ const ManageProduct = () => {
       const currentProduct = products.find(p => p.product_id === id);
       if (!currentProduct) return;
 
-      // 업데이트할 데이터 준비 (API 형식에 맞게 camelCase로 변환)
       const productDto = {
         productId: id,
         productName: editFormData.product_name,
         productPrice: parseInt(editFormData.product_price),
         productAmount: parseInt(editFormData.product_amount),
-        productSold: currentProduct.product_sold, // 기존 값 유지
-        productImg: currentProduct.product_img, // 기존 값 유지
-        productUploadDt: currentProduct.product_upload_dt, // 기존 값 유지
+        productSold: currentProduct.product_sold,
+        productImg: currentProduct.product_img,
+        productUploadDt: currentProduct.product_upload_dt,
         productUpdateDt: new Date().toISOString().split("T")[0],
       };
 
       console.log("물품 수정 요청 데이터:", productDto);
 
-      // 다양한 요청 형식 시도
-      try {
-        // 첫 번째 시도: POST 요청
-        const response = await api.post(
-          "/admin/product/updateProductDto",
-          productDto,
-        );
-        console.log("물품 수정 응답:", response.data);
+      const response = await api.post(
+        "/admin/product/updateProductDto",
+        productDto,
+      );
+      console.log("물품 수정 응답:", response.data);
 
-        // 물품 목록 다시 불러오기
-        await refreshProductList();
-      } catch (error1) {
-        console.error("POST 요청 실패:", error1);
-
-        try {
-          // 두 번째 시도: PUT 요청
-          const response = await api.put(
-            "/admin/product/updateProductDto",
-            productDto,
-          );
-          console.log("물품 수정 응답 (PUT 요청):", response.data);
-
-          // 물품 목록 다시 불러오기
-          await refreshProductList();
-        } catch (error2) {
-          console.error("PUT 요청 실패:", error2);
-
-          try {
-            // 세 번째 시도: productDto 키로 감싸기
-            const response = await api.post("/admin/product/updateProductDto", {
-              productDto,
-            });
-            console.log("물품 수정 응답 (productDto 키):", response.data);
-
-            // 물품 목록 다시 불러오기
-            await refreshProductList();
-          } catch (error3) {
-            console.error("productDto 키 시도 실패:", error3);
-            throw error3;
-          }
-        }
-      }
+      // 물품 목록 다시 불러오기
+      await refreshProductList();
 
       setEditingId(null);
     } catch (error) {
