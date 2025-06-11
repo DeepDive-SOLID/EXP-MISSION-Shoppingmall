@@ -1,4 +1,4 @@
-import productData from "../data/products.json";
+// import productData from "../data/products.json";
 import travelData from "../data/travels.json";
 import userData from "../data/users.json";
 import orderData from "../data/orders.json";
@@ -78,50 +78,28 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 // 물품 관련 API
 export const productApi = {
   getAll: async (): Promise<Product[]> => {
-    await delay(300); // API 호출 지연 시간 모방
-    return productData as unknown as Product[];
+    console.warn("Deprecated: 실제 API를 사용하세요");
+    return [];
   },
 
-  getById: async (id: number): Promise<Product | undefined> => {
-    await delay(200);
-    return (productData as unknown as Product[]).find(
-      product => product.product_id === id,
-    );
+  getById: async (): Promise<Product | undefined> => {
+    console.warn("Deprecated: 실제 API를 사용하세요");
+    return undefined;
   },
 
   create: async (product: Omit<Product, "product_id">): Promise<Product> => {
-    await delay(400);
-    const newId =
-      Math.max(
-        ...(productData as unknown as Product[]).map(p => p.product_id),
-      ) + 1;
-    const newProduct = { ...product, product_id: newId };
-    return newProduct;
+    console.warn("Deprecated: 실제 API를 사용하세요");
+    return { ...product, product_id: 0 } as Product;
   },
 
-  update: async (
-    id: number,
-    updates: Partial<Product>,
-  ): Promise<Product | undefined> => {
-    await delay(300);
-    const product = (productData as unknown as Product[]).find(
-      p => p.product_id === id,
-    );
-    if (!product) return undefined;
-
-    // 업데이트 날짜 자동 설정
-    if (updates && !updates.product_update_dt) {
-      updates.product_update_dt = new Date().toISOString().split("T")[0];
-    }
-
-    return { ...product, ...updates };
+  update: async (): Promise<Product | undefined> => {
+    console.warn("Deprecated: 실제 API를 사용하세요");
+    return undefined;
   },
 
-  delete: async (id: number): Promise<boolean> => {
-    await delay(300);
-    // 실제 구현에서는 데이터베이스에서 삭제 작업 수행
-    console.log(`물품 ID ${id} 삭제`);
-    return true;
+  delete: async (): Promise<boolean> => {
+    console.warn("Deprecated: 실제 API를 사용하세요");
+    return false;
   },
 };
 

@@ -64,11 +64,11 @@ const ManageTravel = () => {
 
   // 이미지 목록
   const travelImages = [
-    { id: "product1", src: product1, name: "제주도 여행" },
-    { id: "product2", src: product1, name: "부산 여행" },
-    { id: "product3", src: product1, name: "강원도 여행" },
-    { id: "product4", src: product1, name: "서울 여행" },
-    { id: "product5", src: product1, name: "경주 여행" },
+    { id: "product1", src: product1 },
+    { id: "product2", src: product1 },
+    { id: "product3", src: product1 },
+    { id: "product4", src: product1 },
+    { id: "product5", src: product1 },
   ];
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -632,7 +632,7 @@ const ManageTravel = () => {
                           className={`${styles.imageOption} ${newTravel.travel_img === img.id ? styles.selected : ""}`}
                           onClick={() => handleImageSelect(img.id)}
                         >
-                          <img src={img.src} alt={img.name} />
+                          <img src={img.src} alt={img.id} />
                         </div>
                       ))}
                     </div>

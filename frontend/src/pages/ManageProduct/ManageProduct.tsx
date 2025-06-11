@@ -12,7 +12,20 @@ import {
   FiAlertTriangle,
 } from "react-icons/fi";
 import { product1 } from "../../assets";
-import { productApi, Product as ProductType } from "../../api/mockApi";
+import { Product as ProductType } from "../../api/mockApi";
+import api from "../../api/axios"; // axios 인스턴스 import
+
+// API 응답 타입 정의
+interface ApiProduct {
+  productId: number;
+  productName: string;
+  productPrice: number;
+  productAmount: number;
+  productSold: boolean;
+  productUploadDt: string;
+  productUpdateDt: string;
+  productImg: string;
+}
 
 const ManageProduct = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,11 +57,11 @@ const ManageProduct = () => {
 
   // 이미지 목록
   const productImages = [
-    { id: "product1", src: product1, name: "여행용 캐리어" },
-    { id: "product2", src: product1, name: "여행용 목베개" },
-    { id: "product3", src: product1, name: "방수 파우치" },
-    { id: "product4", src: product1, name: "여행용 어댑터" },
-    { id: "product5", src: product1, name: "휴대용 공기청정기" },
+    { id: "product1", src: product1 },
+    { id: "product2", src: product1 },
+    { id: "product3", src: product1 },
+    { id: "product4", src: product1 },
+    { id: "product5", src: product1 },
   ];
 
   // API에서 물품 데이터 가져오기
@@ -56,10 +69,88 @@ const ManageProduct = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const data = await productApi.getAll();
-        setProducts(data);
+        console.log("API 요청 시작...");
+        // 실제 API 호출
+        const response = await api.get("/admin/product/getProductList");
+
+        // API 응답 구조 확인 및 데이터 추출
+        console.log("API 응답:", response.data);
+        console.log("API 응답 타입:", typeof response.data);
+        console.log("API 응답이 배열인가?", Array.isArray(response.data));
+
+        if (Array.isArray(response.data)) {
+          console.log("API 응답 배열 길이:", response.data.length);
+          if (response.data.length > 0) {
+            console.log("첫 번째 아이템 샘플:", response.data[0]);
+          }
+        }
+
+        // 응답 데이터가 있고, 배열인지 확인
+        if (response.data) {
+          if (Array.isArray(response.data)) {
+            // camelCase(API)에서 snake_case(프론트)로 필드명 변환
+            const transformedData = response.data.map((item: ApiProduct) => ({
+              product_id: item.productId,
+              product_name: item.productName,
+              product_price: item.productPrice,
+              product_amount: item.productAmount,
+              product_sold: item.productSold,
+              product_upload_dt: item.productUploadDt,
+              product_update_dt: item.productUpdateDt,
+              product_img: item.productImg,
+            }));
+            setProducts(transformedData);
+          } else if (response.data.data && Array.isArray(response.data.data)) {
+            // 일반적인 API 응답 패턴: { data: [...], status: 200, message: "success" }
+            const transformedData = response.data.data.map(
+              (item: ApiProduct) => ({
+                product_id: item.productId,
+                product_name: item.productName,
+                product_price: item.productPrice,
+                product_amount: item.productAmount,
+                product_sold: item.productSold,
+                product_upload_dt: item.productUploadDt,
+                product_update_dt: item.productUpdateDt,
+                product_img: item.productImg,
+              }),
+            );
+            setProducts(transformedData);
+          } else if (typeof response.data === "object") {
+            // 객체인 경우 값들의 배열로 변환 시도
+            const extractedArray = Object.values(response.data);
+            if (Array.isArray(extractedArray) && extractedArray.length > 0) {
+              const transformedData = extractedArray.map((item: unknown) => {
+                const apiItem = item as ApiProduct;
+                return {
+                  product_id: apiItem.productId,
+                  product_name: apiItem.productName,
+                  product_price: apiItem.productPrice,
+                  product_amount: apiItem.productAmount,
+                  product_sold: apiItem.productSold,
+                  product_upload_dt: apiItem.productUploadDt,
+                  product_update_dt: apiItem.productUpdateDt,
+                  product_img: apiItem.productImg,
+                };
+              });
+              setProducts(transformedData as ProductType[]);
+            } else {
+              // 적절한 데이터를 찾을 수 없는 경우
+              console.warn("API 응답에서 배열 데이터를 찾을 수 없습니다.");
+              setProducts([]);
+            }
+          } else {
+            // 적절한 데이터를 찾을 수 없는 경우
+            console.warn("API 응답에서 유효한 데이터를 찾을 수 없습니다.");
+            setProducts([]);
+          }
+        } else {
+          // 응답이 없는 경우
+          console.warn("API 응답이 비어 있습니다.");
+          setProducts([]);
+        }
       } catch (error) {
         console.error("물품 데이터를 가져오는 중 오류 발생:", error);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -84,18 +175,69 @@ const ManageProduct = () => {
       const product = products.find(p => p.product_id === id);
       if (!product) return;
 
-      // API 호출하여 품절 상태 업데이트
-      const updatedProduct = await productApi.update(id, {
-        product_sold: !product.product_sold,
-      });
+      // 업데이트할 데이터 준비
+      const productDto = {
+        productId: id,
+        productName: product.product_name,
+        productPrice: product.product_price,
+        productAmount: product.product_amount,
+        productSold: !product.product_sold, // 품절 상태 변경
+        productImg: product.product_img,
+        productUploadDt: product.product_upload_dt,
+        productUpdateDt: new Date().toISOString().split("T")[0],
+      };
 
-      // 상태 업데이트
-      if (updatedProduct) {
-        setProducts(prevProducts =>
-          prevProducts.map(p =>
-            p.product_id === id ? { ...p, product_sold: !p.product_sold } : p,
-          ),
+      console.log("품절 상태 변경 요청 데이터:", productDto);
+
+      // 다양한 요청 형식 시도
+      try {
+        // 첫 번째 시도: POST 요청
+        const response = await api.post(
+          "/admin/product/updateProductDto",
+          productDto,
         );
+        console.log("품절 상태 변경 응답:", response.data);
+
+        // 물품 목록 다시 불러오기
+        await refreshProductList();
+      } catch (error1) {
+        console.error("POST 요청 실패:", error1);
+
+        try {
+          // 두 번째 시도: PUT 요청
+          const response = await api.put(
+            "/admin/product/updateProductDto",
+            productDto,
+          );
+          console.log("품절 상태 변경 응답 (PUT 요청):", response.data);
+
+          // 물품 목록 다시 불러오기
+          await refreshProductList();
+        } catch (error2) {
+          console.error("PUT 요청 실패:", error2);
+
+          try {
+            // 세 번째 시도: productDto 키로 감싸기
+            const response = await api.post("/admin/product/updateProductDto", {
+              productDto,
+            });
+            console.log("품절 상태 변경 응답 (productDto 키):", response.data);
+
+            // 물품 목록 다시 불러오기
+            await refreshProductList();
+          } catch (error3) {
+            console.error("productDto 키 시도 실패:", error3);
+
+            // 임시 상태 업데이트 (API 실패 시에도 UI 반응성 유지)
+            setProducts(prevProducts =>
+              prevProducts.map(p =>
+                p.product_id === id
+                  ? { ...p, product_sold: !p.product_sold }
+                  : p,
+              ),
+            );
+          }
+        }
       }
     } catch (error) {
       console.error("품절 상태 변경 중 오류 발생:", error);
@@ -140,28 +282,125 @@ const ManageProduct = () => {
     try {
       // 폼 데이터를 API 형식에 맞게 변환
       const productData = {
-        product_name: newProduct.product_name,
-        product_price: parseInt(newProduct.product_price),
-        product_amount: parseInt(newProduct.product_amount),
-        product_sold: newProduct.product_sold,
-        product_img: newProduct.product_img || "product1", // 기본 이미지 설정
-        product_upload_dt: newProduct.product_upload_dt,
-        product_update_dt: newProduct.product_update_dt,
+        productName: newProduct.product_name,
+        productPrice: parseInt(newProduct.product_price),
+        productAmount: parseInt(newProduct.product_amount),
+        productSold: newProduct.product_sold,
+        productImg: newProduct.product_img || "product1", // 기본 이미지 설정
+        productUploadDt: newProduct.product_upload_dt,
+        productUpdateDt: newProduct.product_update_dt,
       };
 
-      // API 호출하여 새 물품 추가
-      const createdProduct = await productApi.create(productData);
+      console.log("물품 추가 요청 데이터:", productData);
 
-      // 상태 업데이트
-      if (createdProduct) {
-        setProducts(prevProducts => [...prevProducts, createdProduct]);
-        console.log("새 물품 추가 성공:", createdProduct);
+      // 다양한 요청 형식 시도
+      try {
+        // 첫 번째 시도: 기본 JSON 요청
+        const response = await api.post(
+          "/admin/product/addProductDto",
+          productData,
+        );
+        console.log("물품 추가 응답:", response.data);
+        await refreshProductList();
+      } catch (error1) {
+        console.error("첫 번째 시도 실패:", error1);
+
+        try {
+          // 두 번째 시도: productDto 키로 감싸기
+          const response = await api.post("/admin/product/addProductDto", {
+            productDto: productData,
+          });
+          console.log("물품 추가 응답 (두 번째 시도):", response.data);
+          await refreshProductList();
+        } catch (error2) {
+          console.error("두 번째 시도 실패:", error2);
+
+          try {
+            // 세 번째 시도: form-urlencoded 형식
+            const params = new URLSearchParams();
+            params.append("productName", productData.productName);
+            params.append("productPrice", productData.productPrice.toString());
+            params.append(
+              "productAmount",
+              productData.productAmount.toString(),
+            );
+            params.append("productSold", productData.productSold.toString());
+            params.append("productImg", productData.productImg);
+            params.append("productUploadDt", productData.productUploadDt);
+            params.append("productUpdateDt", productData.productUpdateDt);
+
+            const response = await api.post(
+              "/admin/product/addProductDto",
+              params,
+              {
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+              },
+            );
+            console.log("물품 추가 응답 (세 번째 시도):", response.data);
+            await refreshProductList();
+          } catch (error3) {
+            console.error("세 번째 시도 실패:", error3);
+
+            // 네 번째 시도: multipart/form-data
+            try {
+              const formData = new FormData();
+              Object.entries(productData).forEach(([key, value]) => {
+                formData.append(key, value.toString());
+              });
+
+              const response = await api.post(
+                "/admin/product/addProductDto",
+                formData,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                  },
+                },
+              );
+              console.log("물품 추가 응답 (네 번째 시도):", response.data);
+              await refreshProductList();
+            } catch (error4) {
+              console.error("네 번째 시도 실패:", error4);
+              throw error4;
+            }
+          }
+        }
       }
 
       // 모달 닫기
       closeModal();
     } catch (error) {
       console.error("물품 추가 중 오류 발생:", error);
+    }
+  };
+
+  // 물품 목록 새로고침 함수
+  const refreshProductList = async () => {
+    try {
+      const productsResponse = await api.get("/admin/product/getProductList");
+
+      if (Array.isArray(productsResponse.data)) {
+        // camelCase(API)에서 snake_case(프론트)로 필드명 변환
+        const transformedData = productsResponse.data.map(
+          (item: ApiProduct) => ({
+            product_id: item.productId,
+            product_name: item.productName,
+            product_price: item.productPrice,
+            product_amount: item.productAmount,
+            product_sold: item.productSold,
+            product_upload_dt: item.productUploadDt,
+            product_update_dt: item.productUpdateDt,
+            product_img: item.productImg,
+          }),
+        );
+        setProducts(transformedData);
+      }
+
+      console.log("물품 목록 새로고침 성공");
+    } catch (error) {
+      console.error("물품 목록 새로고침 실패:", error);
     }
   };
 
@@ -192,26 +431,68 @@ const ManageProduct = () => {
   // 수정 저장
   const handleSaveEdit = async (id: number) => {
     try {
-      // 업데이트할 데이터 준비
-      const updatedData = {
-        product_name: editFormData.product_name,
-        product_price: parseInt(editFormData.product_price),
-        product_amount: parseInt(editFormData.product_amount),
-        product_update_dt: new Date().toISOString().split("T")[0],
+      // 현재 제품 찾기
+      const currentProduct = products.find(p => p.product_id === id);
+      if (!currentProduct) return;
+
+      // 업데이트할 데이터 준비 (API 형식에 맞게 camelCase로 변환)
+      const productDto = {
+        productId: id,
+        productName: editFormData.product_name,
+        productPrice: parseInt(editFormData.product_price),
+        productAmount: parseInt(editFormData.product_amount),
+        productSold: currentProduct.product_sold, // 기존 값 유지
+        productImg: currentProduct.product_img, // 기존 값 유지
+        productUploadDt: currentProduct.product_upload_dt, // 기존 값 유지
+        productUpdateDt: new Date().toISOString().split("T")[0],
       };
 
-      // API 호출하여 데이터 업데이트
-      const updatedProduct = await productApi.update(id, updatedData);
+      console.log("물품 수정 요청 데이터:", productDto);
 
-      // 상태 업데이트
-      if (updatedProduct) {
-        setProducts(prevProducts =>
-          prevProducts.map(p =>
-            p.product_id === id ? { ...p, ...updatedData } : p,
-          ),
+      // 다양한 요청 형식 시도
+      try {
+        // 첫 번째 시도: POST 요청
+        const response = await api.post(
+          "/admin/product/updateProductDto",
+          productDto,
         );
-        setEditingId(null);
+        console.log("물품 수정 응답:", response.data);
+
+        // 물품 목록 다시 불러오기
+        await refreshProductList();
+      } catch (error1) {
+        console.error("POST 요청 실패:", error1);
+
+        try {
+          // 두 번째 시도: PUT 요청
+          const response = await api.put(
+            "/admin/product/updateProductDto",
+            productDto,
+          );
+          console.log("물품 수정 응답 (PUT 요청):", response.data);
+
+          // 물품 목록 다시 불러오기
+          await refreshProductList();
+        } catch (error2) {
+          console.error("PUT 요청 실패:", error2);
+
+          try {
+            // 세 번째 시도: productDto 키로 감싸기
+            const response = await api.post("/admin/product/updateProductDto", {
+              productDto,
+            });
+            console.log("물품 수정 응답 (productDto 키):", response.data);
+
+            // 물품 목록 다시 불러오기
+            await refreshProductList();
+          } catch (error3) {
+            console.error("productDto 키 시도 실패:", error3);
+            throw error3;
+          }
+        }
       }
+
+      setEditingId(null);
     } catch (error) {
       console.error("물품 수정 중 오류 발생:", error);
     }
@@ -234,44 +515,70 @@ const ManageProduct = () => {
     if (!productToDelete) return;
 
     try {
-      // API 호출하여 데이터 삭제
-      const success = await productApi.delete(productToDelete.product_id);
+      const productId = productToDelete.product_id;
+      console.log("물품 삭제 요청 데이터:", productId);
 
-      // 상태 업데이트
-      if (success) {
-        setProducts(prevProducts =>
-          prevProducts.filter(p => p.product_id !== productToDelete.product_id),
-        );
-        console.log(`물품 ID ${productToDelete.product_id} 삭제 성공`);
-      }
+      // POST 요청으로 raw JSON 형태의 정수값만 전송
+      const response = await api.post(
+        "/admin/product/deleteProductDto",
+        productId,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      console.log("물품 삭제 응답:", response.data);
+
+      // 삭제 성공 처리
+      handleDeleteSuccess(productId);
 
       // 모달 닫기
       handleCloseDeleteModal();
     } catch (error) {
       console.error("물품 삭제 중 오류 발생:", error);
+      // 실패 시 UI 업데이트하지 않고 모달만 닫음
+      handleCloseDeleteModal();
     }
   };
 
+  // 삭제 성공 처리 함수
+  const handleDeleteSuccess = (productId: number) => {
+    // 상태 업데이트
+    setProducts(prevProducts =>
+      prevProducts.filter(p => p.product_id !== productId),
+    );
+    console.log(`물품 ID ${productId} 삭제 성공`);
+  };
+
   // 검색어로 필터링
-  const filteredProducts = products.filter(product => {
-    if (searchTerm === "") return true;
+  const filteredProducts = Array.isArray(products)
+    ? products.filter(product => {
+        if (searchTerm === "") return true;
 
-    const searchTermLower = searchTerm.toLowerCase();
-    const nameMatch = product.product_name
-      .toLowerCase()
-      .includes(searchTermLower);
-    const codeMatch = product.product_id.toString().includes(searchTerm);
+        const searchTermLower = searchTerm.toLowerCase();
+        const nameMatch = product.product_name
+          .toLowerCase()
+          .includes(searchTermLower);
+        const codeMatch = product.product_id.toString().includes(searchTerm);
 
-    switch (searchType) {
-      case "name":
-        return nameMatch;
-      case "code":
-        return codeMatch;
-      case "all":
-      default:
-        return nameMatch || codeMatch;
-    }
-  });
+        switch (searchType) {
+          case "name":
+            return nameMatch;
+          case "code":
+            return codeMatch;
+          case "all":
+          default:
+            return nameMatch || codeMatch;
+        }
+      })
+    : [];
+
+  // 디버깅 정보 출력
+  console.log("products 배열:", products);
+  console.log("products 배열 길이:", products.length);
+  console.log("filteredProducts 배열 길이:", filteredProducts.length);
 
   // 페이지네이션 계산
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -281,6 +588,11 @@ const ManageProduct = () => {
     indexOfFirstItem,
     indexOfLastItem,
   );
+
+  // 현재 표시되는 아이템 디버깅
+  console.log("현재 페이지:", currentPage);
+  console.log("페이지당 아이템 수:", itemsPerPage);
+  console.log("현재 표시되는 아이템:", currentItems);
 
   // 페이지 변경 핸들러
   const handlePageChange = (pageNumber: number) => {
@@ -572,7 +884,7 @@ const ManageProduct = () => {
                           className={`${styles.imageOption} ${newProduct.product_img === img.id ? styles.selected : ""}`}
                           onClick={() => handleImageSelect(img.id)}
                         >
-                          <img src={img.src} alt={img.name} />
+                          <img src={img.src} alt={img.id} />
                         </div>
                       ))}
                     </div>
