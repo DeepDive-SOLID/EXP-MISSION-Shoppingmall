@@ -23,4 +23,13 @@ public class MemberController {
         return memberService.getMemberList();
     }
 
+    /**
+     * 설명 : 권한 정보 가져오기
+     * @return AuthDto
+     */
+    @ResponseBody
+    @GetMapping("/auth")
+    public List<AuthDto> getAuthList() {
+        return authService.getAuthList();
+    }
 }
