@@ -28,7 +28,15 @@ public class MemberServiceImpl implements MemberService {
                         member.getMemberEmail(),
                         member.getMemberBirth(),
                         member.getAuthList().stream()
-                                .map(Auth::getAuthName).collect(Collectors.toList())
+                                .map(Auth::getAuthName)
+                                .findFirst()
+                                .orElse(null)
                 )).collect(Collectors.toList());
     }
+
+    @Override
+    public List<MemberListDto> getMemberList(String memberId, String memberName) {
+        return memberRepository.findBySearchCondition(memberId, memberName);
+    }
+
 }

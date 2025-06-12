@@ -1,13 +1,13 @@
 package solid.backend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -44,9 +44,9 @@ public class Member {
      *  양방향 관련 코드 * 현재 다대일 단방향으로 설정해놓음
      */
 
-//    @OneToMany(mappedBy = "member")
-//    @JsonIgnore
-//    private List<Auth> authList = new ArrayList<>();
+    @OneToMany(mappedBy = "member")
+    @JsonIgnore
+    private List<Auth> authList = new ArrayList<>();
 //
 //    @OneToMany(mappedBy = "member")
 //    @JsonIgnore

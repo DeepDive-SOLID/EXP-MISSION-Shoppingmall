@@ -6,7 +6,7 @@ import solid.backend.entity.Member;
 
 import java.util.List;
 
-public interface MemberRepository extends JpaRepository<Member, Integer> {
+public interface MemberRepository extends JpaRepository<Member, Integer>, MemberRepositoryCustom {
     @Override
     @EntityGraph(attributePaths = "authList") // authList를 함께 fetch
     List<Member> findAll();

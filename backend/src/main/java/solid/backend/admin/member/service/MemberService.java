@@ -10,4 +10,6 @@ public interface MemberService {
      * @return List<MemberlListDto>
      * */
     List<MemberListDto> getMemberList();
+
+    List<MemberListDto> getMemberList(String memberId, String memberName);
 }
