@@ -1,18 +1,18 @@
 package solid.backend.admin.travel.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
-public class UpdateTravelDto {
+@Data
+@AllArgsConstructor
+public class TravelListAllDto {
     private Integer travelId;
     private String travelName;
     private Integer travelPrice;
     private Integer travelAmount;
-    private boolean travelSold;
+    private Boolean travelSold;
     private String travelComment;
     private String travelLabel;
     private LocalDate travelStartDt;
