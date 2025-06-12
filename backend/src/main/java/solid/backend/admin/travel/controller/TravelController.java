@@ -5,8 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import solid.backend.admin.travel.dto.TravelAddDto;
+import solid.backend.admin.travel.dto.TravelListAllDto;
+import solid.backend.admin.travel.dto.TravelListDto;
+import solid.backend.admin.travel.dto.TravelUpdDto;
 import solid.backend.admin.travel.service.TravelService;
-import solid.backend.admin.travel.dto.*;
 
 import java.util.List;
 
@@ -16,35 +19,37 @@ import java.util.List;
 public class TravelController {
     private final TravelService travelService;
 
+
     /**
      * 설명 : 여행 상품 조회
-     * @return List<TravelSummaryDto>
+     * @return List<TravelListDto>
      */
     @ResponseBody
     @GetMapping("/getTravelList")
-    public List<TravelSummaryDto> getTravelListCustom() {
+    public List<TravelListDto> getTravelList() {
         return travelService.getTravelList();
     }
 
     /**
      * 설명 : 모든 여행 상품 조회
-     * @return List<TravelDto>
+     * @return List<TravelListAllDto>
      */
     @ResponseBody
     @GetMapping("/getTravelListAll")
-    public List<TravelDto> getTravelList() {
+    public List<TravelListAllDto> getTravelListAll() {
         return travelService.getTravelListAll();
     }
 
     /**
      * 설명 : 여행 상품 추가
-     * @return AddTravelDto
+     * @param travelAddDto
+     * @return ResponseBodyEntity<String>
      */
     @ResponseBody
     @PostMapping("/addTravel")
-    public ResponseEntity<String> addTravel(@RequestBody AddTravelDto addTravelDto) {
+    public ResponseEntity<String> addTravelDto(@RequestBody TravelAddDto travelAddDto) {
         try {
-            travelService.addTravel(addTravelDto);
+            travelService.addTravelDto(travelAddDto);
             return ResponseEntity.ok("SUCCESS");
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,13 +61,14 @@ public class TravelController {
 
     /**
      * 설명 : 여행 상품 수정
-     * @return UpdateTravelDto
+     * @param travelUpdDto
+     * @return ResponseBodyEntity<String>
      */
     @ResponseBody
     @PutMapping("/updateTravel")
-    public ResponseEntity<String> updateTravel(@RequestBody UpdateTravelDto updateTravelDto) {
+    public ResponseEntity<String> updTravelDto(@RequestBody TravelUpdDto travelUpdDto) {
         try {
-            travelService.updateTravel(updateTravelDto);
+            travelService.updTravelDto(travelUpdDto);
             return ResponseEntity.ok("SUCCESS");
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,11 +78,16 @@ public class TravelController {
         }
     }
 
+    /**
+     * 설명 : 여행 상품 수정
+     * @param travelId
+     * @return ResponseBodyEntity<String>
+     */
     @ResponseBody
     @DeleteMapping("/deleteTravel")
-    public ResponseEntity<String> deleteTravel(@RequestBody DeleteTravelDto deleteTravelDto) {
+    public ResponseEntity<String> delTravelDto(@RequestBody Integer travelId) {
         try {
-            travelService.deleteTravel(deleteTravelDto);
+            travelService.delTravelDto(travelId);
             return ResponseEntity.ok("SUCCESS");
         } catch (Exception e) {
             e.printStackTrace();
