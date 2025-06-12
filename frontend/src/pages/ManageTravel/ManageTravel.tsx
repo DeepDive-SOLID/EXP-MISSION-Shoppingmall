@@ -241,7 +241,7 @@ const ManageTravel = () => {
         travel_name: newTravel.travel_name,
         travel_price: parseInt(newTravel.travel_price),
         travel_amount: parseInt(newTravel.travel_amount),
-        travel_sold: newTravel.travel_sold,
+        travel_sold: false,
         travel_img: newTravel.travel_img || "product1", // 기본 이미지 설정
         travel_start_dt: newTravel.travel_start_dt,
         travel_end_dt: newTravel.travel_end_dt,
@@ -636,17 +636,6 @@ const ManageTravel = () => {
                         </div>
                       ))}
                     </div>
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label className={styles.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        name="travel_sold"
-                        checked={newTravel.travel_sold}
-                        onChange={handleInputChange}
-                      />
-                      품절 상태로 등록
-                    </label>
                   </div>
                   <div className={styles.modalActions}>
                     <button

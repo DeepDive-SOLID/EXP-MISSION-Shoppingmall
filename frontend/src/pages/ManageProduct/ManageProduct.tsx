@@ -11,7 +11,7 @@ import {
   FiCheck,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { product1 } from "../../assets";
+import { pilow, travelkit, snorkel, umbrella, carrier } from "../../assets";
 import { Product as ProductType } from "../../api/mockApi";
 import api from "../../api/axios"; // axios 인스턴스 import
 
@@ -57,11 +57,11 @@ const ManageProduct = () => {
 
   // 이미지 목록
   const productImages = [
-    { id: "product1", src: product1 },
-    { id: "product2", src: product1 },
-    { id: "product3", src: product1 },
-    { id: "product4", src: product1 },
-    { id: "product5", src: product1 },
+    { id: "carrier", src: carrier },
+    { id: "pilow", src: pilow },
+    { id: "travelkit", src: travelkit },
+    { id: "snorkel", src: snorkel },
+    { id: "umbrella", src: umbrella },
   ];
 
   // API에서 물품 데이터 가져오기
@@ -248,8 +248,8 @@ const ManageProduct = () => {
         productName: newProduct.product_name,
         productPrice: parseInt(newProduct.product_price),
         productAmount: parseInt(newProduct.product_amount),
-        productSold: newProduct.product_sold,
-        productImg: newProduct.product_img || "product1", // 기본 이미지 설정
+        productSold: false, // 항상 false로 설정
+        productImg: newProduct.product_img || "carrier", // 기본 이미지 설정
         productUploadDt: newProduct.product_upload_dt,
         productUpdateDt: newProduct.product_update_dt,
       };
@@ -748,17 +748,6 @@ const ManageProduct = () => {
                         </div>
                       ))}
                     </div>
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label className={styles.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        name="product_sold"
-                        checked={newProduct.product_sold}
-                        onChange={handleInputChange}
-                      />
-                      품절 상태로 등록
-                    </label>
                   </div>
                   <div className={styles.modalActions}>
                     <button
