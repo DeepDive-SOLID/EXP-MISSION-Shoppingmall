@@ -3,7 +3,8 @@ import Header from "../../components/common/Header/Header";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import styles from "./ManageUser.module.scss";
 import { FiSearch } from "react-icons/fi";
-import { userApi, User } from "../../api/mockApi";
+import { userApi } from "../../api/mockApi";
+import { User } from "../../types/user";
 
 const ManageUser = () => {
   const [searchTerm, setSearchTerm] = useState("");

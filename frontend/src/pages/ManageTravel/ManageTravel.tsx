@@ -13,7 +13,9 @@ import {
   FiAlertTriangle,
 } from "react-icons/fi";
 import { product1 } from "../../assets";
-import { travelApi, Travel } from "../../api/mockApi";
+import { travelApi } from "../../api/mockApi";
+import { Travel, TravelFormData, NewTravelInput } from "../../types/travel";
+import { getToday } from "../../utils/formatDate";
 
 const ManageTravel = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,12 +27,12 @@ const ManageTravel = () => {
   const [travels, setTravels] = useState<Travel[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editFormData, setEditFormData] = useState({
+  const [editFormData, setEditFormData] = useState<TravelFormData>({
     travel_name: "",
     travel_price: "",
     travel_amount: "",
   });
-  const [newTravel, setNewTravel] = useState({
+  const [newTravel, setNewTravel] = useState<NewTravelInput>({
     travel_name: "",
     travel_price: "",
     travel_amount: "",
@@ -40,8 +42,8 @@ const ManageTravel = () => {
     travel_end_dt: "",
     travel_comment: "",
     travel_label: "",
-    travel_upload_dt: new Date().toISOString().split("T")[0],
-    travel_update_dt: new Date().toISOString().split("T")[0],
+    travel_upload_dt: getToday(),
+    travel_update_dt: getToday(),
   });
   const itemsPerPage = 10;
 

@@ -11,21 +11,12 @@ import {
   FiCheck,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { pilow, travelkit, snorkel, umbrella, carrier } from "../../assets";
-import { Product as ProductType } from "../../api/mockApi";
+import { Product as ProductType } from "../../types/product";
 import api from "../../api/axios"; // axios 인스턴스 import
-
-// API 응답 타입 정의
-interface ApiProduct {
-  productId: number;
-  productName: string;
-  productPrice: number;
-  productAmount: number;
-  productSold: boolean;
-  productUploadDt: string;
-  productUpdateDt: string;
-  productImg: string;
-}
+import { productImages } from "../../utils/productImg";
+import { ApiProduct } from "../../types/product";
+import { transformApiProduct } from "../../utils/transformProduct";
+import { getToday } from "../../utils/formatDate";
 
 const ManageProduct = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -50,19 +41,10 @@ const ManageProduct = () => {
     product_amount: "",
     product_sold: false,
     product_img: "",
-    product_upload_dt: new Date().toISOString().split("T")[0],
-    product_update_dt: new Date().toISOString().split("T")[0],
+    product_upload_dt: getToday(),
+    product_update_dt: getToday(),
   });
   const itemsPerPage = 10;
-
-  // 이미지 목록
-  const productImages = [
-    { id: "carrier", src: carrier },
-    { id: "pilow", src: pilow },
-    { id: "travelkit", src: travelkit },
-    { id: "snorkel", src: snorkel },
-    { id: "umbrella", src: umbrella },
-  ];
 
   // API에서 물품 데이터 가져오기
   useEffect(() => {
@@ -88,16 +70,8 @@ const ManageProduct = () => {
         // 응답 데이터가 있고, 배열인지 확인
         if (response.data) {
           if (Array.isArray(response.data)) {
-            const transformedData = response.data.map((item: ApiProduct) => ({
-              product_id: item.productId,
-              product_name: item.productName,
-              product_price: item.productPrice,
-              product_amount: item.productAmount,
-              product_sold: item.productSold,
-              product_upload_dt: item.productUploadDt,
-              product_update_dt: item.productUpdateDt,
-              product_img: item.productImg,
-            }));
+            const transformedData = response.data.map(transformApiProduct);
+
             setProducts(transformedData);
           } else if (response.data.data && Array.isArray(response.data.data)) {
             const transformedData = response.data.data.map(
@@ -181,7 +155,7 @@ const ManageProduct = () => {
         productSold: !product.product_sold, // 품절 상태 변경
         productImg: product.product_img,
         productUploadDt: product.product_upload_dt,
-        productUpdateDt: new Date().toISOString().split("T")[0],
+        productUpdateDt: getToday(),
       };
 
       console.log("품절 상태 변경 요청 데이터:", productDto);
@@ -219,8 +193,8 @@ const ManageProduct = () => {
       product_amount: "",
       product_sold: false,
       product_img: "",
-      product_upload_dt: new Date().toISOString().split("T")[0],
-      product_update_dt: new Date().toISOString().split("T")[0],
+      product_upload_dt: getToday(),
+      product_update_dt: getToday(),
     });
   };
 
@@ -338,7 +312,7 @@ const ManageProduct = () => {
         productSold: currentProduct.product_sold,
         productImg: currentProduct.product_img,
         productUploadDt: currentProduct.product_upload_dt,
-        productUpdateDt: new Date().toISOString().split("T")[0],
+        productUpdateDt: getToday(),
       };
 
       console.log("물품 수정 요청 데이터:", productDto);

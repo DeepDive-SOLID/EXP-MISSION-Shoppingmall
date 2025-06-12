@@ -2,78 +2,11 @@
 import travelData from "../data/travels.json";
 import userData from "../data/users.json";
 import orderData from "../data/orders.json";
-
-// 데이터 타입 정의
-export interface Product {
-  product_id: number;
-  product_name: string;
-  product_price: number;
-  product_amount: number;
-  product_sold: boolean;
-  product_upload_dt: string;
-  product_update_dt: string;
-  product_img: string;
-}
-
-export interface Travel {
-  travel_id: number;
-  travel_name: string;
-  travel_price: number;
-  travel_amount: number;
-  travel_sold: boolean;
-  travel_comment: string;
-  travel_label: string;
-  travel_start_dt: string;
-  travel_end_dt: string;
-  travel_upload_dt: string;
-  travel_update_dt: string;
-  travel_img: string;
-}
-
-export interface User {
-  member_id: string;
-  member_name: string;
-  member_pw: string;
-  member_email: string;
-  member_phone: string;
-  member_birth: string;
-  address: string;
-  auth_name: string;
-}
-
-export interface Order {
-  order_id: number;
-  member_id: string;
-  payment_id: number;
-  order_dt: string;
-  order_state: number;
-  order_addr: string;
-  order_addr_detail: string;
-  travel_product?: OrderTravel;
-  product?: OrderProduct;
-  payment_name?: string; // payment 테이블의 payment_name 사용
-}
-
-export interface OrderTravel {
-  order_id: number;
-  payment_id: number;
-  member_id: string;
-  travel_id: number;
-  order_travel_amount: number;
-  travel_name?: string; // UI 표시용 추가 필드
-}
-
-export interface OrderProduct {
-  order_id: number;
-  payment_id: number;
-  member_id: string;
-  product_id: number;
-  order_product_amount: number;
-  product_name?: string; // UI 표시용 추가 필드
-}
-
-// 지연 시간을 모방하는 함수
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+import { Product } from "../types/product";
+import { Travel } from "../types/travel";
+import { User } from "../types/user";
+import { Order } from "../types/order";
+import { delay } from "../utils/delay";
 
 // 물품 관련 API
 export const productApi = {

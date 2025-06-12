@@ -3,7 +3,12 @@ import Header from "../../components/common/Header/Header";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import styles from "./ManageOrder.module.scss";
 import { FiSearch } from "react-icons/fi";
-import { orderApi, Order } from "../../api/mockApi";
+import { orderApi } from "../../api/mockApi";
+import {
+  getOrderStatusText,
+  getOrderStatusClass,
+} from "../../utils/orderUtils";
+import { Order } from "../../types/order";
 
 const ManageOrder = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -59,22 +64,6 @@ const ManageOrder = () => {
   ) => {
     setSearchType(type);
     setCurrentPage(1); // 검색 유형 변경 시 첫 페이지로 이동
-  };
-
-  // 주문 상태 번호를 텍스트로 변환
-  const getOrderStatusText = (status: number): string => {
-    switch (status) {
-      case 0:
-        return "주문완료";
-      case 1:
-        return "주문취소";
-      case 2:
-        return "배송중";
-      case 3:
-        return "배송완료";
-      default:
-        return "알 수 없음";
-    }
   };
 
   // 검색어로 필터링
@@ -167,22 +156,6 @@ const ManageOrder = () => {
     }
 
     return pageNumbers;
-  };
-
-  // 주문 상태에 따른 스타일 클래스 반환
-  const getOrderStatusClass = (status: number) => {
-    switch (status) {
-      case 0:
-        return styles.statusPaid;
-      case 2:
-        return styles.statusShipping;
-      case 3:
-        return styles.statusDelivered;
-      case 1:
-        return styles.statusCancelled;
-      default:
-        return "";
-    }
   };
 
   return (
@@ -305,7 +278,10 @@ const ManageOrder = () => {
                         <td>{order.order_dt}</td>
                         <td>
                           <span
-                            className={`${styles.statusTag} ${getOrderStatusClass(order.order_state)}`}
+                            className={`${styles.statusTag} ${getOrderStatusClass(
+                              order.order_state,
+                              styles,
+                            )}`}
                           >
                             {getOrderStatusText(order.order_state)}
                           </span>
