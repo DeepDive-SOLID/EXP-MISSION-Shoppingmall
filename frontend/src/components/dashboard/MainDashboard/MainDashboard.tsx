@@ -11,11 +11,12 @@ const MainDashboard = () => {
         <div className={styles.card}>
           <MonthlyTx />
         </div>
-        <div className={styles.card}>
-          <ProductStats />
-        </div>
+
         <div className={styles.card}>
           <CategoryStats />
+        </div>
+        <div className={styles.card}>
+          <ProductStats />
         </div>
         <div className={styles.card}>
           <WeeklySalesChart />

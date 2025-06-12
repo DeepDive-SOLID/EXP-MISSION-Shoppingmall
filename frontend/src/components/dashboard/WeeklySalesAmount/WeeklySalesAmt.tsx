@@ -8,6 +8,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import styles from "./WeeklySalesAmt.module.scss";
 
 ChartJS.register(
   LineElement,
@@ -34,12 +35,21 @@ const WeeklySalesChart = () => {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: false,
       },
     },
     scales: {
+      x: {
+        ticks: {
+          autoSkip: false, // 기본은 true — false면 모든 라벨 표시
+          maxRotation: 0, // 라벨 회전 안 함
+          minRotation: 0,
+          padding: 4,
+        },
+      },
       y: {
         ticks: {
           callback: (value: unknown) => {
@@ -53,7 +63,14 @@ const WeeklySalesChart = () => {
     },
   };
 
-  return <Line data={data} options={options} />;
+  return (
+    <div className={styles.container}>
+      <h2 className={styles.title}>📈 주간 거래 금액 통계</h2>
+      <div className={styles.chartWrapper}>
+        <Line data={data} options={options} />
+      </div>
+    </div>
+  );
 };
 
 export default WeeklySalesChart;

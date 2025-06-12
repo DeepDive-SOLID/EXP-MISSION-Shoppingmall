@@ -19,7 +19,7 @@ const MonthlyTx = () => {
         </li>
         <li>
           <span>총 매출 금액</span>
-          <strong>₩3,560,000</strong>
+          <strong>3,560,000원</strong>
         </li>
       </ul>
     </div>
