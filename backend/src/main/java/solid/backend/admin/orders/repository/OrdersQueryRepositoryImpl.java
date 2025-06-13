@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 public class OrdersQueryRepositoryImpl implements OrdersQueryRepository {
 
     private final JPAQueryFactory queryFactory;
+    /**
+     *  설명: entity 에 해당하는 Q클래스 초기화
+     */
     QOrders orders = QOrders.orders;
     QOrderProduct orderProduct = QOrderProduct.orderProduct;
     QOrderTravel orderTravel = QOrderTravel.orderTravel;
@@ -24,7 +27,11 @@ public class OrdersQueryRepositoryImpl implements OrdersQueryRepository {
 
     @Override
     public List<OrdersManagementDto> search() {
-
+        /**
+         *  설명: QueryDSL을 이용한 쿼리 작성
+         *  연관된 엔티티끼리 조인
+         * @return List<Tuple> -> 내가 원하는 DTO 형식으로 변경
+         */
         List<Tuple> tuples = queryFactory
                 .select(
                         orders.ordersId,
@@ -43,7 +50,10 @@ public class OrdersQueryRepositoryImpl implements OrdersQueryRepository {
                 .join(orderProduct.product, product)
                 .fetch();
 
-
+        /**
+         * 설명: QueryDSL에서 조인을 하면 리턴값이 Tuple로 나옴
+         *      내가 원하는 데이터 형식 DTO로 데이터 변환 시켜 리턴
+         */
         return tuples.stream().map(t -> new OrdersManagementDto(
                 t.get(orders.ordersId),
                 t.get(travel.travelName),
