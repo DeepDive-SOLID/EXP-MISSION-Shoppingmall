@@ -6,5 +6,5 @@ import solid.backend.admin.orders.dto.OrdersManagementDto;
 import java.util.List;
 
 public interface OrdersQueryRepository {
-    List<OrdersManagementDto> search();
+    List<OrdersManagementDto> findAllOrders();
 }

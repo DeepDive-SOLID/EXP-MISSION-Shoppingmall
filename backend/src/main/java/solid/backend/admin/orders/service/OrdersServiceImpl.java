@@ -21,7 +21,7 @@ public class OrdersServiceImpl implements OrdersService{
      */
     @Override
     public List<OrdersManagementDto> findAllOrdersList() {
-        return ordersRepository.search();
+        return ordersRepository.findAllOrders();
     }
 
 }

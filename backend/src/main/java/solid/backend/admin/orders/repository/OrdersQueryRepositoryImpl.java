@@ -26,7 +26,7 @@ public class OrdersQueryRepositoryImpl implements OrdersQueryRepository {
     QTravel travel = QTravel.travel;
 
     @Override
-    public List<OrdersManagementDto> search() {
+    public List<OrdersManagementDto> findAllOrders() {
         /**
          *  설명: QueryDSL을 이용한 쿼리 작성
          *  연관된 엔티티끼리 조인
