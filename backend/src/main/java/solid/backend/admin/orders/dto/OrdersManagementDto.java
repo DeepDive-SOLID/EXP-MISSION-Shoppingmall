@@ -1,6 +1,8 @@
 package solid.backend.admin.orders.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
+
 import java.time.LocalDate;
 
 @Data
@@ -16,8 +18,7 @@ public class OrdersManagementDto {
     private LocalDate orderDt;
     private Integer orderState;
 
-    public OrdersManagementDto() {}
-
+    @QueryProjection
     public OrdersManagementDto(Integer orderId, String travelName , String productName, String memberId, String paymentName, Integer orderTravelAmount, Integer orderProductAmount, LocalDate orderDt, Integer orderState) {
         this.orderId = orderId;
         this.travelName = travelName;

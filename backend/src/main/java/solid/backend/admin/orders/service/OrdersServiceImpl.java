@@ -1,10 +1,12 @@
 package solid.backend.admin.orders.service;
 
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import solid.backend.admin.orders.dto.OrdersManagementDto;
 import solid.backend.admin.orders.repository.OrdersRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,7 +20,8 @@ public class OrdersServiceImpl implements OrdersService{
      * @return List<OrdersManagementDto>
      */
     @Override
-    public List<OrdersManagementDto> findAllOrders() {
-        return ordersRepository.findAllOrders();
+    public List<OrdersManagementDto> findAllOrdersList() {
+        return ordersRepository.search();
     }
+
 }

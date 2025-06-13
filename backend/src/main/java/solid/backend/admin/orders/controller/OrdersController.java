@@ -1,5 +1,6 @@
 package solid.backend.admin.orders.controller;
 
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,6 +27,8 @@ public class OrdersController {
     @ResponseBody
     @GetMapping("/ordersList")
     public List<OrdersManagementDto> findAllOrders() {
-        return ordersService.findAllOrders();
+        return ordersService.findAllOrdersList();
     }
+
+
 }
