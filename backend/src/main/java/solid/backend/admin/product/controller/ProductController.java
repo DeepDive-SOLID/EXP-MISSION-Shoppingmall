@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import solid.backend.admin.product.dto.ProductAddDto;
 import solid.backend.admin.product.dto.ProductListDto;
+import solid.backend.admin.product.dto.ProductSearchDto;
 import solid.backend.admin.product.dto.ProductUpdDto;
 import solid.backend.admin.product.service.ProductService;
 import java.util.List;
@@ -52,7 +53,7 @@ public class ProductController {
      * @return ResponseEntity<String>
      */
     @ResponseBody
-    @PostMapping("/updateProductDto")
+    @PutMapping("/updateProductDto")
     public ResponseEntity<String> updateProductDto(@RequestBody ProductUpdDto productDto) {
         try {
             productService.updateProductDto(productDto);
@@ -71,7 +72,7 @@ public class ProductController {
      * @return ResponseEntity<String>
      */
     @ResponseBody
-    @PostMapping("/deleteProductDto")
+    @DeleteMapping("/deleteProductDto")
     public ResponseEntity<String> deleteProductDto(@RequestBody int productId) {
         try {
             productService.deleteProductDto(productId);
@@ -82,5 +83,16 @@ public class ProductController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("FAIL");
         }
+    }
+
+    /**
+     * 설명 : 물품 정보 검색
+     * @param productDto
+     * @return List<ProductListDto>
+     */
+    @ResponseBody
+    @GetMapping("/searchProductList")
+    public List<ProductListDto> searchProductList(@RequestBody ProductSearchDto productDto) {
+        return productService.searchProductList(productDto);
     }
 }

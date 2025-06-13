@@ -26,8 +26,10 @@ src/main/java/solid/backend
     - ProductListDto.java
     - ProductAddDto.java
     - ProductUpdateDto.java
+    - ProductSearchDto.java
 - repository(jpa)
     - ProductRepository.java
+    - ProductQueryRepository.java
 - service(비즈니스 로직)
     - ProductService.java
     - ProductServiceImpl.java
@@ -46,13 +48,19 @@ param : ProductAddDto(ProductDto)
 return : ResponseEntity(Stirng)
 
 [수정]  
-HTTP method : POST  
+HTTP method : PUT  
 HTTP request URL : /admin/product/updateProductDto  
 param : ProductUpdDto(ProductDto)  
 return : ResponseEntity(Stirng)
 
 [삭제]  
-HTTP method : POST  
+HTTP method : DELETE  
 HTTP request URL : /admin/product/deleteProductDto  
 param : productId(int)  
 return : ResponseEntity(Stirng)  
+
+[검색]  
+HTTP method : POST  
+HTTP request URL : /admin/product/searchProductDto  
+param : ProductSearchDto(ProductDto)  
+return : ProductListDto(List)

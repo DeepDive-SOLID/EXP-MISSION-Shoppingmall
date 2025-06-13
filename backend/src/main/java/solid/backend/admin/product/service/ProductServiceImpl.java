@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import solid.backend.admin.product.dto.ProductAddDto;
 import solid.backend.admin.product.dto.ProductListDto;
+import solid.backend.admin.product.dto.ProductSearchDto;
 import solid.backend.admin.product.dto.ProductUpdDto;
+import solid.backend.admin.product.repository.ProductQueryRepository;
 import solid.backend.admin.product.repository.ProductRepository;
 import solid.backend.entity.Product;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +18,7 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductQueryRepository productQueryRepository;
 
     /**
      * 설명 : 물품 리스트 정보 가져오기
@@ -75,5 +79,15 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void deleteProductDto(int productId) {
         productRepository.deleteById(productId);
+    }
+
+    /**
+     * 설명 : 물품 정보 검색
+     * @param productDto
+     * @return List<ProductListDto>
+     */
+    @Override
+    public List<ProductListDto> searchProductList(ProductSearchDto productDto) {
+        return productQueryRepository.searchProductList(productDto);
     }
 }
