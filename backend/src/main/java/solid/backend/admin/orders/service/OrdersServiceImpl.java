@@ -1,19 +1,18 @@
 package solid.backend.admin.orders.service;
 
-import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import solid.backend.admin.orders.dto.OrdersManagementDto;
-import solid.backend.admin.orders.repository.OrdersRepository;
+import solid.backend.admin.orders.dto.OrdersSearchDto;
+import solid.backend.admin.orders.repository.OrdersQueryRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class OrdersServiceImpl implements OrdersService{
+public class OrdersServiceImpl implements OrdersService {
 
-    private final OrdersRepository ordersRepository;
+    private final OrdersQueryRepository ordersQueryRepository;
 
     /**
      * 설명 : 주문 관리 조회
@@ -21,7 +20,28 @@ public class OrdersServiceImpl implements OrdersService{
      */
     @Override
     public List<OrdersManagementDto> findAllOrdersList() {
-        return ordersRepository.findAllOrders();
+        return ordersQueryRepository.findAllOrders();
+    }
+
+    @Override
+    public List<OrdersManagementDto> findSearchOrdersList(OrdersSearchDto request) {
+        switch (request.getNumber()) {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            default:
+                break;
+        }
+        return ordersQueryRepository.findSearchOrdersList(request.getData());
     }
 
 }

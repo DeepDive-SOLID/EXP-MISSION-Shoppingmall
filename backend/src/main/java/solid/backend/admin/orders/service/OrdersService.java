@@ -2,6 +2,7 @@ package solid.backend.admin.orders.service;
 
 import com.querydsl.core.Tuple;
 import solid.backend.admin.orders.dto.OrdersManagementDto;
+import solid.backend.admin.orders.dto.OrdersSearchDto;
 
 import java.util.List;
 
@@ -12,4 +13,6 @@ public interface OrdersService {
      * @return List<OrdersManagementDto>
      */
     List<OrdersManagementDto> findAllOrdersList();
+
+    List<OrdersManagementDto> findSearchOrdersList(OrdersSearchDto request);
 }
