@@ -13,6 +13,10 @@ public class OrdersServiceImpl implements OrdersService{
 
     private final OrdersRepository ordersRepository;
 
+    /**
+     * 설명 : 주문 관리 조회
+     * @return List<OrdersManagementDto>
+     */
     @Override
     public List<OrdersManagementDto> findAllOrders() {
         return ordersRepository.findAllOrders();
