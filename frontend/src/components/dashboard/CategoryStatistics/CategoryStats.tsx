@@ -3,13 +3,9 @@ import axios from "axios";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import styles from "./CategoryStats.module.scss";
+import { DashboardCategoryStatsDto } from "../../../types/dashboard";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-
-type DashboardCategoryStatsDto = {
-  categoryName: string;
-  totalAmount: number;
-};
 
 const CategoryStats = () => {
   const [categoryStats, setCategoryStats] = useState<
@@ -22,10 +18,10 @@ const CategoryStats = () => {
         const res = await axios.get<DashboardCategoryStatsDto[]>(
           "/api/admin/dashboard/getDashboardCategoryStatsDto",
         );
-        console.log("📦 Category Stats 응답:", res.data);
+        console.log("Category Stats 응답:", res.data);
         setCategoryStats(res.data);
       } catch (err) {
-        console.error("📉 카테고리 통계 로딩 실패:", err);
+        console.error("카테고리 통계 로딩 실패:", err);
       }
     };
 

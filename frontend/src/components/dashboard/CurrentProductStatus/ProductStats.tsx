@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./ProductStats.module.scss";
-
-type DashboardProductStatsDto = {
-  totalTravelProducts: number;
-  soldOutTravelProducts: number;
-};
+import { DashboardProductStatsDto } from "../../../types/dashboard";
 
 const ProductStats = () => {
   const [data, setData] = useState<DashboardProductStatsDto | null>(null);
@@ -16,10 +12,10 @@ const ProductStats = () => {
         const res = await axios.get<DashboardProductStatsDto>(
           "/api/admin/dashboard/getDashboardProductStatsDto",
         );
-        console.log("📦 Product Stats 응답:", res.data);
+        console.log("Product Stats 응답:", res.data);
         setData(res.data);
       } catch (err) {
-        console.error("📉 상품 현황 통계 로딩 실패:", err);
+        console.error("상품 현황 통계 로딩 실패:", err);
       }
     };
 

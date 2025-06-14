@@ -11,6 +11,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import styles from "./WeeklySalesAmt.module.scss";
+import { DashboardWeeklySalesAmtDto } from "../../../types/dashboard";
 
 ChartJS.register(
   LineElement,
@@ -20,11 +21,6 @@ ChartJS.register(
   Tooltip,
   Legend,
 );
-
-type DashboardWeeklySalesAmtDto = {
-  date: string;
-  amount: number;
-};
 
 const WeeklySalesChart = () => {
   const [weeklyData, setWeeklyData] = useState<DashboardWeeklySalesAmtDto[]>(
