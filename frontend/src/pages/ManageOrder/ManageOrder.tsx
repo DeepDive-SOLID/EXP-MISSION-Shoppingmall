@@ -3,26 +3,27 @@ import Header from "../../components/common/Header/Header";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import styles from "./ManageOrder.module.scss";
 import { FiSearch } from "react-icons/fi";
-import { orderApi } from "../../api/mockApi";
+import api from "../../api/axios";
 import {
   getOrderStatusText,
   getOrderStatusClass,
 } from "../../utils/orderUtils";
-import { Order } from "../../types/order";
+import { Order, OrderSearchType } from "../../types/order";
+
+// 검색 카테고리 상수
+const SEARCH_CATEGORIES = {
+  ORDER_ID: 1, // 주문 번호
+  ORDER_DATE: 2, // 주문 일자
+  ORDER_STATE: 3, // 주문 상태
+  MEMBER_ID: 4, // 회원 ID
+  PRODUCT_NAME: 5, // 물품명
+  UNUSED: 6, // 미사용
+  TRAVEL_ID: 7, // 여행 상품 ID
+};
 
 const ManageOrder = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchType, setSearchType] = useState<
-    | "orderId"
-    | "orderDate"
-    | "orderStatus"
-    | "memberId"
-    | "product"
-    | "address"
-    | "quantity"
-    | "payment"
-    | "all"
-  >("all");
+  const [tempSearchTerm, setTempSearchTerm] = useState("");
+  const [searchType, setSearchType] = useState<OrderSearchType>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,8 +34,8 @@ const ManageOrder = () => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        const data = await orderApi.getAll();
-        setOrders(data);
+        const response = await api.get("/admin/orders/list");
+        setOrders(response.data);
       } catch (error) {
         console.error("주문 데이터를 가져오는 중 오류 발생:", error);
       } finally {
@@ -46,86 +47,65 @@ const ManageOrder = () => {
   }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1); // 검색 시 첫 페이지로 이동
+    setTempSearchTerm(e.target.value);
   };
 
-  const handleSearchTypeChange = (
-    type:
-      | "orderId"
-      | "orderDate"
-      | "orderStatus"
-      | "memberId"
-      | "product"
-      | "address"
-      | "quantity"
-      | "payment"
-      | "all",
-  ) => {
-    setSearchType(type);
-    setCurrentPage(1); // 검색 유형 변경 시 첫 페이지로 이동
-  };
+  const handleSearchSubmit = async () => {
+    setCurrentPage(1);
 
-  // 검색어로 필터링
-  const filteredOrders = orders.filter(order => {
-    if (searchTerm === "") return true;
-
-    const searchTermLower = searchTerm.toLowerCase();
-    let quantityStr;
-
-    switch (searchType) {
-      case "orderId":
-        return order.order_id.toString().includes(searchTerm);
-      case "orderDate":
-        return order.order_dt.includes(searchTerm);
-      case "orderStatus":
-        return getOrderStatusText(order.order_state)
-          .toLowerCase()
-          .includes(searchTermLower);
-      case "memberId":
-        return order.member_id.toLowerCase().includes(searchTermLower);
-      case "product":
-        return (
-          (order.product?.product_name || "")
-            .toLowerCase()
-            .includes(searchTermLower) ||
-          (order.travel_product?.travel_name || "")
-            .toLowerCase()
-            .includes(searchTermLower)
-        );
-      case "address":
-        return (
-          order.order_addr.toLowerCase().includes(searchTermLower) ||
-          order.order_addr_detail.toLowerCase().includes(searchTermLower)
-        );
-      case "payment":
-        return (order.payment_name || "")
-          .toLowerCase()
-          .includes(searchTermLower);
-      case "quantity":
-        quantityStr = `${order.travel_product?.order_travel_amount || 0}${order.product?.order_product_amount || 0}`;
-        return quantityStr.includes(searchTerm);
-      case "all":
-      default:
-        return (
-          order.order_id.toString().includes(searchTerm) ||
-          order.order_dt.includes(searchTerm) ||
-          getOrderStatusText(order.order_state)
-            .toLowerCase()
-            .includes(searchTermLower) ||
-          order.member_id.toLowerCase().includes(searchTermLower) ||
-          (order.product?.product_name || "")
-            .toLowerCase()
-            .includes(searchTermLower) ||
-          (order.travel_product?.travel_name || "")
-            .toLowerCase()
-            .includes(searchTermLower) ||
-          order.order_addr.toLowerCase().includes(searchTermLower) ||
-          order.order_addr_detail.toLowerCase().includes(searchTermLower) ||
-          (order.payment_name || "").toLowerCase().includes(searchTermLower)
-        );
+    if (tempSearchTerm === "") {
+      // 검색어가 비어있으면 전체 목록 조회
+      try {
+        setLoading(true);
+        const response = await api.get("/admin/orders/list");
+        setOrders(response.data);
+      } catch (error) {
+        console.error("주문 데이터를 가져오는 중 오류 발생:", error);
+      } finally {
+        setLoading(false);
+      }
+      return;
     }
-  });
+
+    // 검색 타입에 따른 number 매핑
+    const searchTypeToNumber = {
+      orderId: SEARCH_CATEGORIES.ORDER_ID,
+      orderDate: SEARCH_CATEGORIES.ORDER_DATE,
+      orderStatus: SEARCH_CATEGORIES.ORDER_STATE,
+      memberId: SEARCH_CATEGORIES.MEMBER_ID,
+      product: SEARCH_CATEGORIES.PRODUCT_NAME,
+      payment: SEARCH_CATEGORIES.PRODUCT_NAME, // 상품명으로 검색
+      quantity: SEARCH_CATEGORIES.PRODUCT_NAME, // 상품명으로 검색
+      all: SEARCH_CATEGORIES.ORDER_ID, // 주문번호로 검색
+    };
+
+    try {
+      setLoading(true);
+      const response = await api.post("/admin/orders/search", {
+        number: searchTypeToNumber[searchType],
+        data: tempSearchTerm,
+      });
+      setOrders(response.data);
+    } catch (error) {
+      console.error("주문 검색 중 오류 발생:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearchSubmit();
+    }
+  };
+
+  const handleSearchTypeChange = (type: OrderSearchType) => {
+    setSearchType(type);
+    setCurrentPage(1);
+  };
+
+  // 검색어로 필터링 (클라이언트 측 필터링은 제거)
+  const filteredOrders = orders;
 
   // 페이지네이션 계산
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
@@ -216,20 +196,27 @@ const ManageOrder = () => {
                   결제수단
                 </button>
                 <button
-                  className={`${styles.searchTypeButton} ${searchType === "address" ? styles.active : ""}`}
-                  onClick={() => handleSearchTypeChange("address")}
+                  className={`${styles.searchTypeButton} ${searchType === "quantity" ? styles.active : ""}`}
+                  onClick={() => handleSearchTypeChange("quantity")}
                 >
-                  주소
+                  수량
                 </button>
               </div>
               <div className={styles.searchBox}>
-                <FiSearch className={styles.searchIcon} />
                 <input
                   type="text"
                   placeholder="검색어를 입력하세요"
-                  value={searchTerm}
+                  value={tempSearchTerm}
                   onChange={handleSearch}
+                  onKeyPress={handleKeyPress}
                 />
+                <button
+                  className={styles.searchIconButton}
+                  onClick={handleSearchSubmit}
+                  aria-label="검색"
+                >
+                  <FiSearch className={styles.searchIcon} />
+                </button>
               </div>
             </div>
           </div>
@@ -265,25 +252,23 @@ const ManageOrder = () => {
                   </thead>
                   <tbody>
                     {currentItems.map(order => (
-                      <tr key={order.order_id}>
-                        <td>{order.order_id}</td>
-                        <td>{order.travel_product?.travel_name || "-"}</td>
-                        <td>{order.product?.product_name || "-"}</td>
-                        <td>{order.member_id}</td>
-                        <td>{order.payment_name || "-"}</td>
-                        <td>
-                          {order.travel_product?.order_travel_amount || 0}
-                        </td>
-                        <td>{order.product?.order_product_amount || 0}</td>
-                        <td>{order.order_dt}</td>
+                      <tr key={order.orderId}>
+                        <td>{order.orderId}</td>
+                        <td>{order.travelName || "-"}</td>
+                        <td>{order.productName || "-"}</td>
+                        <td>{order.memberId}</td>
+                        <td>{order.paymentName}</td>
+                        <td>{order.orderTravelAmount}</td>
+                        <td>{order.orderProductAmount}</td>
+                        <td>{order.orderDt}</td>
                         <td>
                           <span
                             className={`${styles.statusTag} ${getOrderStatusClass(
-                              order.order_state,
+                              order.orderState,
                               styles,
                             )}`}
                           >
-                            {getOrderStatusText(order.order_state)}
+                            {getOrderStatusText(order.orderState)}
                           </span>
                         </td>
                       </tr>

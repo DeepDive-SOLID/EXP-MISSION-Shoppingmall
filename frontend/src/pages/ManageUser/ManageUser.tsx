@@ -3,62 +3,71 @@ import Header from "../../components/common/Header/Header";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import styles from "./ManageUser.module.scss";
 import { FiSearch } from "react-icons/fi";
-import { userApi } from "../../api/mockApi";
-import { User } from "../../types/user";
+import { memberApi } from "../../api/axios";
+import { User, UserSearchType } from "../../types/user";
 
 const ManageUser = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchType, setSearchType] = useState<"id" | "name" | "all">("all");
+  const [tempSearchTerm, setTempSearchTerm] = useState("");
+  const [searchType, setSearchType] = useState<UserSearchType>("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<User[]>([]);
   const itemsPerPage = 10;
 
   // API에서 사용자 데이터 가져오기
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        const data = await userApi.getAll();
-        setUsers(data);
-      } catch (error) {
-        console.error("사용자 데이터를 가져오는 중 오류 발생:", error);
-      } finally {
-        setLoading(false);
+  const fetchUsers = async (
+    searchTypeParam?: typeof searchType,
+    searchTermParam?: string,
+  ) => {
+    try {
+      setLoading(true);
+      const params: { memberId?: string; memberName?: string } = {};
+      if (searchTypeParam && searchTermParam) {
+        if (searchTypeParam === "id") params.memberId = searchTermParam;
+        else if (searchTypeParam === "name")
+          params.memberName = searchTermParam;
+        else if (searchTypeParam === "all") {
+          // all일 때는 둘 다 넣을 수 있음
+          params.memberId = searchTermParam;
+          params.memberName = searchTermParam;
+        }
       }
-    };
+      const data = await memberApi.getMemberList(params);
+      setUsers(data);
+    } catch (error) {
+      console.error("사용자 데이터를 가져오는 중 오류 발생:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUsers();
   }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1); // 검색 시 첫 페이지로 이동
+    setTempSearchTerm(e.target.value);
   };
 
-  const handleSearchTypeChange = (type: "id" | "name" | "all") => {
+  const handleSearchSubmit = () => {
+    setCurrentPage(1);
+    fetchUsers(searchType, tempSearchTerm);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearchSubmit();
+    }
+  };
+
+  const handleSearchTypeChange = (type: UserSearchType) => {
     setSearchType(type);
-    setCurrentPage(1); // 검색 유형 변경 시 첫 페이지로 이동
+    setCurrentPage(1);
+    fetchUsers(type, tempSearchTerm);
   };
 
   // 검색어로 필터링
-  const filteredUsers = users.filter(user => {
-    if (searchTerm === "") return true;
-
-    const searchTermLower = searchTerm.toLowerCase();
-    const nameMatch = user.member_name.toLowerCase().includes(searchTermLower);
-    const idMatch = user.member_id.toLowerCase().includes(searchTermLower);
-
-    switch (searchType) {
-      case "name":
-        return nameMatch;
-      case "id":
-        return idMatch;
-      case "all":
-      default:
-        return nameMatch || idMatch;
-    }
-  });
+  const filteredUsers = users;
 
   // 페이지네이션 계산
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
@@ -124,32 +133,39 @@ const ManageUser = () => {
                 </button>
               </div>
               <div className={styles.searchBox}>
-                <FiSearch className={styles.searchIcon} />
                 <input
                   type="text"
                   placeholder="검색어를 입력하세요"
-                  value={searchTerm}
+                  value={tempSearchTerm}
                   onChange={handleSearch}
+                  onKeyPress={handleKeyPress}
                 />
+                <button
+                  className={styles.searchIconButton}
+                  onClick={handleSearchSubmit}
+                  aria-label="검색"
+                >
+                  <FiSearch className={styles.searchIcon} />
+                </button>
               </div>
             </div>
           </div>
 
           <div className={styles.tableContainer}>
-            <div className={styles.tableWrapper}>
-              {loading ? (
-                <div className={styles.loadingContainer}>
-                  <div className={styles.loadingSpinner}>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                  </div>
-                  <p className={styles.loadingText}>
-                    데이터를 불러오는 중입니다...
-                  </p>
+            {loading ? (
+              <div className={styles.loadingContainer}>
+                <div className={styles.loadingSpinner}>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
                 </div>
-              ) : (
+                <p className={styles.loadingText}>
+                  데이터를 불러오는 중입니다...
+                </p>
+              </div>
+            ) : (
+              <div className={styles.tableWrapper}>
                 <table className={styles.userTable}>
                   <thead>
                     <tr>
@@ -158,32 +174,30 @@ const ManageUser = () => {
                       <th>전화번호</th>
                       <th>이메일</th>
                       <th>생년월일</th>
-                      <th>주소</th>
                       <th>권한</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentItems.map(user => (
-                      <tr key={user.member_id}>
-                        <td>{user.member_id}</td>
-                        <td>{user.member_name}</td>
-                        <td>{user.member_phone}</td>
-                        <td>{user.member_email}</td>
-                        <td>{user.member_birth}</td>
-                        <td>{user.address}</td>
+                      <tr key={user.memberId}>
+                        <td>{user.memberId}</td>
+                        <td>{user.memberName}</td>
+                        <td>{user.memberPhone}</td>
+                        <td>{user.memberEmail}</td>
+                        <td>{user.memberBirth}</td>
                         <td>
                           <span
-                            className={`${styles.roleTag} ${user.auth_name === "관리자" ? styles.adminRole : styles.guestRole}`}
+                            className={`${styles.roleTag} ${user.authName === "ADMIN" ? styles.adminRole : styles.guestRole}`}
                           >
-                            {user.auth_name}
+                            {user.authName === "ADMIN" ? "관리자" : "사용자"}
                           </span>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {totalPages > 0 && (

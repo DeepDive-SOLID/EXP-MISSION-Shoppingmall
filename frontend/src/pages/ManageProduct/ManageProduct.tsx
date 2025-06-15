@@ -11,23 +11,56 @@ import {
   FiCheck,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { Product as ProductType } from "../../types/product";
-import api from "../../api/axios"; // axios 인스턴스 import
-import { productImages } from "../../utils/productImg";
-import { ApiProduct } from "../../types/product";
-import { transformApiProduct } from "../../utils/transformProduct";
+import api from "../../api/axios";
+import { Product, ProductSearchType } from "../../types/product";
 import { getToday } from "../../utils/formatDate";
+import product1 from "../../assets/images/carrier.jpg";
+import pilow from "../../assets/images/pilow.jpg";
+import travelkit from "../../assets/images/travelkit.jpg";
+import snorkel from "../../assets/images/snorkel.jpg";
+import umbrella from "../../assets/images/umbrella.jpg";
+
+interface ProductListDto {
+  productId: number;
+  productName: string;
+  productPrice: number;
+  productAmount: number;
+  productSold: boolean;
+  productUploadDt?: string;
+  productUpdateDt?: string;
+  productImg?: string;
+}
+
+// API 응답 데이터를 Product 타입으로 변환하는 함수
+const transformApiProduct = (item: ProductListDto): Product => ({
+  product_id: item.productId,
+  product_name: item.productName,
+  product_price: item.productPrice,
+  product_amount: item.productAmount,
+  product_sold: item.productSold,
+  product_upload_dt: item.productUploadDt || "",
+  product_update_dt: item.productUpdateDt || "",
+  product_img: item.productImg || "",
+});
+
+// 이미지 목록
+const productImages = [
+  { id: "carrier", src: product1 },
+  { id: "pilow", src: pilow },
+  { id: "travelkit", src: travelkit },
+  { id: "snorkel", src: snorkel },
+  { id: "umbrella", src: umbrella },
+];
 
 const ManageProduct = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchType, setSearchType] = useState<"name" | "code" | "all">("all");
+  const [tempSearchTerm, setTempSearchTerm] = useState("");
+  const [searchType, setSearchType] = useState<ProductSearchType>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState<ProductType | null>(
-    null,
-  );
-  const [products, setProducts] = useState<ProductType[]>([]);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState({
@@ -46,82 +79,107 @@ const ManageProduct = () => {
   });
   const itemsPerPage = 10;
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTempSearchTerm(e.target.value);
+  };
+
+  const handleSearchSubmit = async () => {
+    try {
+      setLoading(true);
+      setCurrentPage(1);
+
+      type SearchParams = { productId?: string; productName?: string };
+      let searchParams: SearchParams = {};
+      if (tempSearchTerm) {
+        switch (searchType) {
+          case "name":
+            searchParams = { productName: tempSearchTerm };
+            break;
+          case "code":
+            if (!isNaN(Number(tempSearchTerm))) {
+              searchParams = { productId: tempSearchTerm };
+            }
+            break;
+          case "all":
+            searchParams = { productName: tempSearchTerm };
+            if (!isNaN(Number(tempSearchTerm))) {
+              searchParams.productId = tempSearchTerm;
+            }
+            break;
+        }
+      }
+
+      const response = await api.post<ProductListDto[]>(
+        "/admin/product/searchProductList",
+        searchParams, // data 옵션 제거하고 직접 body로 전달
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (Array.isArray(response.data)) {
+        const transformedData = response.data.map((item: ProductListDto) => ({
+          product_id: item.productId,
+          product_name: item.productName,
+          product_price: item.productPrice,
+          product_amount: item.productAmount,
+          product_sold: item.productSold,
+          // 타입 에러를 해결하기 위해 임시로 빈 문자열로 설정
+          product_upload_dt: "",
+          product_update_dt: "",
+          product_img: "",
+        }));
+        setFilteredProducts(transformedData);
+      } else {
+        setFilteredProducts([]);
+      }
+    } catch {
+      setFilteredProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearchSubmit();
+    }
+  };
+
+  const handleSearchTypeChange = (type: ProductSearchType) => {
+    setSearchType(type);
+    setCurrentPage(1);
+    if (tempSearchTerm) {
+      handleSearchSubmit();
+    }
+  };
+
   // API에서 물품 데이터 가져오기
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        console.log("API 요청 시작...");
-        // 실제 API 호출
         const response = await api.get("/admin/product/getProductList");
 
-        // API 응답 구조 확인 및 데이터 추출
-        console.log("API 응답:", response.data);
-        console.log("API 응답 타입:", typeof response.data);
-        console.log("API 응답이 배열인가?", Array.isArray(response.data));
-
         if (Array.isArray(response.data)) {
-          console.log("API 응답 배열 길이:", response.data.length);
-          if (response.data.length > 0) {
-            console.log("첫 번째 아이템 샘플:", response.data[0]);
-          }
-        }
-
-        // 응답 데이터가 있고, 배열인지 확인
-        if (response.data) {
-          if (Array.isArray(response.data)) {
-            const transformedData = response.data.map(transformApiProduct);
-
-            setProducts(transformedData);
-          } else if (response.data.data && Array.isArray(response.data.data)) {
-            const transformedData = response.data.data.map(
-              (item: ApiProduct) => ({
-                product_id: item.productId,
-                product_name: item.productName,
-                product_price: item.productPrice,
-                product_amount: item.productAmount,
-                product_sold: item.productSold,
-                product_upload_dt: item.productUploadDt,
-                product_update_dt: item.productUpdateDt,
-                product_img: item.productImg,
-              }),
-            );
-            setProducts(transformedData);
-          } else if (typeof response.data === "object") {
-            const extractedArray = Object.values(response.data);
-            if (Array.isArray(extractedArray) && extractedArray.length > 0) {
-              const transformedData = extractedArray.map((item: unknown) => {
-                const apiItem = item as ApiProduct;
-                return {
-                  product_id: apiItem.productId,
-                  product_name: apiItem.productName,
-                  product_price: apiItem.productPrice,
-                  product_amount: apiItem.productAmount,
-                  product_sold: apiItem.productSold,
-                  product_upload_dt: apiItem.productUploadDt,
-                  product_update_dt: apiItem.productUpdateDt,
-                  product_img: apiItem.productImg,
-                };
-              });
-              setProducts(transformedData as ProductType[]);
-            } else {
-              // 적절한 데이터를 찾을 수 없는 경우
-              console.warn("API 응답에서 배열 데이터를 찾을 수 없습니다.");
-              setProducts([]);
-            }
-          } else {
-            // 적절한 데이터를 찾을 수 없는 경우
-            console.warn("API 응답에서 유효한 데이터를 찾을 수 없습니다.");
-            setProducts([]);
-          }
+          const transformedData = response.data.map(transformApiProduct);
+          setProducts(transformedData);
+          setFilteredProducts(transformedData);
+        } else if (response.data.data && Array.isArray(response.data.data)) {
+          const transformedData = response.data.data.map(transformApiProduct);
+          setProducts(transformedData);
+          setFilteredProducts(transformedData);
         } else {
-          // 응답이 없는 경우
-          console.warn("API 응답이 비어 있습니다.");
+          console.warn("API 응답에서 유효한 데이터를 찾을 수 없습니다.");
           setProducts([]);
+          setFilteredProducts([]);
         }
       } catch (error) {
         console.error("물품 데이터를 가져오는 중 오류 발생:", error);
         setProducts([]);
+        setFilteredProducts([]);
       } finally {
         setLoading(false);
       }
@@ -129,16 +187,6 @@ const ManageProduct = () => {
 
     fetchProducts();
   }, []);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1); // 검색 시 첫 페이지로 이동
-  };
-
-  const handleSearchTypeChange = (type: "name" | "code" | "all") => {
-    setSearchType(type);
-    setCurrentPage(1); // 검색 유형 변경 시 첫 페이지로 이동
-  };
 
   const handleToggleSoldOut = async (id: number) => {
     try {
@@ -160,8 +208,8 @@ const ManageProduct = () => {
 
       console.log("품절 상태 변경 요청 데이터:", productDto);
 
-      // API 요청 (성공 방식만 유지)
-      const response = await api.post(
+      // PUT 요청으로 변경
+      const response = await api.put(
         "/admin/product/updateProductDto",
         productDto,
       );
@@ -252,19 +300,9 @@ const ManageProduct = () => {
       const productsResponse = await api.get("/admin/product/getProductList");
 
       if (Array.isArray(productsResponse.data)) {
-        const transformedData = productsResponse.data.map(
-          (item: ApiProduct) => ({
-            product_id: item.productId,
-            product_name: item.productName,
-            product_price: item.productPrice,
-            product_amount: item.productAmount,
-            product_sold: item.productSold,
-            product_upload_dt: item.productUploadDt,
-            product_update_dt: item.productUpdateDt,
-            product_img: item.productImg,
-          }),
-        );
+        const transformedData = productsResponse.data.map(transformApiProduct);
         setProducts(transformedData);
+        setFilteredProducts(transformedData);
       }
 
       console.log("물품 목록 새로고침 성공");
@@ -274,7 +312,7 @@ const ManageProduct = () => {
   };
 
   // 수정 모드 시작
-  const handleEditClick = (product: ProductType) => {
+  const handleEditClick = (product: Product) => {
     setEditingId(product.product_id);
     setEditFormData({
       product_name: product.product_name,
@@ -304,28 +342,26 @@ const ManageProduct = () => {
       const currentProduct = products.find(p => p.product_id === id);
       if (!currentProduct) return;
 
-      const productDto = {
+      const productData = {
         productId: id,
         productName: editFormData.product_name,
         productPrice: parseInt(editFormData.product_price),
         productAmount: parseInt(editFormData.product_amount),
         productSold: currentProduct.product_sold,
-        productImg: currentProduct.product_img,
-        productUploadDt: currentProduct.product_upload_dt,
         productUpdateDt: getToday(),
       };
 
-      console.log("물품 수정 요청 데이터:", productDto);
+      console.log("물품 수정 요청 데이터:", productData);
 
-      const response = await api.post(
+      // PUT 요청으로 수정
+      const response = await api.put(
         "/admin/product/updateProductDto",
-        productDto,
+        productData,
       );
       console.log("물품 수정 응답:", response.data);
 
       // 물품 목록 다시 불러오기
       await refreshProductList();
-
       setEditingId(null);
     } catch (error) {
       console.error("물품 수정 중 오류 발생:", error);
@@ -333,7 +369,7 @@ const ManageProduct = () => {
   };
 
   // 삭제 모달 열기
-  const handleDeleteClick = (product: ProductType) => {
+  const handleDeleteClick = (product: Product) => {
     setProductToDelete(product);
     setIsDeleteModalOpen(true);
   };
@@ -352,16 +388,10 @@ const ManageProduct = () => {
       const productId = productToDelete.product_id;
       console.log("물품 삭제 요청 데이터:", productId);
 
-      // POST 요청으로 raw JSON 형태의 정수값만 전송
-      const response = await api.post(
-        "/admin/product/deleteProductDto",
-        productId,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      // DELETE 요청으로 변경
+      const response = await api.delete("/admin/product/deleteProductDto", {
+        data: productId,
+      });
 
       console.log("물품 삭제 응답:", response.data);
 
@@ -385,34 +415,6 @@ const ManageProduct = () => {
     );
     console.log(`물품 ID ${productId} 삭제 성공`);
   };
-
-  // 검색어로 필터링
-  const filteredProducts = Array.isArray(products)
-    ? products.filter(product => {
-        if (searchTerm === "") return true;
-
-        const searchTermLower = searchTerm.toLowerCase();
-        const nameMatch = product.product_name
-          .toLowerCase()
-          .includes(searchTermLower);
-        const codeMatch = product.product_id.toString().includes(searchTerm);
-
-        switch (searchType) {
-          case "name":
-            return nameMatch;
-          case "code":
-            return codeMatch;
-          case "all":
-          default:
-            return nameMatch || codeMatch;
-        }
-      })
-    : [];
-
-  // 디버깅 정보 출력
-  console.log("products 배열:", products);
-  console.log("products 배열 길이:", products.length);
-  console.log("filteredProducts 배열 길이:", filteredProducts.length);
 
   // 페이지네이션 계산
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -486,13 +488,20 @@ const ManageProduct = () => {
                 </button>
               </div>
               <div className={styles.searchBox}>
-                <FiSearch className={styles.searchIcon} />
                 <input
                   type="text"
                   placeholder="검색어를 입력하세요"
-                  value={searchTerm}
+                  value={tempSearchTerm}
                   onChange={handleSearch}
+                  onKeyPress={handleKeyPress}
                 />
+                <button
+                  className={styles.searchIconButton}
+                  onClick={handleSearchSubmit}
+                  aria-label="검색"
+                >
+                  <FiSearch className={styles.searchIcon} />
+                </button>
               </div>
             </div>
             <button className={styles.addButton} onClick={openModal}>

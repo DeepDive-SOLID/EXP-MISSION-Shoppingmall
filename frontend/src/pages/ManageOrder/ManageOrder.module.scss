@@ -38,7 +38,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 600px; // 검색 유형이 많아서 너비 증가
+  width: 600px;
 }
 
 .searchTypeButtons {
@@ -76,10 +76,14 @@
 .searchBox {
   position: relative;
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
   input {
-    width: 100%;
-    padding: 10px 16px 10px 40px;
+    flex: 1;
+    height: 40px;
+    padding: 0 16px 0 16px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-size: 14px;
@@ -91,12 +95,40 @@
     }
   }
 
-  .searchIcon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
+  .searchIconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 20%;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 0;
+    padding: 0;
+
+    .searchIcon {
+      color: #94a3b8;
+      font-size: 20px;
+      transition: color 0.2s;
+    }
+
+    &:hover {
+      background: #f1f5f9;
+      border-color: #4a6cf7;
+      .searchIcon {
+        color: #4a6cf7;
+      }
+    }
+    &:active {
+      background: #e0e7ff;
+      border-color: #4a6cf7;
+      .searchIcon {
+        color: #3a5bd9;
+      }
+    }
   }
 }
 
@@ -232,36 +264,35 @@
 
 // 주문 상태 태그 스타일
 .statusTag {
-  display: inline-block;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
 }
 
-.statusPaid {
-  background-color: #e0e7ff;
-  color: #4f46e5;
+.completed {
+  background-color: #e6f4ea;
+  color: #1e7e34;
 }
 
-.statusShipping {
-  background-color: #fef3c7;
-  color: #d97706;
+.cancelled {
+  background-color: #fbe9e7;
+  color: #d32f2f;
 }
 
-.statusDelivered {
-  background-color: #dcfce7;
-  color: #16a34a;
+.shipping {
+  background-color: #e3f2fd;
+  color: #1976d2;
 }
 
-.statusCancelRequested {
-  background-color: #fee2e2;
-  color: #ef4444;
+.delivered {
+  background-color: #e8f5e9;
+  color: #2e7d32;
 }
 
-.statusCancelled {
-  background-color: #e2e8f0;
-  color: #64748b;
+.unknown {
+  background-color: #f5f5f5;
+  color: #757575;
 }
 
 .pagination {
