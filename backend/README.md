@@ -34,13 +34,13 @@ src/main/java/solid/backend
 
 ## API 목록
 [조회]  
-HTTP method : GET  
-HTTP request URL : /admin/member 
-param : x  
-return : MemberListDto(List)
+- HTTP method : GET  
+- HTTP request URL : /admin/member 
+- param : x  
+- return : MemberListDto(List)
 
 [검색]  
-HTTP method : GET  
-HTTP request URL : /admin/member/search 
-param : MemberSearchDto 
-return : MemberListDto(List)
+- HTTP method : GET  
+- HTTP request URL : /admin/member/search 
+- param : MemberSearchDto 
+- return : MemberListDto(List)
