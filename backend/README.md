@@ -37,37 +37,37 @@ src/main/java/solid/backend
 
 ## API 목록
 [조회]  
-HTTP method : GET  
-HTTP request URL : /admin/getTravelList 
-param : x  
-return : TravelListDto(List)
+- HTTP method : GET  
+- HTTP request URL : /admin/getTravelList 
+- param : x  
+- return : TravelListDto(List)
 
 [전체 데이터 조회]
-HTTP method : GET  
-HTTP request URL : /admin/getTravelListAll
-param : x  
-return : TravelListDto(List)
+- HTTP method : GET  
+- HTTP request URL : /admin/getTravelListAll
+- param : x  
+- return : TravelListDto(List)
 
 [등록]
-HTTP method : POST
-HTTP request URL : /admin/travel/addTravel
-param : TravelAddDto(TravelDto)
-return : ResponseEntity(Stirng)
+- HTTP method : POST
+- HTTP request URL : /admin/travel/addTravel
+- param : TravelAddDto(TravelDto)
+- return : ResponseEntity(Stirng)
 
 [수정]
-HTTP method : PUT
-HTTP request URL : /admin/travel/updateTravel
-param : TravelUpdDto(TravelDto)
-return : ResponseEntity(Stirng)
+- HTTP method : PUT
+- HTTP request URL : /admin/travel/updateTravel
+- param : TravelUpdDto(TravelDto)
+- return : ResponseEntity(Stirng)
 
 [삭제]
-HTTP method : DELETE
-HTTP request URL : /admin/travel/deleteTravel
-param : travelId(Integer)
-return : ResponseEntity(Stirng)
+- HTTP method : DELETE
+- HTTP request URL : /admin/travel/deleteTravel
+- param : travelId(Integer)
+- return : ResponseEntity(Stirng)
 
 [검색]  
-HTTP method : GET  
-HTTP request URL : /admin/travel/search 
-param : TravelSearchDto 
-return : TravelListDto(List)
+- HTTP method : GET  
+- HTTP request URL : /admin/travel/search 
+- param : TravelSearchDto 
+- return : TravelListDto(List)
