@@ -1,7 +1,6 @@
 package solid.backend.admin.travel.service;
 
 import solid.backend.admin.travel.dto.*;
-
 import java.util.List;
 
 public interface TravelService {
@@ -17,6 +16,12 @@ public interface TravelService {
      * @return List<TravelListAllDto>
      * */
     List<TravelListAllDto> getTravelListAll();
+
+    /**
+     * 설명: 여행 상품 검색
+     * @return List<TravelListDto>
+     * */
+    List<TravelListDto> searchTravelList(TravelSearchDto travelSearchDto);
 
     /**
      * 설명: 여행 상품 등록

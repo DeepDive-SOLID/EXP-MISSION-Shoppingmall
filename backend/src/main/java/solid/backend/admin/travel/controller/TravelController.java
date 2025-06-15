@@ -5,11 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import solid.backend.admin.travel.dto.TravelAddDto;
-import solid.backend.admin.travel.dto.TravelListAllDto;
-import solid.backend.admin.travel.dto.TravelListDto;
-import solid.backend.admin.travel.dto.TravelUpdDto;
 import solid.backend.admin.travel.service.TravelService;
+import solid.backend.admin.travel.dto.*;
 
 import java.util.List;
 
@@ -38,6 +35,17 @@ public class TravelController {
     @GetMapping("/getTravelListAll")
     public List<TravelListAllDto> getTravelListAll() {
         return travelService.getTravelListAll();
+    }
+
+    /**
+     * 설명 : 여행 상품 검색
+     * @param travelSearchDto
+     * @return List<TravelListAllDto>
+     */
+    @ResponseBody
+    @GetMapping("/search")
+    public List<TravelListDto> searchTravelList(@RequestBody TravelSearchDto travelSearchDto) {
+        return travelService.searchTravelList(travelSearchDto);
     }
 
     /**

@@ -2,6 +2,7 @@ package solid.backend.admin.travel.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import solid.backend.admin.travel.repository.TravelQueryRepository;
 import solid.backend.admin.travel.repository.TravelRepository;
 import solid.backend.admin.travel.dto.*;
 import solid.backend.entity.Travel;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TravelServiceImpl implements TravelService {
     private final TravelRepository travelRepository;
+    private final TravelQueryRepository travelQueryRepository;
 
     /**
      * 설명: 여행 상품 정보 가져오기
@@ -49,6 +51,16 @@ public class TravelServiceImpl implements TravelService {
                         travel.getTravelUploadDt(),
                         travel.getTravelUpdateDt(),
                         travel.getTravelImg())).collect(Collectors.toList());
+    }
+
+    /**
+     * 설명: 여행 상품 검색
+     * @param travelSearchDto
+     * @return List<TravelListDto>
+     * */
+    @Override
+    public List<TravelListDto> searchTravelList(TravelSearchDto travelSearchDto) {
+        return travelQueryRepository.findTravel(travelSearchDto);
     }
 
     /**
