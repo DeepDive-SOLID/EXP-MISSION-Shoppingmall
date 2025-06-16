@@ -22,7 +22,7 @@ public class MemberQueryRepository {
     }
 
     /**
-     * 설명: 여행 상품 검색
+     * 설명: 사용자 관리 검색
      * @param memberSearchDto
      * @return List<MemberListDto>
      */
@@ -48,7 +48,7 @@ public class MemberQueryRepository {
     }
 
     /**
-     * 설명: 여행 상품 전체 검색
+     * 설명: 사용자 관리 전체 검색
      * @param memberId
      * @param memberName
      * @return BooleanExpression
@@ -60,7 +60,7 @@ public class MemberQueryRepository {
     }
 
     /**
-     * 설명: 여행 상품 Id 검색
+     * 설명: 사용자 Id 검색
      * @param memberId
      * @return BooleanExpression
      */
@@ -69,7 +69,7 @@ public class MemberQueryRepository {
     }
 
     /**
-     * 설명: 여행 상품 Name 검색
+     * 설명: 사용자 Name 검색
      * @param memberName
      * @return BooleanExpression
      */
