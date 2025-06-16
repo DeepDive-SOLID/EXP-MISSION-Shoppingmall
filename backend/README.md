@@ -3,20 +3,69 @@
 # 프로젝트 디렉토리 구조
 src/main/java/solid/backend
 
-- admin : 관리자 페이지
-    - product : 물품관리
+- admin : 관리자 페이지 
+  - product : 물품관리
+  - dashboard : 대시보드 관리
 - entity : 엔티티
-    - Auth : 권한
-    - Member : 회원
-    - Travel : 여행상품
-    - Product : 물품
-    - Orders : 주문
-    - OrderTravel : 여행 주문
-    - OrderProduct : 물품 주문
-    - payment : 결제수단
-    - Basket : 장바구니
-    - Review : 리뷰
-    - CompoundKey : 조합키
+  - Auth : 권한
+  - Member : 회원
+  - Travel : 여행상품
+  - Product : 물품
+  - Orders : 주문
+  - OrderTravel : 여행 주문
+  - OrderProduct : 물품 주문
+  - payment : 결제수단
+  - Basket : 장바구니
+  - Review : 리뷰
+  - CompoundKey : 조합키
+- config: 설정파일
+  - QueryDsl: QueryDSL 빈 등록
+
+### 물품관리 : admin/product
+- controller(컨트롤러)
+    - ProductController.java
+- dto(객체정보)
+    - ProductListDto.java
+    - ProductAddDto.java
+    - ProductUpdateDto.java
+    - ProductSearchDto.java
+- repository(jpa)
+    - ProductRepository.java
+    - ProductQueryRepository.java
+- service(비즈니스 로직)
+    - ProductService.java
+    - ProductServiceImpl.java
+
+### 물품 CRUD API 목록
+[조회]  
+HTTP method : GET  
+HTTP request URL : /admin/product/getProductList  
+param : x  
+return : ProductListDto(List)
+
+[등록]  
+HTTP method : POST  
+HTTP request URL : /admin/product/addProductDto  
+param : ProductAddDto(ProductDto)  
+return : ResponseEntity(Stirng)
+
+[수정]  
+HTTP method : PUT  
+HTTP request URL : /admin/product/updateProductDto  
+param : ProductUpdDto(ProductDto)  
+return : ResponseEntity(Stirng)
+
+[삭제]  
+HTTP method : DELETE  
+HTTP request URL : /admin/product/deleteProductDto  
+param : productId(int)  
+return : ResponseEntity(Stirng)  
+
+[검색]  
+HTTP method : POST  
+HTTP request URL : /admin/product/searchProductDto  
+param : ProductSearchDto(ProductDto)  
+return : ProductListDto(List)
 
 
 ### 대시보드 : admin/dashboard
