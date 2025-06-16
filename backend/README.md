@@ -8,7 +8,7 @@ src/main/java/solid/backend
   - product : 물품관리
   - dashboard : 대시보드 관리
   - orders : 주문 관리
-  - member : 
+  - member : 사용자 관리
 - entity : 엔티티
   - Auth : 권한
   - Member : 회원
@@ -23,7 +23,7 @@ src/main/java/solid/backend
   - CompoundKey : 조합키
 - config: 설정파일
   - QueryDsl: QueryDSL 빈 등록
-
+---
 ### 사용자 관리 : admin/member
 - controller(컨트롤러)
     - MemberController.java
@@ -49,7 +49,7 @@ src/main/java/solid/backend
 - HTTP request URL : /admin/member/search 
 - param : MemberSearchDto 
 - return : MemberListDto(List)
-
+---
 ### 물품관리 : admin/product
 - controller(컨트롤러)
     - ProductController.java
@@ -95,7 +95,7 @@ HTTP method : POST
 HTTP request URL : /admin/product/searchProductDto  
 param : ProductSearchDto(ProductDto)  
 return : ProductListDto(List)
-
+---
 
 ### 대시보드 : admin/dashboard
 - controller(컨트롤러)
