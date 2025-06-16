@@ -49,21 +49,21 @@ const ManageUser = () => {
       }
 
       // 검색어가 있을 때만 검색 API 호출
-      const searchParams = {
-        memberId: "", // 기본값으로 빈 문자열
-        memberName: "", // 기본값으로 빈 문자열
-      };
+      const searchParams: {
+        memberId?: string;
+        memberName?: string;
+      } = {};
 
       switch (searchType) {
         case "id":
-          searchParams.memberId = tempSearchTerm.trim();
+          searchParams.memberId = tempSearchTerm.trim() || undefined;
           break;
         case "name":
-          searchParams.memberName = tempSearchTerm.trim();
+          searchParams.memberName = tempSearchTerm.trim() || undefined;
           break;
         case "all":
-          searchParams.memberId = tempSearchTerm.trim();
-          searchParams.memberName = tempSearchTerm.trim();
+          searchParams.memberId = tempSearchTerm.trim() || undefined;
+          searchParams.memberName = tempSearchTerm.trim() || undefined;
           break;
       }
 
