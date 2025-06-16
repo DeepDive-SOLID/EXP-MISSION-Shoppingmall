@@ -1,4 +1,4 @@
-import Header from "../../components/common/Header_login/Header";
+import Header from "../../components/common/Header_logout/Header";
 
 const Home = () => {
   return (
