@@ -93,3 +93,22 @@ npm run dev
 - main.tsx  → 앱 진입점, 라우터 설정 및 렌더링
 
 ## 📺 화면 별 기능
+### 대시보드
+![image 81](https://github.com/user-attachments/assets/3caca3c2-2a95-4fb8-898f-4a2f5f43dc75)
+
+### 주문 관리 페이지
+![image](https://github.com/user-attachments/assets/357943b6-3db2-4304-b63b-2cb3e8b91060)
+
+### 사용자 관리 페이지
+![image](https://github.com/user-attachments/assets/3e54bb2d-f068-4e91-9625-1637ac00f238)
+
+### 물품 관리 페이지
+![image](https://github.com/user-attachments/assets/6c17442d-43fb-4f0c-b19f-e3b9fcecff0d)
+
+### 여행 상품 관리 페이지
+![image](https://github.com/user-attachments/assets/f100ae54-5076-4ad1-8bc4-cf4f68610be8)
+
+### 추가 모달
+| 물품 추가 | 여행 상품 추가 |
+|--------|---------|
+|![image](https://github.com/user-attachments/assets/a7bb3189-bcef-4396-be99-65c14011993a)|![image](https://github.com/user-attachments/assets/3110ca35-d2b5-4580-83cd-9583a9d5811b)|
