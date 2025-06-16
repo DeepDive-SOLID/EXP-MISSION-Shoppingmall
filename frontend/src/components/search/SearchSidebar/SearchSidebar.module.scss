@@ -1,0 +1,59 @@
+.sidebar {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  position: fixed;
+  z-index: 10;
+  border-right: #0085ff 1px solid;
+}
+
+.mapSection {
+  text-align: center;
+  position: relative;
+  padding: 20px;
+
+  .mapImage {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    border: 1px solid #0085ff;
+    border-radius: 20%;
+    padding: 12px;
+    margin: 0 auto;
+  }
+
+  .mapButton {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #0085ffdd;
+    color: #fff;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+}
+
+.section {
+  margin-bottom: 32px;
+
+  h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #202020;
+  }
+
+  .dateInput,
+  .select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+}
