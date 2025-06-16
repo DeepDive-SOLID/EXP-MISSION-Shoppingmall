@@ -1,10 +1,11 @@
 export interface User {
-  member_id: string;
-  member_name: string;
-  member_pw: string;
-  member_email: string;
-  member_phone: string;
-  member_birth: string;
-  address: string;
-  auth_name: string;
+  memberId: string;
+  memberName: string;
+  memberEmail: string;
+  memberPhone: string;
+  memberBirth: string;
+  authName: string;
 }
+
+// 사용자 관리 페이지 검색 타입
+export type UserSearchType = "id" | "name" | "all";

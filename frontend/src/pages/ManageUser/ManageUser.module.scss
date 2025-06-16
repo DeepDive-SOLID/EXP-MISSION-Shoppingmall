@@ -76,10 +76,14 @@
 .searchBox {
   position: relative;
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
   input {
-    width: 100%;
-    padding: 10px 16px 10px 40px;
+    flex: 1;
+    height: 40px;
+    padding: 0 16px 0 16px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-size: 14px;
@@ -91,12 +95,65 @@
     }
   }
 
-  .searchIcon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
+  .searchIconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 20%;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 0;
+    padding: 0;
+
+    .searchIcon {
+      color: #94a3b8;
+      font-size: 20px;
+      transition: color 0.2s;
+    }
+
+    &:hover {
+      background: #f1f5f9;
+      border-color: #4a6cf7;
+      .searchIcon {
+        color: #4a6cf7;
+      }
+    }
+    &:active {
+      background: #e0e7ff;
+      border-color: #4a6cf7;
+      .searchIcon {
+        color: #3a5bd9;
+      }
+    }
+  }
+
+  .searchButton {
+    height: 40px;
+    padding: 0 20px;
+    background-color: #4a6cf7;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: #3a5bd9;
+    }
+
+    &:active {
+      background-color: #2a4bc0;
+    }
   }
 }
 
@@ -189,28 +246,25 @@
   }
 
   th:nth-child(1) {
-    width: 10%;
-  } /* ID */
+    width: 12%; /* ID */
+  }
   th:nth-child(2) {
-    width: 8%;
-  } /* 이름 */
+    width: 10%; /* 이름 */
+  }
   th:nth-child(3) {
-    width: 12%;
-  } /* 전화번호 */
+    width: 15%; /* 전화번호 */
+  }
   th:nth-child(4) {
-    width: 20%;
-  } /* 이메일 */
+    width: 25%; /* 이메일 */
+  }
   th:nth-child(5) {
-    width: 10%;
-  } /* 생년월일 */
+    width: 15%; /* 생년월일 */
+  }
   th:nth-child(6) {
-    width: 22%;
-  } /* 주소 */
+    width: 13%; /* 권한 */
+  }
   th:nth-child(7) {
     width: 8%;
-  } /* 권한 */
-  th:nth-child(8) {
-    width: 10%;
   } /* 관리 */
 
   td {

@@ -32,3 +32,29 @@ export interface NewTravelInput {
   travel_upload_dt: string;
   travel_update_dt: string;
 }
+
+export interface TravelListDto {
+  travelId: number;
+  travelName: string;
+  travelPrice: number;
+  travelAmount: number;
+  travelSold: boolean;
+}
+
+export interface TravelListAllDto {
+  travelId: number;
+  travelName: string;
+  travelPrice: number;
+  travelAmount: number;
+  travelSold: boolean;
+  travelComment: string;
+  travelLabel: string;
+  travelStartDt: string;
+  travelEndDt: string;
+  travelUploadDt: string;
+  travelUpdateDt: string;
+  travelImg: string;
+}
+
+// 여행 상품 관리 페이지 검색 타입
+export type TravelSearchType = "name" | "code";

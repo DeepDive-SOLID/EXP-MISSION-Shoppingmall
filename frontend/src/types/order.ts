@@ -1,14 +1,13 @@
 export interface Order {
-  order_id: number;
-  member_id: string;
-  payment_id: number;
-  order_dt: string;
-  order_state: number;
-  order_addr: string;
-  order_addr_detail: string;
-  travel_product?: OrderTravel;
-  product?: OrderProduct;
-  payment_name?: string;
+  orderId: number;
+  travelName: string;
+  productName: string;
+  memberId: string;
+  paymentName: string;
+  orderTravelAmount: number;
+  orderProductAmount: number;
+  orderDt: string;
+  orderState: number;
 }
 
 export interface OrderTravel {
@@ -28,3 +27,12 @@ export interface OrderProduct {
   order_product_amount: number;
   product_name?: string;
 }
+
+// 주문 관리 페이지 검색 타입
+export type OrderSearchType =
+  | "orderId"
+  | "orderDate"
+  | "orderStatus"
+  | "memberId"
+  | "product"
+  | "payment";

@@ -20,3 +20,14 @@ export interface ApiProduct {
   productUpdateDt: string;
   productImg: string;
 }
+
+export interface ProductListDto {
+  productId: number;
+  productName: string;
+  productPrice: number;
+  productAmount: number;
+  productSold: boolean;
+}
+
+// 물품 관리 페이지 검색 타입
+export type ProductSearchType = "name" | "code" | "all";

@@ -1,5 +1,5 @@
-export const getOrderStatusText = (status: number): string => {
-  switch (status) {
+export const getOrderStatusText = (orderState: number): string => {
+  switch (orderState) {
     case 0:
       return "주문완료";
     case 1:
@@ -14,19 +14,19 @@ export const getOrderStatusText = (status: number): string => {
 };
 
 export const getOrderStatusClass = (
-  status: number,
+  orderState: number,
   styles: { [key: string]: string },
-) => {
-  switch (status) {
+): string => {
+  switch (orderState) {
     case 0:
-      return styles.statusPaid;
+      return styles.completed;
     case 1:
-      return styles.statusCancelled;
+      return styles.cancelled;
     case 2:
-      return styles.statusShipping;
+      return styles.shipping;
     case 3:
-      return styles.statusDelivered;
+      return styles.delivered;
     default:
-      return "";
+      return styles.unknown;
   }
 };

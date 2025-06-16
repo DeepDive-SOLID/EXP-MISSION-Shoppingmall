@@ -11,31 +11,47 @@ import {
   FiCheck,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { Product as ProductType } from "../../types/product";
-import api from "../../api/axios"; // axios 인스턴스 import
-import { productImages } from "../../utils/productImg";
-import { ApiProduct } from "../../types/product";
-import { transformApiProduct } from "../../utils/transformProduct";
+import { productApi } from "../../api/axios";
+import {
+  Product,
+  ProductSearchType,
+  ProductListDto,
+} from "../../types/product";
 import { getToday } from "../../utils/formatDate";
+import { productImages } from "../../utils/productImg";
+
+// API 응답 데이터를 Product 타입으로 변환하는 유틸리티 함수
+const transformApiProduct = (item: ProductListDto): Product => ({
+  product_id: item.productId,
+  product_name: item.productName,
+  product_price: item.productPrice,
+  product_amount: item.productAmount,
+  product_sold: item.productSold,
+  product_upload_dt: getToday(), // 기본값으로 현재 날짜 사용
+  product_update_dt: getToday(), // 기본값으로 현재 날짜 사용
+  product_img: "", // 기본값으로 빈 문자열 사용
+});
 
 const ManageProduct = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchType, setSearchType] = useState<"name" | "code" | "all">("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState<ProductType | null>(
-    null,
-  );
-  const [products, setProducts] = useState<ProductType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  // 상태 관리
+  const [tempSearchTerm, setTempSearchTerm] = useState(""); // 검색어 임시 저장
+  const [searchType, setSearchType] = useState<ProductSearchType>("name"); // 검색 타입 (물품명/물품코드)
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
+  const [isModalOpen, setIsModalOpen] = useState(false); // 물품 추가 모달 상태
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 삭제 확인 모달 상태
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null); // 삭제할 물품 정보
+  const [products, setProducts] = useState<Product[]>([]); // 전체 물품 목록
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]); // 필터링된 물품 목록
+  const [loading, setLoading] = useState(true); // 로딩 상태
+  const [editingId, setEditingId] = useState<number | null>(null); // 수정 중인 물품 ID
   const [editFormData, setEditFormData] = useState({
+    // 수정 폼 데이터
     product_name: "",
     product_price: "",
     product_amount: "",
   });
   const [newProduct, setNewProduct] = useState({
+    // 새 물품 데이터
     product_name: "",
     product_price: "",
     product_amount: "",
@@ -44,84 +60,95 @@ const ManageProduct = () => {
     product_upload_dt: getToday(),
     product_update_dt: getToday(),
   });
-  const itemsPerPage = 10;
+  const itemsPerPage = 10; // 페이지당 표시할 아이템 수
 
-  // API에서 물품 데이터 가져오기
+  // 검색어 입력 처리
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTempSearchTerm(e.target.value);
+  };
+
+  // 물품 검색 실행
+  const handleSearchSubmit = async () => {
+    try {
+      setLoading(true);
+      setCurrentPage(1);
+
+      type SearchParams = { productId?: string; productName?: string };
+      let searchParams: SearchParams = {};
+
+      if (tempSearchTerm) {
+        switch (searchType) {
+          case "name":
+            searchParams = { productName: tempSearchTerm };
+            break;
+          case "code":
+            if (!isNaN(Number(tempSearchTerm))) {
+              searchParams = { productId: tempSearchTerm };
+            }
+            break;
+        }
+      }
+
+      const response = await productApi.searchProductList(searchParams);
+
+      if (Array.isArray(response.data)) {
+        const transformedData = response.data.map((item: ProductListDto) => ({
+          product_id: item.productId,
+          product_name: item.productName,
+          product_price: item.productPrice,
+          product_amount: item.productAmount,
+          product_sold: item.productSold,
+          product_upload_dt: "",
+          product_update_dt: "",
+          product_img: "",
+        }));
+        setFilteredProducts(transformedData);
+      } else {
+        setFilteredProducts([]);
+      }
+    } catch {
+      setFilteredProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Enter 키 입력 처리
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearchSubmit();
+    }
+  };
+
+  // 검색 타입 변경 처리
+  const handleSearchTypeChange = (type: ProductSearchType) => {
+    setSearchType(type);
+    setCurrentPage(1);
+    if (tempSearchTerm) {
+      handleSearchSubmit();
+    }
+  };
+
+  // 초기 물품 데이터 로드
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        console.log("API 요청 시작...");
-        // 실제 API 호출
-        const response = await api.get("/admin/product/getProductList");
-
-        // API 응답 구조 확인 및 데이터 추출
-        console.log("API 응답:", response.data);
-        console.log("API 응답 타입:", typeof response.data);
-        console.log("API 응답이 배열인가?", Array.isArray(response.data));
+        const response = await productApi.getProductList();
 
         if (Array.isArray(response.data)) {
-          console.log("API 응답 배열 길이:", response.data.length);
-          if (response.data.length > 0) {
-            console.log("첫 번째 아이템 샘플:", response.data[0]);
-          }
-        }
-
-        // 응답 데이터가 있고, 배열인지 확인
-        if (response.data) {
-          if (Array.isArray(response.data)) {
-            const transformedData = response.data.map(transformApiProduct);
-
-            setProducts(transformedData);
-          } else if (response.data.data && Array.isArray(response.data.data)) {
-            const transformedData = response.data.data.map(
-              (item: ApiProduct) => ({
-                product_id: item.productId,
-                product_name: item.productName,
-                product_price: item.productPrice,
-                product_amount: item.productAmount,
-                product_sold: item.productSold,
-                product_upload_dt: item.productUploadDt,
-                product_update_dt: item.productUpdateDt,
-                product_img: item.productImg,
-              }),
-            );
-            setProducts(transformedData);
-          } else if (typeof response.data === "object") {
-            const extractedArray = Object.values(response.data);
-            if (Array.isArray(extractedArray) && extractedArray.length > 0) {
-              const transformedData = extractedArray.map((item: unknown) => {
-                const apiItem = item as ApiProduct;
-                return {
-                  product_id: apiItem.productId,
-                  product_name: apiItem.productName,
-                  product_price: apiItem.productPrice,
-                  product_amount: apiItem.productAmount,
-                  product_sold: apiItem.productSold,
-                  product_upload_dt: apiItem.productUploadDt,
-                  product_update_dt: apiItem.productUpdateDt,
-                  product_img: apiItem.productImg,
-                };
-              });
-              setProducts(transformedData as ProductType[]);
-            } else {
-              // 적절한 데이터를 찾을 수 없는 경우
-              console.warn("API 응답에서 배열 데이터를 찾을 수 없습니다.");
-              setProducts([]);
-            }
-          } else {
-            // 적절한 데이터를 찾을 수 없는 경우
-            console.warn("API 응답에서 유효한 데이터를 찾을 수 없습니다.");
-            setProducts([]);
-          }
+          const transformedData = response.data.map(transformApiProduct);
+          setProducts(transformedData);
+          setFilteredProducts(transformedData);
         } else {
-          // 응답이 없는 경우
-          console.warn("API 응답이 비어 있습니다.");
+          console.warn("API 응답에서 유효한 데이터를 찾을 수 없습니다.");
           setProducts([]);
+          setFilteredProducts([]);
         }
       } catch (error) {
         console.error("물품 데이터를 가져오는 중 오류 발생:", error);
         setProducts([]);
+        setFilteredProducts([]);
       } finally {
         setLoading(false);
       }
@@ -130,49 +157,27 @@ const ManageProduct = () => {
     fetchProducts();
   }, []);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1); // 검색 시 첫 페이지로 이동
-  };
-
-  const handleSearchTypeChange = (type: "name" | "code" | "all") => {
-    setSearchType(type);
-    setCurrentPage(1); // 검색 유형 변경 시 첫 페이지로 이동
-  };
-
+  // 품절 상태 토글 처리
   const handleToggleSoldOut = async (id: number) => {
     try {
-      // 현재 제품 찾기
       const product = products.find(p => p.product_id === id);
       if (!product) return;
 
-      // 업데이트할 데이터 준비
-      const productDto = {
+      const productData = {
         productId: id,
         productName: product.product_name,
         productPrice: product.product_price,
         productAmount: product.product_amount,
-        productSold: !product.product_sold, // 품절 상태 변경
+        productSold: !product.product_sold,
         productImg: product.product_img,
         productUploadDt: product.product_upload_dt,
         productUpdateDt: getToday(),
       };
 
-      console.log("품절 상태 변경 요청 데이터:", productDto);
-
-      // API 요청 (성공 방식만 유지)
-      const response = await api.post(
-        "/admin/product/updateProductDto",
-        productDto,
-      );
-      console.log("품절 상태 변경 응답:", response.data);
-
-      // 물품 목록 다시 불러오기
+      await productApi.updateProduct(productData);
       await refreshProductList();
     } catch (error) {
       console.error("품절 상태 변경 중 오류 발생:", error);
-
-      // 임시 상태 업데이트 (API 실패 시에도 UI 반응성 유지)
       setProducts(prevProducts =>
         prevProducts.map(p =>
           p.product_id === id ? { ...p, product_sold: !p.product_sold } : p,
@@ -181,6 +186,7 @@ const ManageProduct = () => {
     }
   };
 
+  // 모달 관련 핸들러
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -198,6 +204,7 @@ const ManageProduct = () => {
     });
   };
 
+  // 입력 필드 변경 처리
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setNewProduct(prev => ({
@@ -206,6 +213,7 @@ const ManageProduct = () => {
     }));
   };
 
+  // 이미지 선택 처리
   const handleImageSelect = (imageId: string) => {
     setNewProduct(prev => ({
       ...prev,
@@ -213,68 +221,45 @@ const ManageProduct = () => {
     }));
   };
 
+  // 새 물품 추가 처리
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      // 폼 데이터를 API 형식에 맞게 변환
       const productData = {
         productName: newProduct.product_name,
         productPrice: parseInt(newProduct.product_price),
         productAmount: parseInt(newProduct.product_amount),
-        productSold: false, // 항상 false로 설정
-        productImg: newProduct.product_img || "carrier", // 기본 이미지 설정
+        productSold: false,
+        productImg: newProduct.product_img || "carrier",
         productUploadDt: newProduct.product_upload_dt,
         productUpdateDt: newProduct.product_update_dt,
       };
 
-      console.log("물품 추가 요청 데이터:", productData);
-
-      const response = await api.post(
-        "/admin/product/addProductDto",
-        productData,
-      );
-      console.log("물품 추가 응답:", response.data);
-
-      // 물품 목록 다시 불러오기
+      await productApi.addProduct(productData);
       await refreshProductList();
-
-      // 모달 닫기
       closeModal();
     } catch (error) {
       console.error("물품 추가 중 오류 발생:", error);
     }
   };
 
-  // 물품 목록 새로고침 함수
+  // 물품 목록 새로고침
   const refreshProductList = async () => {
     try {
-      const productsResponse = await api.get("/admin/product/getProductList");
-
-      if (Array.isArray(productsResponse.data)) {
-        const transformedData = productsResponse.data.map(
-          (item: ApiProduct) => ({
-            product_id: item.productId,
-            product_name: item.productName,
-            product_price: item.productPrice,
-            product_amount: item.productAmount,
-            product_sold: item.productSold,
-            product_upload_dt: item.productUploadDt,
-            product_update_dt: item.productUpdateDt,
-            product_img: item.productImg,
-          }),
-        );
+      const response = await productApi.getProductList();
+      if (Array.isArray(response.data)) {
+        const transformedData = response.data.map(transformApiProduct);
         setProducts(transformedData);
+        setFilteredProducts(transformedData);
       }
-
-      console.log("물품 목록 새로고침 성공");
     } catch (error) {
       console.error("물품 목록 새로고침 실패:", error);
     }
   };
 
-  // 수정 모드 시작
-  const handleEditClick = (product: ProductType) => {
+  // 수정 관련 핸들러
+  const handleEditClick = (product: Product) => {
     setEditingId(product.product_id);
     setEditFormData({
       product_name: product.product_name,
@@ -283,7 +268,6 @@ const ManageProduct = () => {
     });
   };
 
-  // 수정 중인 입력값 변경 처리
   const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditFormData(prev => ({
@@ -292,129 +276,67 @@ const ManageProduct = () => {
     }));
   };
 
-  // 수정 취소
   const handleCancelEdit = () => {
     setEditingId(null);
   };
 
-  // 수정 저장
   const handleSaveEdit = async (id: number) => {
     try {
-      // 현재 제품 찾기
       const currentProduct = products.find(p => p.product_id === id);
       if (!currentProduct) return;
 
-      const productDto = {
+      const productData = {
         productId: id,
         productName: editFormData.product_name,
         productPrice: parseInt(editFormData.product_price),
         productAmount: parseInt(editFormData.product_amount),
         productSold: currentProduct.product_sold,
-        productImg: currentProduct.product_img,
-        productUploadDt: currentProduct.product_upload_dt,
         productUpdateDt: getToday(),
       };
 
-      console.log("물품 수정 요청 데이터:", productDto);
-
-      const response = await api.post(
-        "/admin/product/updateProductDto",
-        productDto,
-      );
-      console.log("물품 수정 응답:", response.data);
-
-      // 물품 목록 다시 불러오기
+      await productApi.updateProduct(productData);
       await refreshProductList();
-
       setEditingId(null);
     } catch (error) {
       console.error("물품 수정 중 오류 발생:", error);
     }
   };
 
-  // 삭제 모달 열기
-  const handleDeleteClick = (product: ProductType) => {
+  // 삭제 관련 핸들러
+  const handleDeleteClick = (product: Product) => {
     setProductToDelete(product);
     setIsDeleteModalOpen(true);
   };
 
-  // 삭제 모달 닫기
   const handleCloseDeleteModal = () => {
     setIsDeleteModalOpen(false);
     setProductToDelete(null);
   };
 
-  // 삭제 확인
   const handleConfirmDelete = async () => {
     if (!productToDelete) return;
 
     try {
-      const productId = productToDelete.product_id;
-      console.log("물품 삭제 요청 데이터:", productId);
-
-      // POST 요청으로 raw JSON 형태의 정수값만 전송
-      const response = await api.post(
-        "/admin/product/deleteProductDto",
-        productId,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
-
-      console.log("물품 삭제 응답:", response.data);
-
-      // 삭제 성공 처리
-      handleDeleteSuccess(productId);
-
-      // 모달 닫기
+      await productApi.deleteProduct(productToDelete.product_id);
+      handleDeleteSuccess(productToDelete.product_id);
       handleCloseDeleteModal();
     } catch (error) {
       console.error("물품 삭제 중 오류 발생:", error);
-      // 실패 시 UI 업데이트하지 않고 모달만 닫음
       handleCloseDeleteModal();
     }
   };
 
-  // 삭제 성공 처리 함수
   const handleDeleteSuccess = (productId: number) => {
-    // 상태 업데이트
     setProducts(prevProducts =>
+      prevProducts.filter(p => p.product_id !== productId),
+    );
+    setFilteredProducts(prevProducts =>
       prevProducts.filter(p => p.product_id !== productId),
     );
     console.log(`물품 ID ${productId} 삭제 성공`);
   };
 
-  // 검색어로 필터링
-  const filteredProducts = Array.isArray(products)
-    ? products.filter(product => {
-        if (searchTerm === "") return true;
-
-        const searchTermLower = searchTerm.toLowerCase();
-        const nameMatch = product.product_name
-          .toLowerCase()
-          .includes(searchTermLower);
-        const codeMatch = product.product_id.toString().includes(searchTerm);
-
-        switch (searchType) {
-          case "name":
-            return nameMatch;
-          case "code":
-            return codeMatch;
-          case "all":
-          default:
-            return nameMatch || codeMatch;
-        }
-      })
-    : [];
-
-  // 디버깅 정보 출력
-  console.log("products 배열:", products);
-  console.log("products 배열 길이:", products.length);
-  console.log("filteredProducts 배열 길이:", filteredProducts.length);
-
-  // 페이지네이션 계산
+  // 페이지네이션 관련 로직
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -423,12 +345,7 @@ const ManageProduct = () => {
     indexOfLastItem,
   );
 
-  // 현재 표시되는 아이템 디버깅
-  console.log("현재 페이지:", currentPage);
-  console.log("페이지당 아이템 수:", itemsPerPage);
-  console.log("현재 표시되는 아이템:", currentItems);
-
-  // 페이지 변경 핸들러
+  // 페이지 변경 처리
   const handlePageChange = (pageNumber: number) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -467,12 +384,6 @@ const ManageProduct = () => {
             <div className={styles.searchContainer}>
               <div className={styles.searchTypeButtons}>
                 <button
-                  className={`${styles.searchTypeButton} ${searchType === "all" ? styles.active : ""}`}
-                  onClick={() => handleSearchTypeChange("all")}
-                >
-                  전체
-                </button>
-                <button
                   className={`${styles.searchTypeButton} ${searchType === "name" ? styles.active : ""}`}
                   onClick={() => handleSearchTypeChange("name")}
                 >
@@ -486,13 +397,20 @@ const ManageProduct = () => {
                 </button>
               </div>
               <div className={styles.searchBox}>
-                <FiSearch className={styles.searchIcon} />
                 <input
                   type="text"
                   placeholder="검색어를 입력하세요"
-                  value={searchTerm}
+                  value={tempSearchTerm}
                   onChange={handleSearch}
+                  onKeyPress={handleKeyPress}
                 />
+                <button
+                  className={styles.searchIconButton}
+                  onClick={handleSearchSubmit}
+                  aria-label="검색"
+                >
+                  <FiSearch className={styles.searchIcon} />
+                </button>
               </div>
             </div>
             <button className={styles.addButton} onClick={openModal}>

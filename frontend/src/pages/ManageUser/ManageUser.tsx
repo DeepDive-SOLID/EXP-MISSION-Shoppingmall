@@ -3,70 +3,83 @@ import Header from "../../components/common/Header/Header";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import styles from "./ManageUser.module.scss";
 import { FiSearch } from "react-icons/fi";
-import { userApi } from "../../api/mockApi";
-import { User } from "../../types/user";
+import { memberApi } from "../../api/axios";
+import { User, UserSearchType } from "../../types/user";
 
 const ManageUser = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchType, setSearchType] = useState<"id" | "name" | "all">("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const itemsPerPage = 10;
+  // 상태 관리
+  const [tempSearchTerm, setTempSearchTerm] = useState(""); // 검색어 임시 저장
+  const [searchType, setSearchType] = useState<UserSearchType>("id"); // 검색 타입 (아이디/이름)
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
+  const [loading, setLoading] = useState(true); // 로딩 상태
+  const [users, setUsers] = useState<User[]>([]); // 사용자 목록
+  const itemsPerPage = 10; // 페이지당 표시할 사용자 수
 
   // API에서 사용자 데이터 가져오기
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        const data = await userApi.getAll();
-        setUsers(data);
-      } catch (error) {
-        console.error("사용자 데이터를 가져오는 중 오류 발생:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const data = await memberApi.getMemberList();
+      setUsers(data);
+    } catch (error) {
+      console.error("사용자 데이터를 가져오는 중 오류 발생:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // 컴포넌트 마운트 시 사용자 데이터 로드
+  useEffect(() => {
     fetchUsers();
   }, []);
 
+  // 검색어 입력 처리
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1); // 검색 시 첫 페이지로 이동
+    setTempSearchTerm(e.target.value);
   };
 
-  const handleSearchTypeChange = (type: "id" | "name" | "all") => {
-    setSearchType(type);
-    setCurrentPage(1); // 검색 유형 변경 시 첫 페이지로 이동
-  };
+  // 사용자 검색 실행
+  const handleSearchSubmit = async () => {
+    setCurrentPage(1);
 
-  // 검색어로 필터링
-  const filteredUsers = users.filter(user => {
-    if (searchTerm === "") return true;
+    try {
+      setLoading(true);
 
-    const searchTermLower = searchTerm.toLowerCase();
-    const nameMatch = user.member_name.toLowerCase().includes(searchTermLower);
-    const idMatch = user.member_id.toLowerCase().includes(searchTermLower);
+      // 검색어가 있을 때만 검색 API 호출
+      const searchParams = {
+        memberId: searchType === "id" ? tempSearchTerm.trim() : undefined,
+        memberName: searchType === "name" ? tempSearchTerm.trim() : undefined,
+      };
 
-    switch (searchType) {
-      case "name":
-        return nameMatch;
-      case "id":
-        return idMatch;
-      case "all":
-      default:
-        return nameMatch || idMatch;
+      const data = await memberApi.searchMember(searchParams);
+      setUsers(data);
+    } catch (error) {
+      console.error("사용자 검색 중 오류 발생:", error);
+    } finally {
+      setLoading(false);
     }
-  });
+  };
 
-  // 페이지네이션 계산
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  // Enter 키 입력 처리
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearchSubmit();
+    }
+  };
+
+  // 검색 타입 변경 처리
+  const handleSearchTypeChange = (type: UserSearchType) => {
+    setSearchType(type);
+    setCurrentPage(1);
+  };
+
+  // 페이지네이션 관련 로직
+  const totalPages = Math.ceil(users.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
 
-  // 페이지 변경 핸들러
+  // 페이지 변경 처리
   const handlePageChange = (pageNumber: number) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -97,19 +110,16 @@ const ManageUser = () => {
       <div className={styles.content}>
         <Sidebar />
         <div className={styles.mainContent}>
+          {/* 페이지 헤더 */}
           <div className={styles.pageHeader}>
             <h1>사용자 관리</h1>
           </div>
 
+          {/* 검색 섹션 */}
           <div className={styles.filterSection}>
             <div className={styles.searchContainer}>
+              {/* 검색 타입 버튼 */}
               <div className={styles.searchTypeButtons}>
-                <button
-                  className={`${styles.searchTypeButton} ${searchType === "all" ? styles.active : ""}`}
-                  onClick={() => handleSearchTypeChange("all")}
-                >
-                  전체
-                </button>
                 <button
                   className={`${styles.searchTypeButton} ${searchType === "id" ? styles.active : ""}`}
                   onClick={() => handleSearchTypeChange("id")}
@@ -123,33 +133,44 @@ const ManageUser = () => {
                   이름
                 </button>
               </div>
+              {/* 검색 입력창 */}
               <div className={styles.searchBox}>
-                <FiSearch className={styles.searchIcon} />
                 <input
                   type="text"
                   placeholder="검색어를 입력하세요"
-                  value={searchTerm}
+                  value={tempSearchTerm}
                   onChange={handleSearch}
+                  onKeyPress={handleKeyPress}
                 />
+                <button
+                  className={styles.searchIconButton}
+                  onClick={handleSearchSubmit}
+                  aria-label="검색"
+                >
+                  <FiSearch className={styles.searchIcon} />
+                </button>
               </div>
             </div>
           </div>
 
+          {/* 사용자 목록 테이블 */}
           <div className={styles.tableContainer}>
-            <div className={styles.tableWrapper}>
-              {loading ? (
-                <div className={styles.loadingContainer}>
-                  <div className={styles.loadingSpinner}>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                  </div>
-                  <p className={styles.loadingText}>
-                    데이터를 불러오는 중입니다...
-                  </p>
+            {loading ? (
+              // 로딩 상태 표시
+              <div className={styles.loadingContainer}>
+                <div className={styles.loadingSpinner}>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
                 </div>
-              ) : (
+                <p className={styles.loadingText}>
+                  데이터를 불러오는 중입니다...
+                </p>
+              </div>
+            ) : (
+              // 사용자 목록 테이블
+              <div className={styles.tableWrapper}>
                 <table className={styles.userTable}>
                   <thead>
                     <tr>
@@ -158,34 +179,33 @@ const ManageUser = () => {
                       <th>전화번호</th>
                       <th>이메일</th>
                       <th>생년월일</th>
-                      <th>주소</th>
                       <th>권한</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentItems.map(user => (
-                      <tr key={user.member_id}>
-                        <td>{user.member_id}</td>
-                        <td>{user.member_name}</td>
-                        <td>{user.member_phone}</td>
-                        <td>{user.member_email}</td>
-                        <td>{user.member_birth}</td>
-                        <td>{user.address}</td>
+                      <tr key={user.memberId}>
+                        <td>{user.memberId}</td>
+                        <td>{user.memberName}</td>
+                        <td>{user.memberPhone}</td>
+                        <td>{user.memberEmail}</td>
+                        <td>{user.memberBirth}</td>
                         <td>
                           <span
-                            className={`${styles.roleTag} ${user.auth_name === "관리자" ? styles.adminRole : styles.guestRole}`}
+                            className={`${styles.roleTag} ${user.authName === "ADMIN" ? styles.adminRole : styles.guestRole}`}
                           >
-                            {user.auth_name}
+                            {user.authName === "ADMIN" ? "관리자" : "사용자"}
                           </span>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
+          {/* 페이지네이션 */}
           {totalPages > 0 && (
             <div className={styles.pagination}>
               <button
