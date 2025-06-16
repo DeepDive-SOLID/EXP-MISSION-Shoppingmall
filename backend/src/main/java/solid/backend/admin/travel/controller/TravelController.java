@@ -43,7 +43,7 @@ public class TravelController {
      * @return List<TravelListAllDto>
      */
     @ResponseBody
-    @GetMapping("/search")
+    @PostMapping("/search")
     public List<TravelListDto> searchTravelList(@RequestBody TravelSearchDto travelSearchDto) {
         return travelService.searchTravelList(travelSearchDto);
     }
