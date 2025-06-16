@@ -15,7 +15,7 @@ export { default as umbrella } from "./images/product/umbrella.jpg";
 // 홈 배너 이미지
 export { default as home_banner } from "./images/home_banner/home_banner.jpg";
 export { default as home_banner1 } from "./images/home_banner/home_banner1.jpg";
-export { default as home_banner2 } from "./images/home_banner/home_banner2.avif";
+export { default as home_banner2 } from "./images/home_banner/home_banner2.jpg";
 export { default as home_banner3 } from "./images/home_banner/home_banner3.jpg";
 export { default as home_banner4 } from "./images/home_banner/home_banner4.jpg";
 export { default as home_banner5 } from "./images/home_banner/home_banner5.jpg";

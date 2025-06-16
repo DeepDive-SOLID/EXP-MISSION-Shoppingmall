@@ -84,9 +84,6 @@ const HomePopular = () => {
           1280: {
             slidesPerView: 5,
           },
-          1536: {
-            slidesPerView: 6,
-          },
         }}
         className={styles.slider}
       >
