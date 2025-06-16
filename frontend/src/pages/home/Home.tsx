@@ -1,7 +1,7 @@
 import HomeBanner from "../../components/home/HomeBanner/HomeBanner";
 import Header from "../../components/common/Header_login/Header";
 import HomePopular from "../../components/home/HomePopular/HomePopular";
-// import styles from "./Home.module.scss";
+import HomeRecommend from "../../components/home/HomeRecommend/HomeRecommend";
 
 const Home = () => {
   return (
@@ -9,6 +9,7 @@ const Home = () => {
       <Header />
       <HomeBanner />
       <HomePopular />
+      <HomeRecommend />
     </div>
   );
 };
