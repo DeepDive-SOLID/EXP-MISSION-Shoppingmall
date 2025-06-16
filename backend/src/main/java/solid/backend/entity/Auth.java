@@ -1,8 +1,12 @@
 package solid.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Comment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "auth")
@@ -18,9 +22,7 @@ public class Auth {
     @Comment("권한 이름")
     private String authName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", unique = true, nullable = false)
-    @Comment("회원 ID")
-    private Member member;
-
+    @OneToMany(mappedBy = "authId")
+    @JsonIgnore
+    private List<Member> memberList = new ArrayList<>();
 }

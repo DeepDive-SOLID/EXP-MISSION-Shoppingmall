@@ -1,12 +1,8 @@
 package solid.backend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Comment;
-
 import java.time.LocalDate;
 
 @Data
@@ -38,6 +34,11 @@ public class Member {
     @Column(name = "member_birth")
     @Comment("회원 생년월일")
     private LocalDate memberBirth;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "auth_id", nullable = false)
+    @Comment("권한 코드")
+    private Auth authId;
 
 
     /**
