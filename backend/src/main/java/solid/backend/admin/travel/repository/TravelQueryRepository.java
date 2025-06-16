@@ -20,6 +20,11 @@ public class TravelQueryRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
+    /**
+     * 설명: 여행 상품 검색
+     * @param travelSearchDto
+     * @return
+     */
     public List<TravelListDto> findTravel(TravelSearchDto travelSearchDto) {
         QTravel travel = QTravel.travel;
 
@@ -39,10 +44,20 @@ public class TravelQueryRepository {
                 .fetch();
     }
 
+    /**
+     * 여행 상품 Id 검색
+     * @param travelId
+     * @return BooleanExpression
+     */
     private BooleanExpression eqTravelId(Integer travelId) {
         return travelId != null ? QTravel.travel.travelId.eq(travelId) : null;
     }
 
+    /**
+     * 여행 상품 Name 검색
+     * @param travelName
+     * @return BooleanExpression
+     */
     private BooleanExpression containsTravelName(String travelName) {
         return StringUtils.hasText(travelName) ? QTravel.travel.travelName.contains(travelName) : null;
     }
