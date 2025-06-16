@@ -34,7 +34,7 @@ public class OrdersController {
      * @return List<OrdersManagementDto>
      */
     @ResponseBody
-    @GetMapping("/search")
+    @PostMapping("/search")
     public List<OrdersManagementDto> findAllOrdersSearch(@RequestBody OrdersSearchDto request) {
         return ordersService.findSearchOrdersList(request);
     }

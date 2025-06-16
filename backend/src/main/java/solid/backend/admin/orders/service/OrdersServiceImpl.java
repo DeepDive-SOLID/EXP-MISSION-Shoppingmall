@@ -26,26 +26,13 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     /**
-     * 설명: request를 받아 number에 따른 데이터를 가공
+     * 설명: 주문 관리 검색
      * @param request
      * @return List<OrdersManagementDto>
      */
     @Override
     public List<OrdersManagementDto> findSearchOrdersList(OrdersSearchDto request) {
-        Map<String, String> map = new HashMap<>();
-
-        String result = switch (request.getNumber()) {
-            case 1 -> "orderId";
-            case 2 -> "orderDt";
-            case 3 -> "orderState";
-            case 4 -> "memberId";
-            case 5 -> "productName";
-            case 6 -> "";
-            default -> "travelId";
-        };
-        map.put(result, request.getData());
-
-        return ordersQueryRepository.findSearchOrdersList(map);
+        return ordersQueryRepository.findSearchOrdersList(request);
     }
 
 }

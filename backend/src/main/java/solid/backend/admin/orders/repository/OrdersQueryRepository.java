@@ -2,12 +2,14 @@ package solid.backend.admin.orders.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.util.StringUtils;
 import solid.backend.admin.orders.dto.OrdersManagementDto;
+import solid.backend.admin.orders.dto.OrdersSearchDto;
 import solid.backend.entity.*;
 
 import java.time.LocalDate;
@@ -56,8 +58,7 @@ public class OrdersQueryRepository {
      *  설명: 검색 기능
      * @return List<OrdersManagementDto>
      */
-    public List<OrdersManagementDto> findSearchOrdersList(Map<String, String> search) {
-        BooleanBuilder builder = addSearchCondition(search);
+    public List<OrdersManagementDto> findSearchOrdersList(OrdersSearchDto search) {
 
         return queryFactory
                 .select(Projections.constructor(OrdersManagementDto.class,
@@ -76,36 +77,68 @@ public class OrdersQueryRepository {
                 .leftJoin(orders.orderProducts, orderProduct)
                 .leftJoin(orderTravel.travel, travel)
                 .leftJoin(orderProduct.product, product)
-                .where(builder)
+                .where(
+                        eqOrdersId(search.getOrderId()),
+                        containsProductName(search.getProductName()),
+                        eqMemberId(search.getMemberId()),
+                        containsPaymentName(search.getPaymentName()),
+                        eqOrderDt(search.getOrderDt()),
+                        eqOrderState(search.getOrderState())
+                )
                 .fetch();
     }
 
     /**
-     *  설명: BooleanBuilder -> queryDSL 에서 제공하는 동적 쿼리를 구현할 때 유용하게 사용할 수 있는 클래스
-     *       service에서 가공한 데이터 중 key값 (지정한 조건) 에 해당하는 조건절(where)을 생성 후 리턴
-     * @param search
-     * @return Booleanbuilder
+     * 설명 : 물품 Id 검색
+     * @param ordersId
+     * @return BooleanExpression
      */
-    private BooleanBuilder addSearchCondition(Map<String, String> search) {
-        BooleanBuilder builder = new BooleanBuilder();
-
-        search.forEach((key, value) -> {
-            if (StringUtils.hasText(value)) {
-                if (key.contains("orderId")) {
-                    builder.and(orders.ordersId.eq(Integer.parseInt(value)));
-                } else if (key.contains("orderDt")) {
-                    builder.and(orders.orderDt.eq(LocalDate.parse(value)));
-                } else if (key.contains("orderState")) {
-                    builder.and(orders.orderState.eq(Integer.parseInt(value)));
-                } else if (key.contains("memberId")) {
-                    builder.and(orders.member.memberId.eq(value));
-                } else if (key.contains("productName")) {
-                    builder.and(product.productName.contains(value));
-                } else if (key.contains("travelId")) {
-                    builder.and(travel.travelId.eq(Integer.parseInt(value)));
-                }
-            }
-        });
-        return builder;
+    private BooleanExpression eqOrdersId(Integer ordersId) {
+        return (ordersId != null) ? QOrders.orders.ordersId.eq(ordersId) : null;
     }
+
+    /**
+     * 설명 : 물품 이름 검색
+     * @param productName
+     * @return BooleanExpression
+     */
+    private BooleanExpression containsProductName(String productName) {
+        return (productName != null) ? QProduct.product.productName.contains(productName) : null;
+    }
+
+    /**
+     * 설명 : 유저 아이디 검색
+     * @param memberId
+     * @return BooleanExpression
+     */
+    private BooleanExpression eqMemberId(String memberId) {
+        return (memberId != null) ? QOrders.orders.member.memberId.eq(memberId) : null;
+    }
+    /**
+     * 설명 : 결제 수단 이름 검색
+     * @param paymentName
+     * @return BooleanExpression
+     */
+    private BooleanExpression containsPaymentName(String paymentName) {
+        return (paymentName != null) ? QOrders.orders.payment.paymentName.contains(paymentName) : null;
+    }
+
+    /**
+     * 설명 : 주문 날짜 검색
+     * @param orderDt
+     * @return BooleanExpression
+     */
+    private BooleanExpression eqOrderDt(LocalDate orderDt) {
+        return (orderDt != null) ? QOrders.orders.orderDt.eq(orderDt) : null;
+    }
+
+    /**
+     * 설명 : 주문 상태 검색
+     * @param orderState
+     * @return BooleanExpression
+     */
+    private BooleanExpression eqOrderState (Integer orderState) {
+        return (orderState != null) ? QOrders.orders.orderState.eq(orderState) : null;
+    }
+
 }
