@@ -1,13 +1,9 @@
 package solid.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Comment;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Data
 @Entity
@@ -39,14 +35,19 @@ public class Member {
     @Comment("회원 생년월일")
     private LocalDate memberBirth;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "auth_id", nullable = false)
+    @Comment("권한 코드")
+    private Auth authId;
+
 
     /**
      *  양방향 관련 코드 * 현재 다대일 단방향으로 설정해놓음
      */
 
-    @OneToMany(mappedBy = "member")
-    @JsonIgnore
-    private List<Auth> authList = new ArrayList<>();
+//    @OneToMany(mappedBy = "member")
+//    @JsonIgnore
+//    private List<Auth> authList = new ArrayList<>();
 //
 //    @OneToMany(mappedBy = "member")
 //    @JsonIgnore
