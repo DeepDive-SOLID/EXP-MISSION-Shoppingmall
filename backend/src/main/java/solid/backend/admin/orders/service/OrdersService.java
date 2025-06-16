@@ -14,5 +14,10 @@ public interface OrdersService {
      */
     List<OrdersManagementDto> findAllOrdersList();
 
+    /**
+     * 설명: 주문 관리 검색
+     * @param request
+     * @return List<OrdersManagementDto>
+     */
     List<OrdersManagementDto> findSearchOrdersList(OrdersSearchDto request);
 }
