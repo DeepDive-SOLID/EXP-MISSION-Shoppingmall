@@ -89,7 +89,7 @@ public class OrdersQueryRepository {
     }
 
     /**
-     * 설명 : 물품 Id 검색
+     * 설명 : 주문 Id 검색
      * @param ordersId
      * @return BooleanExpression
      */
@@ -115,7 +115,7 @@ public class OrdersQueryRepository {
         return (memberId != null) ? QOrders.orders.member.memberId.eq(memberId) : null;
     }
     /**
-     * 설명 : 결제 수단 이름 검색
+     * 설명 : 결제 수단 검색
      * @param paymentName
      * @return BooleanExpression
      */
