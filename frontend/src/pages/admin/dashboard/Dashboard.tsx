@@ -1,7 +1,7 @@
-import Header from "../../components/common/Header/Header";
+import Header from "../../../components/common/Header/Header";
 import styles from "./Dashboard.module.scss";
-import Sidebar from "../../components/common/Sidebar/Sidebar";
-import MainDashboard from "../../components/dashboard/MainDashboard/MainDashboard";
+import Sidebar from "../../../components/common/Sidebar/Sidebar";
+import MainDashboard from "../../../components/dashboard/MainDashboard/MainDashboard";
 
 const Dashboard = () => {
   return (

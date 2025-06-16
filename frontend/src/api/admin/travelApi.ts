@@ -1,5 +1,5 @@
 import api from "../axios";
-import { TravelListDto, TravelListAllDto } from "../../types/travel";
+import { TravelListDto, TravelListAllDto } from "../../types/admin/travel";
 
 // 여행상품 관리 API
 export const travelApi = {

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import styles from "./CategoryStats.module.scss";
-import { DashboardCategoryStatsDto } from "../../../types/dashboard";
-import { dashboardApi } from "../../../api/management/dashboardApi";
+import { DashboardCategoryStatsDto } from "../../../types/admin/dashboard";
+import { dashboardApi } from "../../../api/admin/dashboardApi";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

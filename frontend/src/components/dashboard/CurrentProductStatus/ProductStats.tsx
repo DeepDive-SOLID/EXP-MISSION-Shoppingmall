@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { dashboardApi } from "../../../api/management/dashboardApi";
+import { dashboardApi } from "../../../api/admin/dashboardApi";
 import styles from "./ProductStats.module.scss";
-import { DashboardProductStatsDto } from "../../../types/dashboard";
+import { DashboardProductStatsDto } from "../../../types/admin/dashboard";
 
 const ProductStats = () => {
   const [data, setData] = useState<DashboardProductStatsDto | null>(null);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import Header from "../../components/common/Header/Header";
-import Sidebar from "../../components/common/Sidebar/Sidebar";
+import Header from "../../../components/common/Header/Header";
+import Sidebar from "../../../components/common/Sidebar/Sidebar";
 import styles from "./ManageTravel.module.scss";
 import {
   FiSearch,
@@ -12,22 +12,22 @@ import {
   FiCheck,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { product1 } from "../../assets";
-import { travelApi } from "../../api/management/travelApi";
+import { product1 } from "../../../assets";
+import { travelApi } from "../../../api/admin/travelApi";
 import {
   Travel,
   TravelFormData,
   NewTravelInput,
   TravelListAllDto,
   TravelSearchType,
-} from "../../types/travel";
-import { getToday } from "../../utils/formatDate";
+} from "../../../types/admin/travel";
+import { getToday } from "../../../utils/formatDate";
 import {
   transformApiTravel,
   createSearchParams,
   calculatePagination,
   getPageNumbers,
-} from "../../utils/travelUtils";
+} from "../../../utils/travelUtils";
 
 const ManageTravel = () => {
   // 검색 관련 상태

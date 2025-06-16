@@ -1,8 +1,4 @@
-import carrier from "../assets/images/carrier.jpg";
-import pilow from "../assets/images/pilow.jpg";
-import travelkit from "../assets/images/travelkit.jpg";
-import snorkel from "../assets/images/snorkel.jpg";
-import umbrella from "../assets/images/umbrella.jpg";
+import { carrier, pilow, travelkit, snorkel, umbrella } from "../assets";
 
 // 상품 이미지 타입 정의
 export interface ProductImage {

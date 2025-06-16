@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { dashboardApi } from "../../../api/management/dashboardApi";
+import { dashboardApi } from "../../../api/admin/dashboardApi";
 import {
   Chart as ChartJS,
   LineElement,
@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import styles from "./WeeklySalesAmt.module.scss";
-import { DashboardWeeklySalesAmtDto } from "../../../types/dashboard";
+import { DashboardWeeklySalesAmtDto } from "../../../types/admin/dashboard";
 
 ChartJS.register(
   LineElement,

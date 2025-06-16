@@ -5,7 +5,7 @@ import {
   DashboardProductStatsDto,
   DashboardMonthlyTxDto,
   DashboardWeeklySalesAmtDto,
-} from "../../types/dashboard";
+} from "../../types/admin/dashboard";
 
 export const dashboardApi = {
   // 카테고리 통계 API

@@ -1,7 +1,7 @@
 import styles from "./MonthlyTx.module.scss";
-import { dashboardApi } from "../../../api/management/dashboardApi";
+import { dashboardApi } from "../../../api/admin/dashboardApi";
 import { useEffect, useState } from "react";
-import { DashboardMonthlyTxDto } from "../../../types/dashboard";
+import { DashboardMonthlyTxDto } from "../../../types/admin/dashboard";
 
 const MonthlyTx = () => {
   const [data, setData] = useState<DashboardMonthlyTxDto | null>(null);

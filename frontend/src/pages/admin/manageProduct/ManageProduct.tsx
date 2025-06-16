@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import Header from "../../components/common/Header/Header";
-import Sidebar from "../../components/common/Sidebar/Sidebar";
+import Header from "../../../components/common/Header/Header";
+import Sidebar from "../../../components/common/Sidebar/Sidebar";
 import styles from "./ManageProduct.module.scss";
 import {
   FiSearch,
@@ -11,14 +11,14 @@ import {
   FiCheck,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { productApi } from "../../api/management/productApi";
+import { productApi } from "../../../api/admin/productApi";
 import {
   Product,
   ProductSearchType,
   ProductListDto,
-} from "../../types/product";
-import { getToday } from "../../utils/formatDate";
-import { productImages } from "../../utils/productImg";
+} from "../../../types/admin/product";
+import { getToday } from "../../../utils/formatDate";
+import { productImages } from "../../../utils/productImg";
 
 // API 응답 데이터를 Product 타입으로 변환하는 유틸리티 함수
 const transformApiProduct = (item: ProductListDto): Product => ({

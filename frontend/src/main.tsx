@@ -3,11 +3,11 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import Home from "./pages/home/Home";
-import Dashboard from "./pages/dashboard/Dashboard";
-import ManageProduct from "./pages/ManageProduct/ManageProduct";
-import ManageTravel from "./pages/ManageTravel/ManageTravel";
-import ManageUser from "./pages/ManageUser/ManageUser";
-import ManageOrder from "./pages/ManageOrder/ManageOrder";
+import Dashboard from "./pages/admin/dashboard/Dashboard";
+import ManageProduct from "./pages/admin/manageProduct/ManageProduct";
+import ManageTravel from "./pages/admin/manageTravel/ManageTravel";
+import ManageUser from "./pages/admin/manageUser/ManageUser";
+import ManageOrder from "./pages/admin/manageOrder/ManageOrder";
 
 const router = createBrowserRouter([
   {

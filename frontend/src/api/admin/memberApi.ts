@@ -1,5 +1,5 @@
 import api from "../axios";
-import { User } from "../../types/user";
+import { User } from "../../types/admin/user";
 
 // 사용자 관리 API
 export const memberApi = {

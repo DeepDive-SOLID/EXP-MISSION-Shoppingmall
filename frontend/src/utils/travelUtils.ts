@@ -1,4 +1,4 @@
-import { Travel, TravelListAllDto } from "../types/travel";
+import { Travel, TravelListAllDto } from "../types/admin/travel";
 
 // API 응답 데이터를 Travel 타입으로 변환하는 함수
 export const transformApiTravel = (item: TravelListAllDto): Travel => ({

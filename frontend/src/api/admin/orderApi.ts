@@ -1,5 +1,5 @@
 import api from "../axios";
-import { Order } from "../../types/order";
+import { Order } from "../../types/admin/order";
 
 // 주문 관리 API
 export const orderApi = {

@@ -1,5 +1,5 @@
 import api from "../axios";
-import { ProductListDto } from "../../types/product";
+import { ProductListDto } from "../../types/admin/product";
 
 // 물품 관리 API
 export const productApi = {
