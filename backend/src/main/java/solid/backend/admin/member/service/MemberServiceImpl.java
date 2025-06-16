@@ -5,7 +5,6 @@ import solid.backend.admin.member.dto.MemberListDto;
 import solid.backend.admin.member.dto.MemberSearchDto;
 import solid.backend.admin.member.repository.MemberQueryRepository;
 import solid.backend.admin.member.repository.MemberRepository;
-import solid.backend.entity.Auth;
 
 import java.util.List;
 import java.util.stream.Collectors;

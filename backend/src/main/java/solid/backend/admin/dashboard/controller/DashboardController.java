@@ -1,4 +1,4 @@
-package solid.backend.admin.dashboard.comtroller;
+package solid.backend.admin.dashboard.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
