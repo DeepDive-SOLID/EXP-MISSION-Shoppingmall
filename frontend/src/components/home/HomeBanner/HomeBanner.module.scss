@@ -6,10 +6,24 @@
 
 .left {
   flex: 1;
-  img {
+  position: relative;
+  overflow: hidden;
+
+  .bannerImage {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    z-index: 0;
+  }
+
+  .active {
+    opacity: 1;
+    z-index: 1;
   }
 }
 
