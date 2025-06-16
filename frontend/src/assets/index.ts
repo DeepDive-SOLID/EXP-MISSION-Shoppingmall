@@ -11,3 +11,7 @@ export { default as pilow } from "./images/pilow.jpg";
 export { default as travelkit } from "./images/travelkit.jpg";
 export { default as snorkel } from "./images/snorkel.jpg";
 export { default as umbrella } from "./images/umbrella.jpg";
+
+export { default as home_banner } from "./images/home_banner.png";
+export { default as home_banner2 } from "./images/home_banner2.avif";
+export { default as home_banner3 } from "./images/home_banner3.jpg";
