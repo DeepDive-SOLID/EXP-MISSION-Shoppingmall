@@ -60,55 +60,62 @@ src/main/java/solid/backend
 - RequestBody Param: OrdersSearchDto
 - return: List\<OrdersManagementDto\>
 - 테이블 조인 관계: orders + orderTravels + orderProducts + travel + product
-- where 절
+- 해당 하는 검색 조건
 ```java
-private BooleanBuilder addSearchCondition(Map<String, String> search) {
-        BooleanBuilder builder = new BooleanBuilder();
+    /**
+     * 설명 : 물품 Id 검색
+     * @param ordersId
+     * @return BooleanExpression
+     */
+    private BooleanExpression eqOrdersId(Integer ordersId) {
+        return (ordersId != null) ? QOrders.orders.ordersId.eq(ordersId) : null;
+    }
 
-        search.forEach((key, value) -> {
-            if (StringUtils.hasText(value)) {
-                if (key.contains("orderId")) {
-                    builder.and(orders.ordersId.eq(Integer.parseInt(value)));
-                } else if (key.contains("orderDt")) {
-                    builder.and(orders.orderDt.eq(LocalDate.parse(value)));
-                } else if (key.contains("orderState")) {
-                    builder.and(orders.orderState.eq(Integer.parseInt(value)));
-                } else if (key.contains("memberId")) {
-                    builder.and(orders.member.memberId.eq(value));
-                } else if (key.contains("productName")) {
-                    builder.and(product.productName.contains(value));
-                } else if (key.contains("travelId")) {
-                    builder.and(travel.travelId.eq(Integer.parseInt(value)));
-                }
-            }
-        });
-        return builder;
+    /**
+     * 설명 : 물품 이름 검색
+     * @param productName
+     * @return BooleanExpression
+     */
+    private BooleanExpression containsProductName(String productName) {
+        return (productName != null) ? QProduct.product.productName.contains(productName) : null;
+    }
+
+    /**
+     * 설명 : 유저 아이디 검색
+     * @param memberId
+     * @return BooleanExpression
+     */
+    private BooleanExpression eqMemberId(String memberId) {
+        return (memberId != null) ? QOrders.orders.member.memberId.eq(memberId) : null;
+    }
+    /**
+     * 설명 : 결제 수단 이름 검색
+     * @param paymentName
+     * @return BooleanExpression
+     */
+    private BooleanExpression containsPaymentName(String paymentName) {
+        return (paymentName != null) ? QOrders.orders.payment.paymentName.contains(paymentName) : null;
+    }
+
+    /**
+     * 설명 : 주문 날짜 검색
+     * @param orderDt
+     * @return BooleanExpression
+     */
+    private BooleanExpression eqOrderDt(LocalDate orderDt) {
+        return (orderDt != null) ? QOrders.orders.orderDt.eq(orderDt) : null;
+    }
+
+    /**
+     * 설명 : 주문 상태 검색
+     * @param orderState
+     * @return BooleanExpression
+     */
+    private BooleanExpression eqOrderState (Integer orderState) {
+        return (orderState != null) ? QOrders.orders.orderState.eq(orderState) : null;
     }
 ```
 
-[Param JSON 데이터 구조]
-- Integer number: 1-7번까지 해당 하는 검색 카테고리 (카테고리는 더 추가/삭제 가능함)
-- String data: input 데이터
-
-[검색 분기 처리]
-```java
-    public List<OrdersManagementDto> findSearchOrdersList(OrdersSearchDto request) {
-        Map<String, String> map = new HashMap<>();
-
-        String result = switch (request.getNumber()) {
-            case 1 -> "orderId";
-            case 2 -> "orderDt";
-            case 3 -> "orderState";
-            case 4 -> "memberId";
-            case 5 -> "productName";
-            case 6 -> "";
-            default -> "travelId";
-        };
-        map.put(result, request.getData());
-
-        return ordersQueryRepository.findSearchOrdersList(map);
-    }
-```
 
 
 
