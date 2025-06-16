@@ -8,6 +8,7 @@ import {
   CategoryScale,
   Tooltip,
   Legend,
+  ChartOptions,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import styles from "./WeeklySalesAmt.module.scss";
@@ -57,7 +58,7 @@ const WeeklySalesChart = () => {
     ],
   };
 
-  const options = {
+  const options: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -67,6 +68,7 @@ const WeeklySalesChart = () => {
     },
     scales: {
       x: {
+        type: "category",
         ticks: {
           autoSkip: false,
           maxRotation: 0,
@@ -75,8 +77,9 @@ const WeeklySalesChart = () => {
         },
       },
       y: {
+        type: "linear",
         ticks: {
-          callback: (value: unknown) => {
+          callback: (value: number | string) => {
             if (typeof value === "number") {
               return new Intl.NumberFormat("ko-KR").format(value) + "원";
             }
