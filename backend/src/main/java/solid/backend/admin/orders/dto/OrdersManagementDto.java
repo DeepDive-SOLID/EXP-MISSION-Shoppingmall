@@ -1,10 +1,14 @@
 package solid.backend.admin.orders.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrdersManagementDto {
 
     private Integer orderId;
@@ -16,16 +20,4 @@ public class OrdersManagementDto {
     private Integer orderProductAmount;
     private LocalDate orderDt;
     private Integer orderState;
-
-    public OrdersManagementDto(Integer orderId, String travelName , String productName, String memberId, String paymentName, Integer orderTravelAmount, Integer orderProductAmount, LocalDate orderDt, Integer orderState) {
-        this.orderId = orderId;
-        this.travelName = travelName;
-        this.productName = productName;
-        this.memberId = memberId;
-        this.paymentName = paymentName;
-        this.orderTravelAmount = orderTravelAmount;
-        this.orderProductAmount = orderProductAmount;
-        this.orderDt = orderDt;
-        this.orderState = orderState;
-    }
 }
