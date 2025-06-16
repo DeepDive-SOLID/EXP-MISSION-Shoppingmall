@@ -3,23 +3,12 @@ import Header from "../../components/common/Header/Header";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import styles from "./ManageOrder.module.scss";
 import { FiSearch } from "react-icons/fi";
-import api from "../../api/axios";
+import { orderApi } from "../../api/axios";
 import {
   getOrderStatusText,
   getOrderStatusClass,
 } from "../../utils/orderUtils";
 import { Order, OrderSearchType } from "../../types/order";
-
-// 검색 카테고리 상수
-const SEARCH_CATEGORIES = {
-  ORDER_ID: 1, // 주문 번호
-  ORDER_DATE: 2, // 주문 일자
-  ORDER_STATE: 3, // 주문 상태
-  MEMBER_ID: 4, // 회원 ID
-  PRODUCT_NAME: 5, // 물품명
-  UNUSED: 6, // 미사용
-  TRAVEL_ID: 7, // 여행 상품 ID
-};
 
 const ManageOrder = () => {
   const [tempSearchTerm, setTempSearchTerm] = useState("");
@@ -34,8 +23,8 @@ const ManageOrder = () => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        const response = await api.get("/admin/orders/list");
-        setOrders(response.data);
+        const response = await orderApi.getOrderList();
+        setOrders(response);
       } catch (error) {
         console.error("주문 데이터를 가져오는 중 오류 발생:", error);
       } finally {
@@ -57,8 +46,8 @@ const ManageOrder = () => {
       // 검색어가 비어있으면 전체 목록 조회
       try {
         setLoading(true);
-        const response = await api.get("/admin/orders/list");
-        setOrders(response.data);
+        const response = await orderApi.getOrderList();
+        setOrders(response);
       } catch (error) {
         console.error("주문 데이터를 가져오는 중 오류 발생:", error);
       } finally {
@@ -67,25 +56,10 @@ const ManageOrder = () => {
       return;
     }
 
-    // 검색 타입에 따른 number 매핑
-    const searchTypeToNumber = {
-      orderId: SEARCH_CATEGORIES.ORDER_ID,
-      orderDate: SEARCH_CATEGORIES.ORDER_DATE,
-      orderStatus: SEARCH_CATEGORIES.ORDER_STATE,
-      memberId: SEARCH_CATEGORIES.MEMBER_ID,
-      product: SEARCH_CATEGORIES.PRODUCT_NAME,
-      payment: SEARCH_CATEGORIES.PRODUCT_NAME, // 상품명으로 검색
-      quantity: SEARCH_CATEGORIES.PRODUCT_NAME, // 상품명으로 검색
-      all: SEARCH_CATEGORIES.ORDER_ID, // 주문번호로 검색
-    };
-
     try {
       setLoading(true);
-      const response = await api.post("/admin/orders/search", {
-        number: searchTypeToNumber[searchType],
-        data: tempSearchTerm,
-      });
-      setOrders(response.data);
+      const response = await orderApi.searchOrder(searchType, tempSearchTerm);
+      setOrders(response);
     } catch (error) {
       console.error("주문 검색 중 오류 발생:", error);
     } finally {

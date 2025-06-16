@@ -49,25 +49,17 @@ const ManageUser = () => {
       }
 
       // 검색어가 있을 때만 검색 API 호출
-      const searchParams: {
-        memberId?: string;
-        memberName?: string;
-      } = {};
+      const searchParams = {
+        memberId:
+          searchType === "id" || searchType === "all"
+            ? tempSearchTerm.trim()
+            : undefined,
+        memberName:
+          searchType === "name" || searchType === "all"
+            ? tempSearchTerm.trim()
+            : undefined,
+      };
 
-      switch (searchType) {
-        case "id":
-          searchParams.memberId = tempSearchTerm.trim() || undefined;
-          break;
-        case "name":
-          searchParams.memberName = tempSearchTerm.trim() || undefined;
-          break;
-        case "all":
-          searchParams.memberId = tempSearchTerm.trim() || undefined;
-          searchParams.memberName = tempSearchTerm.trim() || undefined;
-          break;
-      }
-
-      console.log("검색 파라미터:", searchParams); // 디버깅용
       const data = await memberApi.searchMember(searchParams);
       setUsers(data);
     } catch (error) {
@@ -88,14 +80,11 @@ const ManageUser = () => {
     setCurrentPage(1);
   };
 
-  // 검색어로 필터링
-  const filteredUsers = users;
-
   // 페이지네이션 계산
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const totalPages = Math.ceil(users.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
 
   // 페이지 변경 핸들러
   const handlePageChange = (pageNumber: number) => {

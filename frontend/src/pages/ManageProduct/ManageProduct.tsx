@@ -11,25 +11,18 @@ import {
   FiCheck,
   FiAlertTriangle,
 } from "react-icons/fi";
-import api from "../../api/axios";
-import { Product, ProductSearchType } from "../../types/product";
+import { productApi } from "../../api/axios";
+import {
+  Product,
+  ProductSearchType,
+  ProductListDto,
+} from "../../types/product";
 import { getToday } from "../../utils/formatDate";
-import product1 from "../../assets/images/carrier.jpg";
+import carrier from "../../assets/images/carrier.jpg";
 import pilow from "../../assets/images/pilow.jpg";
 import travelkit from "../../assets/images/travelkit.jpg";
 import snorkel from "../../assets/images/snorkel.jpg";
 import umbrella from "../../assets/images/umbrella.jpg";
-
-interface ProductListDto {
-  productId: number;
-  productName: string;
-  productPrice: number;
-  productAmount: number;
-  productSold: boolean;
-  productUploadDt?: string;
-  productUpdateDt?: string;
-  productImg?: string;
-}
 
 // API 응답 데이터를 Product 타입으로 변환하는 함수
 const transformApiProduct = (item: ProductListDto): Product => ({
@@ -38,14 +31,14 @@ const transformApiProduct = (item: ProductListDto): Product => ({
   product_price: item.productPrice,
   product_amount: item.productAmount,
   product_sold: item.productSold,
-  product_upload_dt: item.productUploadDt || "",
-  product_update_dt: item.productUpdateDt || "",
-  product_img: item.productImg || "",
+  product_upload_dt: getToday(), // 기본값으로 현재 날짜 사용
+  product_update_dt: getToday(), // 기본값으로 현재 날짜 사용
+  product_img: "", // 기본값으로 빈 문자열 사용
 });
 
 // 이미지 목록
 const productImages = [
-  { id: "carrier", src: product1 },
+  { id: "carrier", src: carrier },
   { id: "pilow", src: pilow },
   { id: "travelkit", src: travelkit },
   { id: "snorkel", src: snorkel },
@@ -109,15 +102,7 @@ const ManageProduct = () => {
         }
       }
 
-      const response = await api.post<ProductListDto[]>(
-        "/admin/product/searchProductList",
-        searchParams, // data 옵션 제거하고 직접 body로 전달
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const response = await productApi.searchProductList(searchParams);
 
       if (Array.isArray(response.data)) {
         const transformedData = response.data.map((item: ProductListDto) => ({
@@ -126,7 +111,6 @@ const ManageProduct = () => {
           product_price: item.productPrice,
           product_amount: item.productAmount,
           product_sold: item.productSold,
-          // 타입 에러를 해결하기 위해 임시로 빈 문자열로 설정
           product_upload_dt: "",
           product_update_dt: "",
           product_img: "",
@@ -161,14 +145,10 @@ const ManageProduct = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await api.get("/admin/product/getProductList");
+        const response = await productApi.getProductList();
 
         if (Array.isArray(response.data)) {
           const transformedData = response.data.map(transformApiProduct);
-          setProducts(transformedData);
-          setFilteredProducts(transformedData);
-        } else if (response.data.data && Array.isArray(response.data.data)) {
-          const transformedData = response.data.data.map(transformApiProduct);
           setProducts(transformedData);
           setFilteredProducts(transformedData);
         } else {
@@ -190,37 +170,24 @@ const ManageProduct = () => {
 
   const handleToggleSoldOut = async (id: number) => {
     try {
-      // 현재 제품 찾기
       const product = products.find(p => p.product_id === id);
       if (!product) return;
 
-      // 업데이트할 데이터 준비
-      const productDto = {
+      const productData = {
         productId: id,
         productName: product.product_name,
         productPrice: product.product_price,
         productAmount: product.product_amount,
-        productSold: !product.product_sold, // 품절 상태 변경
+        productSold: !product.product_sold,
         productImg: product.product_img,
         productUploadDt: product.product_upload_dt,
         productUpdateDt: getToday(),
       };
 
-      console.log("품절 상태 변경 요청 데이터:", productDto);
-
-      // PUT 요청으로 변경
-      const response = await api.put(
-        "/admin/product/updateProductDto",
-        productDto,
-      );
-      console.log("품절 상태 변경 응답:", response.data);
-
-      // 물품 목록 다시 불러오기
+      await productApi.updateProduct(productData);
       await refreshProductList();
     } catch (error) {
       console.error("품절 상태 변경 중 오류 발생:", error);
-
-      // 임시 상태 업데이트 (API 실패 시에도 UI 반응성 유지)
       setProducts(prevProducts =>
         prevProducts.map(p =>
           p.product_id === id ? { ...p, product_sold: !p.product_sold } : p,
@@ -265,47 +232,32 @@ const ManageProduct = () => {
     e.preventDefault();
 
     try {
-      // 폼 데이터를 API 형식에 맞게 변환
       const productData = {
         productName: newProduct.product_name,
         productPrice: parseInt(newProduct.product_price),
         productAmount: parseInt(newProduct.product_amount),
-        productSold: false, // 항상 false로 설정
-        productImg: newProduct.product_img || "carrier", // 기본 이미지 설정
+        productSold: false,
+        productImg: newProduct.product_img || "carrier",
         productUploadDt: newProduct.product_upload_dt,
         productUpdateDt: newProduct.product_update_dt,
       };
 
-      console.log("물품 추가 요청 데이터:", productData);
-
-      const response = await api.post(
-        "/admin/product/addProductDto",
-        productData,
-      );
-      console.log("물품 추가 응답:", response.data);
-
-      // 물품 목록 다시 불러오기
+      await productApi.addProduct(productData);
       await refreshProductList();
-
-      // 모달 닫기
       closeModal();
     } catch (error) {
       console.error("물품 추가 중 오류 발생:", error);
     }
   };
 
-  // 물품 목록 새로고침 함수
   const refreshProductList = async () => {
     try {
-      const productsResponse = await api.get("/admin/product/getProductList");
-
-      if (Array.isArray(productsResponse.data)) {
-        const transformedData = productsResponse.data.map(transformApiProduct);
+      const response = await productApi.getProductList();
+      if (Array.isArray(response.data)) {
+        const transformedData = response.data.map(transformApiProduct);
         setProducts(transformedData);
         setFilteredProducts(transformedData);
       }
-
-      console.log("물품 목록 새로고침 성공");
     } catch (error) {
       console.error("물품 목록 새로고침 실패:", error);
     }
@@ -338,7 +290,6 @@ const ManageProduct = () => {
   // 수정 저장
   const handleSaveEdit = async (id: number) => {
     try {
-      // 현재 제품 찾기
       const currentProduct = products.find(p => p.product_id === id);
       if (!currentProduct) return;
 
@@ -351,16 +302,7 @@ const ManageProduct = () => {
         productUpdateDt: getToday(),
       };
 
-      console.log("물품 수정 요청 데이터:", productData);
-
-      // PUT 요청으로 수정
-      const response = await api.put(
-        "/admin/product/updateProductDto",
-        productData,
-      );
-      console.log("물품 수정 응답:", response.data);
-
-      // 물품 목록 다시 불러오기
+      await productApi.updateProduct(productData);
       await refreshProductList();
       setEditingId(null);
     } catch (error) {
@@ -385,32 +327,22 @@ const ManageProduct = () => {
     if (!productToDelete) return;
 
     try {
-      const productId = productToDelete.product_id;
-      console.log("물품 삭제 요청 데이터:", productId);
-
-      // DELETE 요청으로 변경
-      const response = await api.delete("/admin/product/deleteProductDto", {
-        data: productId,
-      });
-
-      console.log("물품 삭제 응답:", response.data);
-
-      // 삭제 성공 처리
-      handleDeleteSuccess(productId);
-
-      // 모달 닫기
+      await productApi.deleteProduct(productToDelete.product_id);
+      handleDeleteSuccess(productToDelete.product_id);
       handleCloseDeleteModal();
     } catch (error) {
       console.error("물품 삭제 중 오류 발생:", error);
-      // 실패 시 UI 업데이트하지 않고 모달만 닫음
       handleCloseDeleteModal();
     }
   };
 
   // 삭제 성공 처리 함수
   const handleDeleteSuccess = (productId: number) => {
-    // 상태 업데이트
+    // products와 filteredProducts 모두 업데이트
     setProducts(prevProducts =>
+      prevProducts.filter(p => p.product_id !== productId),
+    );
+    setFilteredProducts(prevProducts =>
       prevProducts.filter(p => p.product_id !== productId),
     );
     console.log(`물품 ID ${productId} 삭제 성공`);

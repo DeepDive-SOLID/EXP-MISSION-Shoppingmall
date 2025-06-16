@@ -22,6 +22,12 @@ import {
   TravelSearchType,
 } from "../../types/travel";
 import { getToday } from "../../utils/formatDate";
+import {
+  transformApiTravel,
+  createSearchParams,
+  calculatePagination,
+  getPageNumbers,
+} from "../../utils/travelUtils";
 
 const ManageTravel = () => {
   const [tempSearchTerm, setTempSearchTerm] = useState("");
@@ -59,29 +65,11 @@ const ManageTravel = () => {
       try {
         setLoading(true);
         const data = await travelApi.getTravelListAll();
-        console.log("API 응답 데이터:", data); // 디버깅용 로그
-
-        // API 응답 형식에 맞게 데이터 변환
-        const formattedData = data.map(item => ({
-          travel_id: item.travelId,
-          travel_name: item.travelName,
-          travel_price: item.travelPrice,
-          travel_amount: item.travelAmount,
-          travel_sold: item.travelSold,
-          travel_comment: item.travelComment,
-          travel_label: item.travelLabel,
-          travel_start_dt: item.travelStartDt,
-          travel_end_dt: item.travelEndDt,
-          travel_upload_dt: item.travelUploadDt,
-          travel_update_dt: item.travelUpdateDt,
-          travel_img: item.travelImg,
-        }));
-
-        console.log("변환된 데이터:", formattedData); // 디버깅용 로그
+        const formattedData = data.map(transformApiTravel);
         setTravels(formattedData);
       } catch (error) {
         console.error("여행상품 데이터를 가져오는 중 오류 발생:", error);
-        setTravels([]); // 에러 발생 시 빈 배열로 초기화
+        setTravels([]);
       } finally {
         setLoading(false);
       }
@@ -113,60 +101,9 @@ const ManageTravel = () => {
 
     try {
       setLoading(true);
-
-      // 검색 파라미터 준비
-      const searchParams: {
-        travelId: number | null;
-        travelName: string | null;
-      } = {
-        travelId: null,
-        travelName: null,
-      };
-
-      let travelId: number | undefined;
-      let parsedId: number | undefined;
-
-      if (tempSearchTerm.trim()) {
-        switch (searchType) {
-          case "name":
-            searchParams.travelName = tempSearchTerm.trim();
-            break;
-          case "code":
-            travelId = parseInt(tempSearchTerm.trim());
-            if (!isNaN(travelId)) {
-              searchParams.travelId = travelId;
-            }
-            break;
-          case "all":
-            // 입력값이 숫자인지 확인
-            parsedId = parseInt(tempSearchTerm.trim());
-            if (!isNaN(parsedId)) {
-              // 숫자면 travelId로 검색
-              searchParams.travelId = parsedId;
-            } else {
-              // 문자열이면 travelName으로 검색
-              searchParams.travelName = tempSearchTerm.trim();
-            }
-            break;
-        }
-      }
-
-      console.log("검색 파라미터:", searchParams); // 디버깅용
+      const searchParams = createSearchParams(searchType, tempSearchTerm);
       const data = await travelApi.searchTravel(searchParams);
-      const formattedData = data.map(item => ({
-        travel_id: item.travelId,
-        travel_name: item.travelName,
-        travel_price: item.travelPrice,
-        travel_amount: item.travelAmount,
-        travel_sold: item.travelSold,
-        travel_comment: "",
-        travel_label: "",
-        travel_start_dt: "",
-        travel_end_dt: "",
-        travel_upload_dt: "",
-        travel_update_dt: "",
-        travel_img: "",
-      }));
+      const formattedData = data.map(transformApiTravel);
       setTravels(formattedData);
     } catch (error) {
       console.error("여행상품 검색 중 오류 발생:", error);
@@ -425,9 +362,11 @@ const ManageTravel = () => {
   };
 
   // 페이지네이션 계산
-  const totalPages = Math.ceil(travels.length / itemsPerPage);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const { totalPages, indexOfLastItem, indexOfFirstItem } = calculatePagination(
+    travels.length,
+    currentPage,
+    itemsPerPage,
+  );
   const currentItems = travels.slice(indexOfFirstItem, indexOfLastItem);
 
   // 페이지 변경 핸들러
@@ -437,23 +376,8 @@ const ManageTravel = () => {
     }
   };
 
-  // 페이지 번호 배열 생성 (최대 5개)
-  const getPageNumbers = () => {
-    const pageNumbers = [];
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-
-    return pageNumbers;
-  };
+  // 페이지 번호 배열 생성
+  const pageNumbers = getPageNumbers(currentPage, totalPages);
 
   return (
     <div className={styles.container}>
@@ -648,7 +572,7 @@ const ManageTravel = () => {
                 이전
               </button>
 
-              {getPageNumbers().map(number => (
+              {pageNumbers.map(number => (
                 <button
                   key={number}
                   className={`${styles.pageButton} ${
