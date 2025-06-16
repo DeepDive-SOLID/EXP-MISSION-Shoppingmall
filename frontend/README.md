@@ -94,7 +94,7 @@ npm run dev
 
 ## 📺 화면 별 기능
 ### 대시보드
-![image 81](https://github.com/user-attachments/assets/3caca3c2-2a95-4fb8-898f-4a2f5f43dc75)
+![image](https://github.com/user-attachments/assets/785437ff-439d-43df-9fee-408741b34283)
 
 ### 주문 관리 페이지
 ![image](https://github.com/user-attachments/assets/a5d9f2ff-642f-49e6-a65f-4d7f5034ad07)
