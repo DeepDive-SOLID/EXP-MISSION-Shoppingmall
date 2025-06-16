@@ -222,10 +222,10 @@ public class DashboardQueryRepository {
         QOrderProduct orderProducts = QOrderProduct.orderProduct;
         QOrderTravel orderTravels = QOrderTravel.orderTravel;
 
-        // 오늘 날짜 (예: 2025-06-13) -> firstDayOfMonth : 이번 주 월요일(2025-06-09), firstDayOfNextMonth : 2025-06-15(이번 주 일요일)
+        // 오늘 날짜 (예: 2025-06-13) -> startDt : 6일 전(2025-06-07), endDt : 오늘(2025-06-13)
         LocalDate today = LocalDate.now();
-        LocalDate monday = today.with(DayOfWeek.MONDAY);
-        LocalDate sunday = monday.plusDays(6);
+        LocalDate startDt = today.minusDays(6);
+        LocalDate endDt = today;
 
         // 여행상품, 물품 기준 일별 총 금액
         List<Tuple> productStats = query
@@ -233,7 +233,7 @@ public class DashboardQueryRepository {
                 .from(orderProducts)
                 .join(orderProducts.order, orders)
                 .join(orderProducts.product, products)
-                .where(orders.orderDt.between(monday, sunday).and(orders.orderState.ne(1)))
+                .where(orders.orderDt.between(startDt, endDt).and(orders.orderState.ne(1)))
                 .groupBy(orders.orderDt)
                 .fetch();
 
@@ -242,7 +242,7 @@ public class DashboardQueryRepository {
                 .from(orderTravels)
                 .join(orderTravels.order, orders)
                 .join(orderTravels.travel, travels)
-                .where(orders.orderDt.between(monday, sunday).and(orders.orderState.ne(1)))
+                .where(orders.orderDt.between(startDt, endDt).and(orders.orderState.ne(1)))
                 .groupBy(orders.orderDt)
                 .fetch();
 
@@ -268,7 +268,7 @@ public class DashboardQueryRepository {
         // 일자별 데이터 생성 (값 없으면 0 처리)
         List<DashboardWeeklySalesAmtDto> result = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
-            LocalDate date = monday.plusDays(i);
+            LocalDate date = startDt.plusDays(i);
             result.add(new DashboardWeeklySalesAmtDto(date, dailyTotalMap.getOrDefault(date, 0L)));
         }
 
