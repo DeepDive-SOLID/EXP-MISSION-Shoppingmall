@@ -42,21 +42,10 @@ public class MemberQueryRepository {
                 .from(member)
                 .leftJoin(member.authList, auth)
                 .where(
-                        isOrName(memberSearchDto.getMemberId(), memberSearchDto.getMemberName())
+                        eqMemberId(memberSearchDto.getMemberId()),
+                        containsMemberName(memberSearchDto.getMemberName())
                 )
                 .fetch();
-    }
-
-    /**
-     * 설명: 사용자 관리 전체 검색
-     * @param memberId
-     * @param memberName
-     * @return BooleanExpression
-     */
-    private BooleanExpression isOrName(String memberId, String memberName) {
-        if(memberId != null && memberName != null)  return eqMemberId(memberId).or(containsMemberName(memberName));
-        else if(memberId != null)                   return eqMemberId(memberId);
-        else                                        return containsMemberName(memberName);
     }
 
     /**
