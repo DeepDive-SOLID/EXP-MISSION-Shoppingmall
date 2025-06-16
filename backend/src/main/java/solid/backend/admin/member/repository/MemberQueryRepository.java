@@ -21,6 +21,11 @@ public class MemberQueryRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
+    /**
+     * 설명: 여행 상품 검색
+     * @param memberSearchDto
+     * @return List<MemberListDto>
+     */
     public List<MemberListDto> findMember(MemberSearchDto memberSearchDto) {
         QMember member = QMember.member;
         QAuth auth = QAuth.auth;
@@ -37,16 +42,37 @@ public class MemberQueryRepository {
                 .from(member)
                 .leftJoin(member.authList, auth)
                 .where(
-                        eqMemberId(memberSearchDto.getMemberId()),
-                        containsMemberName(memberSearchDto.getMemberName())
+                        isOrName(memberSearchDto.getMemberId(), memberSearchDto.getMemberName())
                 )
                 .fetch();
     }
 
+    /**
+     * 설명: 여행 상품 전체 검색
+     * @param memberId
+     * @param memberName
+     * @return BooleanExpression
+     */
+    private BooleanExpression isOrName(String memberId, String memberName) {
+        if(memberId != null && memberName != null)  return eqMemberId(memberId).or(containsMemberName(memberName));
+        else if(memberId != null)                   return eqMemberId(memberId);
+        else                                        return containsMemberName(memberName);
+    }
+
+    /**
+     * 설명: 여행 상품 Id 검색
+     * @param memberId
+     * @return BooleanExpression
+     */
     private BooleanExpression eqMemberId(String memberId) {
         return StringUtils.hasText(memberId) ? QMember.member.memberId.eq(memberId) : null;
     }
 
+    /**
+     * 설명: 여행 상품 Name 검색
+     * @param memberName
+     * @return BooleanExpression
+     */
     private BooleanExpression containsMemberName(String memberName) {
         return StringUtils.hasText(memberName) ? QMember.member.memberName.contains(memberName) : null;
     }
