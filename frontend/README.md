@@ -97,7 +97,7 @@ npm run dev
 ![image](https://github.com/user-attachments/assets/785437ff-439d-43df-9fee-408741b34283)
 
 ### 주문 관리 페이지
-![image](https://github.com/user-attachments/assets/a5d9f2ff-642f-49e6-a65f-4d7f5034ad07)
+![image](https://github.com/user-attachments/assets/1e5f9c3c-1fce-4b3d-a173-e84987d53823)
 
 ### 사용자 관리 페이지
 ![image](https://github.com/user-attachments/assets/3e54bb2d-f068-4e91-9625-1637ac00f238)
