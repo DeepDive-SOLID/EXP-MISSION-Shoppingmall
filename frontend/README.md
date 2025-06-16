@@ -97,16 +97,23 @@ npm run dev
 ![image 81](https://github.com/user-attachments/assets/3caca3c2-2a95-4fb8-898f-4a2f5f43dc75)
 
 ### 주문 관리 페이지
-![image](https://github.com/user-attachments/assets/357943b6-3db2-4304-b63b-2cb3e8b91060)
+![image](https://github.com/user-attachments/assets/a5d9f2ff-642f-49e6-a65f-4d7f5034ad07)
 
 ### 사용자 관리 페이지
 ![image](https://github.com/user-attachments/assets/3e54bb2d-f068-4e91-9625-1637ac00f238)
 
 ### 물품 관리 페이지
 ![image](https://github.com/user-attachments/assets/6c17442d-43fb-4f0c-b19f-e3b9fcecff0d)
+| 수정 | 삭제 |
+|--------|---------|
+|![image](https://github.com/user-attachments/assets/5b1c03c3-9eec-4890-bc64-6343280b75b9)|![image](https://github.com/user-attachments/assets/62a1bc5c-cc56-4a39-bcac-a997cdf06975)|
 
 ### 여행 상품 관리 페이지
 ![image](https://github.com/user-attachments/assets/f100ae54-5076-4ad1-8bc4-cf4f68610be8)
+| 수정 | 삭제 |
+|--------|---------|
+|![image](https://github.com/user-attachments/assets/324e6f7e-9c05-43d5-988a-5d21c7b3bfc3)|![image](https://github.com/user-attachments/assets/71dd176b-bb0e-45b2-9eea-d431944b277d)|
+
 
 ### 추가 모달
 | 물품 추가 | 여행 상품 추가 |
