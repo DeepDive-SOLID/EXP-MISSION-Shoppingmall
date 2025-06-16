@@ -32,7 +32,7 @@ import {
 const ManageTravel = () => {
   // 검색 관련 상태
   const [tempSearchTerm, setTempSearchTerm] = useState("");
-  const [searchType, setSearchType] = useState<TravelSearchType>("all");
+  const [searchType, setSearchType] = useState<TravelSearchType>("name");
 
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
@@ -358,12 +358,6 @@ const ManageTravel = () => {
           <div className={styles.filterSection}>
             <div className={styles.searchContainer}>
               <div className={styles.searchTypeButtons}>
-                <button
-                  className={`${styles.searchTypeButton} ${searchType === "all" ? styles.active : ""}`}
-                  onClick={() => handleSearchTypeChange("all")}
-                >
-                  전체
-                </button>
                 <button
                   className={`${styles.searchTypeButton} ${searchType === "name" ? styles.active : ""}`}
                   onClick={() => handleSearchTypeChange("name")}

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { User } from "../types/user";
 import { TravelListDto, TravelListAllDto } from "../types/travel";
-import { Order, OrderSearchDto, OrderSearchType } from "../types/order";
+import { Order } from "../types/order";
 import { ProductListDto } from "../types/product";
 
 // axios 기본 설정
@@ -168,26 +168,18 @@ export const orderApi = {
   },
 
   // 주문 검색
-  searchOrder: async (
-    searchType: OrderSearchType,
-    searchData: string,
-  ): Promise<Order[]> => {
-    const searchDto: OrderSearchDto = {
-      number:
-        searchType === "orderId"
-          ? 1
-          : searchType === "orderDate"
-            ? 2
-            : searchType === "orderStatus"
-              ? 3
-              : searchType === "memberId"
-                ? 4
-                : searchType === "product"
-                  ? 5
-                  : 6,
-      data: searchData,
-    };
-    const response = await api.post<Order[]>("/admin/orders/search", searchDto);
+  searchOrder: async (searchParams: {
+    orderId?: number;
+    productName?: string;
+    memberId?: string;
+    paymentName?: string;
+    orderDt?: string;
+    orderState?: number;
+  }): Promise<Order[]> => {
+    const response = await api.post<Order[]>(
+      "/admin/orders/search",
+      searchParams,
+    );
     return response.data;
   },
 

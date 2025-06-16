@@ -13,7 +13,7 @@ import { Order, OrderSearchType } from "../../types/order";
 const ManageOrder = () => {
   // 상태 관리
   const [tempSearchTerm, setTempSearchTerm] = useState(""); // 검색어 임시 저장
-  const [searchType, setSearchType] = useState<OrderSearchType>("all"); // 검색 타입 (전체/주문번호/주문날짜 등)
+  const [searchType, setSearchType] = useState<OrderSearchType>("orderId"); // 검색 타입 (주문번호/주문날짜 등)
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
   const [orders, setOrders] = useState<Order[]>([]); // 주문 목록
   const [loading, setLoading] = useState(true); // 로딩 상태
@@ -46,10 +46,21 @@ const ManageOrder = () => {
     setCurrentPage(1);
     try {
       setLoading(true);
+      const searchParams = {
+        orderId:
+          searchType === "orderId" ? parseInt(tempSearchTerm) : undefined,
+        productName: searchType === "product" ? tempSearchTerm : undefined,
+        memberId: searchType === "memberId" ? tempSearchTerm : undefined,
+        paymentName: searchType === "payment" ? tempSearchTerm : undefined,
+        orderDt: searchType === "orderDate" ? tempSearchTerm : undefined,
+        orderState:
+          searchType === "orderStatus" ? parseInt(tempSearchTerm) : undefined,
+      };
+
       const response =
         tempSearchTerm === ""
           ? await orderApi.getOrderList()
-          : await orderApi.searchOrder(searchType, tempSearchTerm);
+          : await orderApi.searchOrder(searchParams);
       setOrders(response);
     } catch (error) {
       console.error("주문 데이터를 가져오는 중 오류 발생:", error);
@@ -119,12 +130,6 @@ const ManageOrder = () => {
               {/* 검색 타입 버튼 - 첫 번째 줄 */}
               <div className={styles.searchTypeButtons}>
                 <button
-                  className={`${styles.searchTypeButton} ${searchType === "all" ? styles.active : ""}`}
-                  onClick={() => handleSearchTypeChange("all")}
-                >
-                  전체
-                </button>
-                <button
                   className={`${styles.searchTypeButton} ${searchType === "orderId" ? styles.active : ""}`}
                   onClick={() => handleSearchTypeChange("orderId")}
                 >
@@ -155,19 +160,13 @@ const ManageOrder = () => {
                   className={`${styles.searchTypeButton} ${searchType === "product" ? styles.active : ""}`}
                   onClick={() => handleSearchTypeChange("product")}
                 >
-                  물품
+                  물품명
                 </button>
                 <button
                   className={`${styles.searchTypeButton} ${searchType === "payment" ? styles.active : ""}`}
                   onClick={() => handleSearchTypeChange("payment")}
                 >
                   결제수단
-                </button>
-                <button
-                  className={`${styles.searchTypeButton} ${searchType === "quantity" ? styles.active : ""}`}
-                  onClick={() => handleSearchTypeChange("quantity")}
-                >
-                  수량
                 </button>
               </div>
               {/* 검색 입력창 */}

@@ -57,4 +57,4 @@ export interface TravelListAllDto {
 }
 
 // 여행 상품 관리 페이지 검색 타입
-export type TravelSearchType = "name" | "code" | "all";
+export type TravelSearchType = "name" | "code";

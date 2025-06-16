@@ -35,7 +35,7 @@ const transformApiProduct = (item: ProductListDto): Product => ({
 const ManageProduct = () => {
   // 상태 관리
   const [tempSearchTerm, setTempSearchTerm] = useState(""); // 검색어 임시 저장
-  const [searchType, setSearchType] = useState<ProductSearchType>("all"); // 검색 타입 (전체/물품명/물품코드)
+  const [searchType, setSearchType] = useState<ProductSearchType>("name"); // 검색 타입 (물품명/물품코드)
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
   const [isModalOpen, setIsModalOpen] = useState(false); // 물품 추가 모달 상태
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 삭제 확인 모달 상태
@@ -75,6 +75,7 @@ const ManageProduct = () => {
 
       type SearchParams = { productId?: string; productName?: string };
       let searchParams: SearchParams = {};
+
       if (tempSearchTerm) {
         switch (searchType) {
           case "name":
@@ -83,12 +84,6 @@ const ManageProduct = () => {
           case "code":
             if (!isNaN(Number(tempSearchTerm))) {
               searchParams = { productId: tempSearchTerm };
-            }
-            break;
-          case "all":
-            searchParams = { productName: tempSearchTerm };
-            if (!isNaN(Number(tempSearchTerm))) {
-              searchParams.productId = tempSearchTerm;
             }
             break;
         }
@@ -388,12 +383,6 @@ const ManageProduct = () => {
           <div className={styles.filterSection}>
             <div className={styles.searchContainer}>
               <div className={styles.searchTypeButtons}>
-                <button
-                  className={`${styles.searchTypeButton} ${searchType === "all" ? styles.active : ""}`}
-                  onClick={() => handleSearchTypeChange("all")}
-                >
-                  전체
-                </button>
                 <button
                   className={`${styles.searchTypeButton} ${searchType === "name" ? styles.active : ""}`}
                   onClick={() => handleSearchTypeChange("name")}

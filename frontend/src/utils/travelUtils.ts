@@ -18,7 +18,7 @@ export const transformApiTravel = (item: TravelListAllDto): Travel => ({
 
 // 검색 파라미터 생성 함수
 export const createSearchParams = (
-  searchType: "all" | "name" | "code",
+  searchType: "name" | "code",
   searchTerm: string,
 ) => {
   const searchParams: {
@@ -40,13 +40,6 @@ export const createSearchParams = (
       case "code":
         if (!isNaN(parsedId)) {
           searchParams.travelId = parsedId;
-        }
-        break;
-      case "all":
-        if (!isNaN(parsedId)) {
-          searchParams.travelId = parsedId;
-        } else {
-          searchParams.travelName = trimmedTerm;
         }
         break;
     }

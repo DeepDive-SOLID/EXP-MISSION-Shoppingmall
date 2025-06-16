@@ -9,7 +9,7 @@ import { User, UserSearchType } from "../../types/user";
 const ManageUser = () => {
   // 상태 관리
   const [tempSearchTerm, setTempSearchTerm] = useState(""); // 검색어 임시 저장
-  const [searchType, setSearchType] = useState<UserSearchType>("all"); // 검색 타입 (전체/아이디/이름)
+  const [searchType, setSearchType] = useState<UserSearchType>("id"); // 검색 타입 (아이디/이름)
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [users, setUsers] = useState<User[]>([]); // 사용자 목록
@@ -45,23 +45,10 @@ const ManageUser = () => {
     try {
       setLoading(true);
 
-      if (!tempSearchTerm.trim()) {
-        // 검색어가 비어있으면 전체 목록 조회
-        const data = await memberApi.getMemberList();
-        setUsers(data);
-        return;
-      }
-
       // 검색어가 있을 때만 검색 API 호출
       const searchParams = {
-        memberId:
-          searchType === "id" || searchType === "all"
-            ? tempSearchTerm.trim()
-            : undefined,
-        memberName:
-          searchType === "name" || searchType === "all"
-            ? tempSearchTerm.trim()
-            : undefined,
+        memberId: searchType === "id" ? tempSearchTerm.trim() : undefined,
+        memberName: searchType === "name" ? tempSearchTerm.trim() : undefined,
       };
 
       const data = await memberApi.searchMember(searchParams);
@@ -133,12 +120,6 @@ const ManageUser = () => {
             <div className={styles.searchContainer}>
               {/* 검색 타입 버튼 */}
               <div className={styles.searchTypeButtons}>
-                <button
-                  className={`${styles.searchTypeButton} ${searchType === "all" ? styles.active : ""}`}
-                  onClick={() => handleSearchTypeChange("all")}
-                >
-                  전체
-                </button>
                 <button
                   className={`${styles.searchTypeButton} ${searchType === "id" ? styles.active : ""}`}
                   onClick={() => handleSearchTypeChange("id")}
