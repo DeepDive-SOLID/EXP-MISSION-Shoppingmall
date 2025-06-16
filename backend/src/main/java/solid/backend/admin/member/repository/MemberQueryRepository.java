@@ -40,7 +40,7 @@ public class MemberQueryRepository {
                         auth.authName
                 ))
                 .from(member)
-                .leftJoin(member.authList, auth)
+                .join(member.authId, auth)
                 .where(
                         eqMemberId(memberSearchDto.getMemberId()),
                         containsMemberName(memberSearchDto.getMemberName())

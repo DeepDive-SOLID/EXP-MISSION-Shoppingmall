@@ -18,7 +18,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberQueryRepository memberQueryRepository;
 
     /**
-     * 설명: 여행 상품 정보 가져오기
+     * 설명: 사용자 정보 가져오기
      * @return List<MemberListDto>
      * */
     @Override
@@ -30,15 +30,12 @@ public class MemberServiceImpl implements MemberService {
                         member.getMemberPhone(),
                         member.getMemberEmail(),
                         member.getMemberBirth(),
-                        member.getAuthList().stream()
-                                .map(Auth::getAuthName)
-                                .findFirst()
-                                .orElse(null)
+                        member.getAuthId().getAuthName()
                 )).collect(Collectors.toList());
     }
 
     /**
-     * 설명: 여행 상품 정보 가져오기
+     * 설명: 사용자 정보 가져오기
      * @param memberSearchDto
      * @return List<MemberListDto>
      * */
