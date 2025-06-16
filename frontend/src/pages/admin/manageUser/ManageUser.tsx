@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Header from "../../../components/common/Header/Header";
+import Header from "../../../components/common/Header_dash/Header";
 import Sidebar from "../../../components/common/Sidebar/Sidebar";
 import styles from "./ManageUser.module.scss";
 import { FiSearch } from "react-icons/fi";

@@ -1,4 +1,4 @@
-import Header from "../../../components/common/Header/Header";
+import Header from "../../../components/common/Header_dash/Header";
 import styles from "./Dashboard.module.scss";
 import Sidebar from "../../../components/common/Sidebar/Sidebar";
 import MainDashboard from "../../../components/dashboard/MainDashboard/MainDashboard";
