@@ -6,7 +6,17 @@
   z-index: 10;
   overflow-x: hidden;
   box-sizing: border-box;
-  border-right: 1px solid #0085ff;
+  height: 100vh;
+  border-right: 1px solid #dcdcdc;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #202020;
+  margin: 0 20px 16px 20px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 8px;
 }
 
 .mapSection {
@@ -41,15 +51,6 @@
 
 .calendarSection {
   padding: 16px 0;
-
-  .sectionTitle {
-    font-size: 18px;
-    font-weight: 600;
-    color: #202020;
-    margin: 0 5px 15px 5px;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 5px;
-  }
 
   .select {
     width: 100%;
@@ -128,5 +129,46 @@
   :global(.react-datepicker__day--keyboard-selected) {
     background-color: #005fcc;
     color: #fff;
+  }
+}
+
+.memberSection {
+  padding: 16px 0;
+
+  .select {
+    width: 90%;
+    padding: 12px 16px;
+    margin: 10px;
+    font-size: 15px;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    background-color: #fff;
+    color: #333;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='14' height='8' viewBox='0 0 14 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:hover {
+      border-color: #bbb;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #0085ff;
+      box-shadow: 0 0 0 2px rgba(0, 133, 255, 0.2);
+    }
+
+    option {
+      background: #fff;
+      color: #000;
+      font-size: 14px;
+    }
   }
 }

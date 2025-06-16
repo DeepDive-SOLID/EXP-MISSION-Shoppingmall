@@ -16,7 +16,7 @@ const SearchSidebar = () => {
       </div>
 
       <div className={styles.calendarSection}>
-        <h2 className={styles.sectionTitle}>일정 선택</h2>
+        <p className={styles.sectionTitle}>일정 선택</p>
         <DatePicker
           selected={startDate}
           onChange={dates => {
@@ -32,8 +32,8 @@ const SearchSidebar = () => {
         />
       </div>
 
-      <div className={styles.section}>
-        <h3>인원 선택</h3>
+      <div className={styles.memberSection}>
+        <p className={styles.sectionTitle}>인원 선택</p>
         <select className={styles.select}>
           {Array.from({ length: 10 }, (_, i) => (
             <option key={i} value={i + 1}>
