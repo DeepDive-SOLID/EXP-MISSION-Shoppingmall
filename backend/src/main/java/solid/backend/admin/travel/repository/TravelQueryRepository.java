@@ -32,7 +32,7 @@ public class TravelQueryRepository {
                 .select(Projections.constructor(TravelListDto.class,
                         travel.travelId,
                         travel.travelName,
-                        travel.travelAmount,
+                        travel.travelPrice,
                         travel.travelAmount,
                         travel.travelSold
                 ))
