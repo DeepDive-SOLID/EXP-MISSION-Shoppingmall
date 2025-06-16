@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import styles from "./CategoryStats.module.scss";
 import { DashboardCategoryStatsDto } from "../../../types/dashboard";
+import { dashboardApi } from "../../../api/management/dashboardApi";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -15,11 +15,9 @@ const CategoryStats = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get<DashboardCategoryStatsDto[]>(
-          "/api/admin/dashboard/getDashboardCategoryStatsDto",
-        );
-        console.log("Category Stats 응답:", res.data);
-        setCategoryStats(res.data);
+        const res = await dashboardApi.getCategoryStats();
+        console.log("Category Stats 응답:", res);
+        setCategoryStats(res);
       } catch (err) {
         console.error("카테고리 통계 로딩 실패:", err);
       }

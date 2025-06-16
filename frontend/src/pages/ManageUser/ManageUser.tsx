@@ -3,7 +3,7 @@ import Header from "../../components/common/Header/Header";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import styles from "./ManageUser.module.scss";
 import { FiSearch } from "react-icons/fi";
-import { memberApi } from "../../api/axios";
+import { memberApi } from "../../api/management/memberApi";
 import { User, UserSearchType } from "../../types/user";
 
 const ManageUser = () => {

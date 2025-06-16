@@ -3,7 +3,7 @@ import Header from "../../components/common/Header/Header";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import styles from "./ManageOrder.module.scss";
 import { FiSearch } from "react-icons/fi";
-import { orderApi } from "../../api/axios";
+import { orderApi } from "../../api/management/orderApi";
 import {
   getOrderStatusText,
   getOrderStatusClass,

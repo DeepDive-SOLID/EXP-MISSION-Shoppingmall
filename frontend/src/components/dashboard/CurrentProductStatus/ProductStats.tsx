@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { dashboardApi } from "../../../api/management/dashboardApi";
 import styles from "./ProductStats.module.scss";
 import { DashboardProductStatsDto } from "../../../types/dashboard";
 
@@ -9,11 +9,9 @@ const ProductStats = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get<DashboardProductStatsDto>(
-          "/api/admin/dashboard/getDashboardProductStatsDto",
-        );
-        console.log("Product Stats 응답:", res.data);
-        setData(res.data);
+        const res = await dashboardApi.getProductStats(); // ✅ axios -> dashboardApi 변경
+        console.log("Product Stats 응답:", res);
+        setData(res);
       } catch (err) {
         console.error("상품 현황 통계 로딩 실패:", err);
       }

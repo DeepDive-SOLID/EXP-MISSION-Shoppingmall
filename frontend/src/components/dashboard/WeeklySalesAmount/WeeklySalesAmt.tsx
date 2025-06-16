@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { dashboardApi } from "../../../api/management/dashboardApi";
 import {
   Chart as ChartJS,
   LineElement,
@@ -30,11 +30,9 @@ const WeeklySalesChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get<DashboardWeeklySalesAmtDto[]>(
-          "/api/admin/dashboard/getDashboardWeeklySalesAmtDto",
-        );
-        console.log("Weekly Sales 응답:", res.data);
-        setWeeklyData(res.data);
+        const res = await dashboardApi.getWeeklySalesStats();
+        console.log("Weekly Sales 응답:", res);
+        setWeeklyData(res);
       } catch (err) {
         console.error("주간 매출 통계 로딩 실패:", err);
       }

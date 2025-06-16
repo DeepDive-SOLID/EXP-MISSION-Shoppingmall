@@ -1,5 +1,5 @@
 import styles from "./MonthlyTx.module.scss";
-import axios from "axios";
+import { dashboardApi } from "../../../api/management/dashboardApi";
 import { useEffect, useState } from "react";
 import { DashboardMonthlyTxDto } from "../../../types/dashboard";
 
@@ -9,12 +9,9 @@ const MonthlyTx = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(
-          "/api/admin/dashboard/getDashboardMonthlyTxDto",
-        );
-        console.log("Dashboard API 응답:", res.data);
-
-        setData(res.data);
+        const res = await dashboardApi.getMonthlyTxStats();
+        console.log("Dashboard API 응답:", res);
+        setData(res);
       } catch (err) {
         console.error("월간 거래현황 로딩 실패:", err);
       }
