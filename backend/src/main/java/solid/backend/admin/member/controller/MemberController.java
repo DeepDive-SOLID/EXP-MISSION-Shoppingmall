@@ -18,7 +18,7 @@ public class MemberController {
 
     /**
      * 설명 : 회원 정보 가져오기
-     * @return MemberDto
+     * @return List<MemberListDto>
      */
     @ResponseBody
     @GetMapping("")
@@ -28,7 +28,7 @@ public class MemberController {
 
     /**
      * 설명 : 회원 정보 가져오기
-     * @return MemberDto
+     * @return List<MemberListDto>
      */
     @ResponseBody
     @PostMapping("/search")
