@@ -4,9 +4,6 @@ import styles from "./Home.module.scss";
 import { FiArrowRight } from "react-icons/fi";
 
 const Home = () => {
-  const navigate = useNavigate();
-  const today = formatDate(new Date());
-
   return (
     <div className={styles.homeContainer}>
       <div className={styles.content}>
