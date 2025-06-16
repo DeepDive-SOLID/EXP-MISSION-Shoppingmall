@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductSearchDto {
 
-    private String productId;
+    private Integer productId;
     private String productName;
 }

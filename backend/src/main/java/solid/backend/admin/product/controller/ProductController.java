@@ -91,7 +91,7 @@ public class ProductController {
      * @return List<ProductListDto>
      */
     @ResponseBody
-    @GetMapping("/searchProductList")
+    @PostMapping("/searchProductList")
     public List<ProductListDto> searchProductList(@RequestBody ProductSearchDto productDto) {
         return productService.searchProductList(productDto);
     }

@@ -37,27 +37,10 @@ public class ProductQueryRepository {
                         product.productSold
                 ))
                 .from(product)
-                .where(idOrName(productDto.getProductId(), productDto.getProductName()))
+                .where(
+                        eqProductId(productDto.getProductId()),
+                        containsProductName(productDto.getProductName()))
                 .fetch();
-    }
-
-    /**
-     * 설명 : 물품 Id, 물품명 null 체크
-     * @param productId
-     * @param productName
-     * @return BooleanExpression
-     */
-    private BooleanExpression idOrName(String productId, String productName) {
-        BooleanExpression id = eqProductId(productId);
-        BooleanExpression name = containsProductName(productName);
-
-        if (id != null && name != null) {
-            return id.or(name);
-        } else if (id != null) {
-            return id;
-        } else {
-            return name;
-        }
     }
 
     /**
@@ -65,13 +48,8 @@ public class ProductQueryRepository {
      * @param productId
      * @return BooleanExpression
      */
-    private BooleanExpression eqProductId(String productId) {
-        if (productId == null || productId.isBlank()) return null;
-        try {
-            return QProduct.product.productId.eq(Integer.parseInt(productId));
-        } catch (NumberFormatException e) {
-            return null;
-        }
+    private BooleanExpression eqProductId(Integer productId) {
+        return (productId != null) ? QProduct.product.productId.eq(productId) : null;
     }
 
     /**
