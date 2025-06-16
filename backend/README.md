@@ -1,11 +1,13 @@
 # EXP-MISSION-Shoppingmall
 
+
 # 프로젝트 디렉토리 구조
 src/main/java/solid/backend
 
 - admin : 관리자 페이지 
   - product : 물품관리
   - dashboard : 대시보드 관리
+  - orders : 주문 관리
 - entity : 엔티티
   - Auth : 권한
   - Member : 회원
@@ -159,3 +161,45 @@ return : List< DashboardWeeklySalesAmtDto >
 
 조회 조건 및 테이블 조인 관계
 - 여행상품, 물품 기준 일별 총 금액 : order_state = 1인 주문을 제외한 orderProductAmount * productPrice + orderTravelAmount * travelPrice
+
+---
+## 주문 관리
+/admin/orders
+
+### Controller
+- OrdersController
+### Dto 
+- OrdersManagementDto ( 주문 관리 조회 )
+- OrdersSearchDto ( 주문 관리 검색 )
+### Repository
+- OrdersQueryRepository ( QueryDSL Repository )
+### Service
+- OrdersService ( Service Interface )
+- OrdersServiceImpl ( Service 구현 클래스 )
+---
+## 주문 관리
+## Return 데이터 값
+### [데이터 구조]
+- orderId: Integer,
+- travelName: String,
+- productName: String,
+- memberId: String,
+- paymentName: String,
+- orderTravelAmount: Integer,
+- orderProductAmount: Integer,
+- orderDt: LocalDate,
+- orderState: Integer
+
+### [전체 조회] 
+- HTTP Method: GET
+- HTTP URL: /admin/orders/list
+- Params: X
+- return: List\<OrdersManagementDto\>
+- 테이블 조인 관계: orders + orderTravels + orderProducts + travel + product
+
+### [검색]
+- HTTP Method: GET
+- HTTP URL: /admin/orders/search
+- RequestBody Param: OrdersSearchDto
+- return: List\<OrdersManagementDto\>
+- 테이블 조인 관계: orders + orderTravels + orderProducts + travel + product
