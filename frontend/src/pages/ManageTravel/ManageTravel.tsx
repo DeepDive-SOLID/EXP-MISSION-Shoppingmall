@@ -114,53 +114,41 @@ const ManageTravel = () => {
     try {
       setLoading(true);
 
-      if (!tempSearchTerm.trim()) {
-        // 검색어가 비어있으면 전체 목록 조회
-        const data = await travelApi.getTravelListAll();
-        const formattedData = data.map(item => ({
-          travel_id: item.travelId,
-          travel_name: item.travelName,
-          travel_price: item.travelPrice,
-          travel_amount: item.travelAmount,
-          travel_sold: item.travelSold,
-          travel_comment: item.travelComment,
-          travel_label: item.travelLabel,
-          travel_start_dt: item.travelStartDt,
-          travel_end_dt: item.travelEndDt,
-          travel_upload_dt: item.travelUploadDt,
-          travel_update_dt: item.travelUpdateDt,
-          travel_img: item.travelImg,
-        }));
-        setTravels(formattedData);
-        return;
-      }
-
-      // 검색어가 있을 때만 검색 API 호출
+      // 검색 파라미터 준비
       const searchParams: {
-        travelId?: number;
-        travelName?: string;
-      } = {};
+        travelId: number | null;
+        travelName: string | null;
+      } = {
+        travelId: null,
+        travelName: null,
+      };
 
       let travelId: number | undefined;
-      let id: number | undefined;
+      let parsedId: number | undefined;
 
-      switch (searchType) {
-        case "name":
-          searchParams.travelName = tempSearchTerm.trim();
-          break;
-        case "code":
-          travelId = parseInt(tempSearchTerm.trim());
-          if (!isNaN(travelId)) {
-            searchParams.travelId = travelId;
-          }
-          break;
-        case "all":
-          searchParams.travelName = tempSearchTerm.trim();
-          id = parseInt(tempSearchTerm.trim());
-          if (!isNaN(id)) {
-            searchParams.travelId = id;
-          }
-          break;
+      if (tempSearchTerm.trim()) {
+        switch (searchType) {
+          case "name":
+            searchParams.travelName = tempSearchTerm.trim();
+            break;
+          case "code":
+            travelId = parseInt(tempSearchTerm.trim());
+            if (!isNaN(travelId)) {
+              searchParams.travelId = travelId;
+            }
+            break;
+          case "all":
+            // 입력값이 숫자인지 확인
+            parsedId = parseInt(tempSearchTerm.trim());
+            if (!isNaN(parsedId)) {
+              // 숫자면 travelId로 검색
+              searchParams.travelId = parsedId;
+            } else {
+              // 문자열이면 travelName으로 검색
+              searchParams.travelName = tempSearchTerm.trim();
+            }
+            break;
+        }
       }
 
       console.log("검색 파라미터:", searchParams); // 디버깅용

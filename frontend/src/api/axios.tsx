@@ -66,9 +66,9 @@ export const travelApi = {
   },
 
   // 여행상품 검색
-  searchTravel: async (params?: {
-    travelId?: number;
-    travelName?: string;
+  searchTravel: async (params: {
+    travelId: number | null;
+    travelName: string | null;
   }): Promise<TravelListAllDto[]> => {
     try {
       const response = await api.post<TravelListAllDto[]>(
