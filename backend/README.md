@@ -31,6 +31,7 @@ src/main/java/solid/backend
 - dto(객체정보)
     - MemberListDto.java
     - MemberSearchDto.java
+    - MemberUpdDto.java
 - repository(jpa)
     - MemberQueryRepository.java
     - MemberRepository.java
@@ -50,6 +51,12 @@ src/main/java/solid/backend
 - HTTP request URL : /admin/member/search 
 - param : MemberSearchDto 
 - return : MemberListDto(List)
+
+[권한 변경]
+- HTTP method : PUT  
+- HTTP request URL : /admin/member/updateAuth
+- param : MemberUpdDto
+- return : ResponseEntity<String>
 ---
 ### 물품관리 : admin/product
 - controller(컨트롤러)
