@@ -61,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void updateProductDto(ProductUpdDto productDto) {
         Product product = productRepository.findById(productDto.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 여행 상품이 존재하지 않습니다: id = " + productDto.getProductId()));
+                .orElseThrow(() -> new IllegalArgumentException("해당 물품이 존재하지 않습니다: id = " + productDto.getProductId()));
         product.setProductId(productDto.getProductId());
         product.setProductName(productDto.getProductName());
         product.setProductPrice(productDto.getProductPrice());
@@ -77,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     @Transactional
-    public void deleteProductDto(int productId) {
+    public void deleteProductDto(Integer productId) {
         productRepository.deleteById(productId);
     }
 

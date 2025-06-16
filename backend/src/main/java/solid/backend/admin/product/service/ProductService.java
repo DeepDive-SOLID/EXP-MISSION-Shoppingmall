@@ -31,7 +31,7 @@ public interface ProductService {
      * 설명 : 물품 정보 삭제
      * @param productId
      */
-    void deleteProductDto(int productId);
+    void deleteProductDto(Integer productId);
 
     /**
      * 설명 : 물품 정보 검색

@@ -73,7 +73,7 @@ public class ProductController {
      */
     @ResponseBody
     @DeleteMapping("/deleteProductDto")
-    public ResponseEntity<String> deleteProductDto(@RequestBody int productId) {
+    public ResponseEntity<String> deleteProductDto(@RequestBody Integer productId) {
         try {
             productService.deleteProductDto(productId);
             return ResponseEntity.ok("SUCCESS");
