@@ -58,23 +58,23 @@ const ManageTravel = () => {
     const fetchTravels = async () => {
       try {
         setLoading(true);
-        const data = await travelApi.getTravelList();
+        const data = await travelApi.getTravelListAll();
         console.log("API 응답 데이터:", data); // 디버깅용 로그
 
         // API 응답 형식에 맞게 데이터 변환
         const formattedData = data.map(item => ({
-          travel_id: item.travelId || 0,
-          travel_name: item.travelName || "",
-          travel_price: item.travelPrice || 0,
-          travel_amount: item.travelAmount || 0,
-          travel_sold: item.travelSold || false,
-          travel_comment: item.travelComment || "",
-          travel_label: item.travelLabel || "",
-          travel_start_dt: item.travelStartDt || "",
-          travel_end_dt: item.travelEndDt || "",
-          travel_upload_dt: item.travelUploadDt || "",
-          travel_update_dt: item.travelUpdateDt || "",
-          travel_img: item.travelImg || "",
+          travel_id: item.travelId,
+          travel_name: item.travelName,
+          travel_price: item.travelPrice,
+          travel_amount: item.travelAmount,
+          travel_sold: item.travelSold,
+          travel_comment: item.travelComment,
+          travel_label: item.travelLabel,
+          travel_start_dt: item.travelStartDt,
+          travel_end_dt: item.travelEndDt,
+          travel_upload_dt: item.travelUploadDt,
+          travel_update_dt: item.travelUpdateDt,
+          travel_img: item.travelImg,
         }));
 
         console.log("변환된 데이터:", formattedData); // 디버깅용 로그
@@ -110,30 +110,81 @@ const ManageTravel = () => {
 
   const handleSearchSubmit = async () => {
     setCurrentPage(1);
-    // 검색어로 필터링
-    const filteredTravels = travels.filter(travel => {
-      if (!travel) return false;
-      if (tempSearchTerm === "") return true;
 
-      const searchTermLower = tempSearchTerm.toLowerCase();
-      const nameMatch = (travel.travel_name || "")
-        .toLowerCase()
-        .includes(searchTermLower);
-      const codeMatch = (travel.travel_id || 0)
-        .toString()
-        .includes(tempSearchTerm);
+    try {
+      setLoading(true);
+
+      if (!tempSearchTerm.trim()) {
+        // 검색어가 비어있으면 전체 목록 조회
+        const data = await travelApi.getTravelListAll();
+        const formattedData = data.map(item => ({
+          travel_id: item.travelId,
+          travel_name: item.travelName,
+          travel_price: item.travelPrice,
+          travel_amount: item.travelAmount,
+          travel_sold: item.travelSold,
+          travel_comment: item.travelComment,
+          travel_label: item.travelLabel,
+          travel_start_dt: item.travelStartDt,
+          travel_end_dt: item.travelEndDt,
+          travel_upload_dt: item.travelUploadDt,
+          travel_update_dt: item.travelUpdateDt,
+          travel_img: item.travelImg,
+        }));
+        setTravels(formattedData);
+        return;
+      }
+
+      // 검색어가 있을 때만 검색 API 호출
+      const searchParams: {
+        travelId?: number;
+        travelName?: string;
+      } = {};
+
+      let travelId: number | undefined;
+      let id: number | undefined;
 
       switch (searchType) {
         case "name":
-          return nameMatch;
+          searchParams.travelName = tempSearchTerm.trim();
+          break;
         case "code":
-          return codeMatch;
+          travelId = parseInt(tempSearchTerm.trim());
+          if (!isNaN(travelId)) {
+            searchParams.travelId = travelId;
+          }
+          break;
         case "all":
-        default:
-          return nameMatch || codeMatch;
+          searchParams.travelName = tempSearchTerm.trim();
+          id = parseInt(tempSearchTerm.trim());
+          if (!isNaN(id)) {
+            searchParams.travelId = id;
+          }
+          break;
       }
-    });
-    setTravels(filteredTravels);
+
+      console.log("검색 파라미터:", searchParams); // 디버깅용
+      const data = await travelApi.searchTravel(searchParams);
+      const formattedData = data.map(item => ({
+        travel_id: item.travelId,
+        travel_name: item.travelName,
+        travel_price: item.travelPrice,
+        travel_amount: item.travelAmount,
+        travel_sold: item.travelSold,
+        travel_comment: "",
+        travel_label: "",
+        travel_start_dt: "",
+        travel_end_dt: "",
+        travel_upload_dt: "",
+        travel_update_dt: "",
+        travel_img: "",
+      }));
+      setTravels(formattedData);
+    } catch (error) {
+      console.error("여행상품 검색 중 오류 발생:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -214,19 +265,21 @@ const ManageTravel = () => {
       const currentTravel = travels.find(t => t.travel_id === id);
       if (!currentTravel) return;
 
+      // 전체 리스트에서 상세 정보 가져오기
+      const allTravels = await travelApi.getTravelListAll();
+      const target = allTravels.find(item => item.travelId === id);
+      if (!target) {
+        alert("해당 상품의 상세 정보를 찾을 수 없습니다.");
+        return;
+      }
+
       // 업데이트할 데이터 준비
       const travelData = {
-        travelId: id,
+        ...target,
         travelName: editFormData.travel_name,
         travelPrice: parseInt(editFormData.travel_price),
         travelAmount: parseInt(editFormData.travel_amount),
-        travelSold: currentTravel.travel_sold,
-        travelComment: currentTravel.travel_comment,
-        travelLabel: currentTravel.travel_label,
-        travelStartDt: currentTravel.travel_start_dt,
-        travelEndDt: currentTravel.travel_end_dt,
         travelUpdateDt: getToday(),
-        travelImg: currentTravel.travel_img,
       };
 
       console.log("여행상품 수정 요청 데이터:", travelData);
@@ -235,20 +288,20 @@ const ManageTravel = () => {
       await travelApi.updateTravel(id, travelData);
 
       // 여행상품 목록 다시 불러오기
-      const updatedList = await travelApi.getTravelList();
+      const updatedList = await travelApi.getTravelListAll();
       const formattedData = updatedList.map(item => ({
-        travel_id: item.travelId || 0,
-        travel_name: item.travelName || "",
-        travel_price: item.travelPrice || 0,
-        travel_amount: item.travelAmount || 0,
-        travel_sold: item.travelSold || false,
-        travel_comment: item.travelComment || "",
-        travel_label: item.travelLabel || "",
-        travel_start_dt: item.travelStartDt || "",
-        travel_end_dt: item.travelEndDt || "",
-        travel_upload_dt: item.travelUploadDt || "",
-        travel_update_dt: item.travelUpdateDt || "",
-        travel_img: item.travelImg || "",
+        travel_id: item.travelId,
+        travel_name: item.travelName,
+        travel_price: item.travelPrice,
+        travel_amount: item.travelAmount,
+        travel_sold: item.travelSold,
+        travel_comment: item.travelComment,
+        travel_label: item.travelLabel,
+        travel_start_dt: item.travelStartDt,
+        travel_end_dt: item.travelEndDt,
+        travel_upload_dt: item.travelUploadDt,
+        travel_update_dt: item.travelUpdateDt,
+        travel_img: item.travelImg,
       }));
       setTravels(formattedData);
 
@@ -359,20 +412,20 @@ const ManageTravel = () => {
       console.log("여행상품 추가 응답:", createdTravel);
 
       // 여행상품 목록 다시 불러오기
-      const updatedList = await travelApi.getTravelList();
+      const updatedList = await travelApi.getTravelListAll();
       const formattedData = updatedList.map(item => ({
-        travel_id: item.travelId || 0,
-        travel_name: item.travelName || "",
-        travel_price: item.travelPrice || 0,
-        travel_amount: item.travelAmount || 0,
-        travel_sold: item.travelSold || false,
-        travel_comment: item.travelComment || "",
-        travel_label: item.travelLabel || "",
-        travel_start_dt: item.travelStartDt || "",
-        travel_end_dt: item.travelEndDt || "",
-        travel_upload_dt: item.travelUploadDt || "",
-        travel_update_dt: item.travelUpdateDt || "",
-        travel_img: item.travelImg || "",
+        travel_id: item.travelId,
+        travel_name: item.travelName,
+        travel_price: item.travelPrice,
+        travel_amount: item.travelAmount,
+        travel_sold: item.travelSold,
+        travel_comment: item.travelComment,
+        travel_label: item.travelLabel,
+        travel_start_dt: item.travelStartDt,
+        travel_end_dt: item.travelEndDt,
+        travel_upload_dt: item.travelUploadDt,
+        travel_update_dt: item.travelUpdateDt,
+        travel_img: item.travelImg,
       }));
       setTravels(formattedData);
 

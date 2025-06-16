@@ -35,11 +35,18 @@ api.interceptors.response.use(
 
 // 사용자 관리 API
 export const memberApi = {
-  getMemberList: async (params?: {
+  // 전체 사용자 목록 조회
+  getMemberList: async (): Promise<User[]> => {
+    const response = await api.get<User[]>("/admin/member");
+    return response.data;
+  },
+
+  // 사용자 검색
+  searchMember: async (params?: {
     memberId?: string;
     memberName?: string;
   }): Promise<User[]> => {
-    const response = await api.get<User[]>("/admin/member/list", { params });
+    const response = await api.post<User[]>("/admin/member/search", params);
     return response.data;
   },
 };
@@ -54,6 +61,23 @@ export const travelApi = {
       return response.data;
     } catch (error) {
       console.error("API 응답 에러:", error);
+      throw error;
+    }
+  },
+
+  // 여행상품 검색
+  searchTravel: async (params?: {
+    travelId?: number;
+    travelName?: string;
+  }): Promise<TravelListAllDto[]> => {
+    try {
+      const response = await api.post<TravelListAllDto[]>(
+        "/admin/travel/search",
+        params,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("여행상품 검색 중 오류 발생:", error);
       throw error;
     }
   },

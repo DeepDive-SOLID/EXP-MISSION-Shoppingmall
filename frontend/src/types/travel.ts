@@ -39,13 +39,6 @@ export interface TravelListDto {
   travelPrice: number;
   travelAmount: number;
   travelSold: boolean;
-  travelComment: string;
-  travelLabel: string;
-  travelStartDt: string;
-  travelEndDt: string;
-  travelUploadDt: string;
-  travelUpdateDt: string;
-  travelImg: string;
 }
 
 export interface TravelListAllDto {

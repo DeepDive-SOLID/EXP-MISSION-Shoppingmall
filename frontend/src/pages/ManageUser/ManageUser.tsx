@@ -15,24 +15,10 @@ const ManageUser = () => {
   const itemsPerPage = 10;
 
   // API에서 사용자 데이터 가져오기
-  const fetchUsers = async (
-    searchTypeParam?: typeof searchType,
-    searchTermParam?: string,
-  ) => {
+  const fetchUsers = async () => {
     try {
       setLoading(true);
-      const params: { memberId?: string; memberName?: string } = {};
-      if (searchTypeParam && searchTermParam) {
-        if (searchTypeParam === "id") params.memberId = searchTermParam;
-        else if (searchTypeParam === "name")
-          params.memberName = searchTermParam;
-        else if (searchTypeParam === "all") {
-          // all일 때는 둘 다 넣을 수 있음
-          params.memberId = searchTermParam;
-          params.memberName = searchTermParam;
-        }
-      }
-      const data = await memberApi.getMemberList(params);
+      const data = await memberApi.getMemberList();
       setUsers(data);
     } catch (error) {
       console.error("사용자 데이터를 가져오는 중 오류 발생:", error);
@@ -49,9 +35,46 @@ const ManageUser = () => {
     setTempSearchTerm(e.target.value);
   };
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = async () => {
     setCurrentPage(1);
-    fetchUsers(searchType, tempSearchTerm);
+
+    try {
+      setLoading(true);
+
+      if (!tempSearchTerm.trim()) {
+        // 검색어가 비어있으면 전체 목록 조회
+        const data = await memberApi.getMemberList();
+        setUsers(data);
+        return;
+      }
+
+      // 검색어가 있을 때만 검색 API 호출
+      const searchParams = {
+        memberId: "", // 기본값으로 빈 문자열
+        memberName: "", // 기본값으로 빈 문자열
+      };
+
+      switch (searchType) {
+        case "id":
+          searchParams.memberId = tempSearchTerm.trim();
+          break;
+        case "name":
+          searchParams.memberName = tempSearchTerm.trim();
+          break;
+        case "all":
+          searchParams.memberId = tempSearchTerm.trim();
+          searchParams.memberName = tempSearchTerm.trim();
+          break;
+      }
+
+      console.log("검색 파라미터:", searchParams); // 디버깅용
+      const data = await memberApi.searchMember(searchParams);
+      setUsers(data);
+    } catch (error) {
+      console.error("사용자 검색 중 오류 발생:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -63,7 +86,6 @@ const ManageUser = () => {
   const handleSearchTypeChange = (type: UserSearchType) => {
     setSearchType(type);
     setCurrentPage(1);
-    fetchUsers(type, tempSearchTerm);
   };
 
   // 검색어로 필터링
