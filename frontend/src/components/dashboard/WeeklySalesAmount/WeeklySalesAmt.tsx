@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   Chart as ChartJS,
   LineElement,
@@ -9,6 +11,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import styles from "./WeeklySalesAmt.module.scss";
+import { DashboardWeeklySalesAmtDto } from "../../../types/dashboard";
 
 ChartJS.register(
   LineElement,
@@ -20,12 +23,35 @@ ChartJS.register(
 );
 
 const WeeklySalesChart = () => {
-  const data = {
-    labels: ["1일", "2일", "3일", "4일", "5일", "6일", "7일"],
+  const [weeklyData, setWeeklyData] = useState<DashboardWeeklySalesAmtDto[]>(
+    [],
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get<DashboardWeeklySalesAmtDto[]>(
+          "/api/admin/dashboard/getDashboardWeeklySalesAmtDto",
+        );
+        console.log("Weekly Sales 응답:", res.data);
+        setWeeklyData(res.data);
+      } catch (err) {
+        console.error("주간 매출 통계 로딩 실패:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const chartData = {
+    labels: weeklyData.map(item => {
+      const date = new Date(item.date);
+      return `${date.getDate()}일`;
+    }),
     datasets: [
       {
         label: "일별 거래 금액",
-        data: [20000, 30000, 18000, 25000, 40000, 32000, 37000],
+        data: weeklyData.map(item => item.amount),
         fill: false,
         borderColor: "#0085FF",
         tension: 0.3,
@@ -44,8 +70,8 @@ const WeeklySalesChart = () => {
     scales: {
       x: {
         ticks: {
-          autoSkip: false, // 기본은 true — false면 모든 라벨 표시
-          maxRotation: 0, // 라벨 회전 안 함
+          autoSkip: false,
+          maxRotation: 0,
           minRotation: 0,
           padding: 4,
         },
@@ -67,7 +93,11 @@ const WeeklySalesChart = () => {
     <div className={styles.container}>
       <h2 className={styles.title}>📈 주간 거래 금액 통계</h2>
       <div className={styles.chartWrapper}>
-        <Line data={data} options={options} />
+        {weeklyData.length > 0 ? (
+          <Line data={chartData} options={options} />
+        ) : (
+          <p>📡 데이터를 불러오는 중...</p>
+        )}
       </div>
     </div>
   );
