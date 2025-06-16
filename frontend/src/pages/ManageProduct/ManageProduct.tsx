@@ -18,13 +18,9 @@ import {
   ProductListDto,
 } from "../../types/product";
 import { getToday } from "../../utils/formatDate";
-import carrier from "../../assets/images/carrier.jpg";
-import pilow from "../../assets/images/pilow.jpg";
-import travelkit from "../../assets/images/travelkit.jpg";
-import snorkel from "../../assets/images/snorkel.jpg";
-import umbrella from "../../assets/images/umbrella.jpg";
+import { productImages } from "../../utils/productImg";
 
-// API 응답 데이터를 Product 타입으로 변환하는 함수
+// API 응답 데이터를 Product 타입으로 변환하는 유틸리티 함수
 const transformApiProduct = (item: ProductListDto): Product => ({
   product_id: item.productId,
   product_name: item.productName,
@@ -36,32 +32,26 @@ const transformApiProduct = (item: ProductListDto): Product => ({
   product_img: "", // 기본값으로 빈 문자열 사용
 });
 
-// 이미지 목록
-const productImages = [
-  { id: "carrier", src: carrier },
-  { id: "pilow", src: pilow },
-  { id: "travelkit", src: travelkit },
-  { id: "snorkel", src: snorkel },
-  { id: "umbrella", src: umbrella },
-];
-
 const ManageProduct = () => {
-  const [tempSearchTerm, setTempSearchTerm] = useState("");
-  const [searchType, setSearchType] = useState<ProductSearchType>("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  // 상태 관리
+  const [tempSearchTerm, setTempSearchTerm] = useState(""); // 검색어 임시 저장
+  const [searchType, setSearchType] = useState<ProductSearchType>("all"); // 검색 타입 (전체/물품명/물품코드)
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
+  const [isModalOpen, setIsModalOpen] = useState(false); // 물품 추가 모달 상태
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 삭제 확인 모달 상태
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null); // 삭제할 물품 정보
+  const [products, setProducts] = useState<Product[]>([]); // 전체 물품 목록
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]); // 필터링된 물품 목록
+  const [loading, setLoading] = useState(true); // 로딩 상태
+  const [editingId, setEditingId] = useState<number | null>(null); // 수정 중인 물품 ID
   const [editFormData, setEditFormData] = useState({
+    // 수정 폼 데이터
     product_name: "",
     product_price: "",
     product_amount: "",
   });
   const [newProduct, setNewProduct] = useState({
+    // 새 물품 데이터
     product_name: "",
     product_price: "",
     product_amount: "",
@@ -70,12 +60,14 @@ const ManageProduct = () => {
     product_upload_dt: getToday(),
     product_update_dt: getToday(),
   });
-  const itemsPerPage = 10;
+  const itemsPerPage = 10; // 페이지당 표시할 아이템 수
 
+  // 검색어 입력 처리
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTempSearchTerm(e.target.value);
   };
 
+  // 물품 검색 실행
   const handleSearchSubmit = async () => {
     try {
       setLoading(true);
@@ -126,12 +118,14 @@ const ManageProduct = () => {
     }
   };
 
+  // Enter 키 입력 처리
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearchSubmit();
     }
   };
 
+  // 검색 타입 변경 처리
   const handleSearchTypeChange = (type: ProductSearchType) => {
     setSearchType(type);
     setCurrentPage(1);
@@ -140,7 +134,7 @@ const ManageProduct = () => {
     }
   };
 
-  // API에서 물품 데이터 가져오기
+  // 초기 물품 데이터 로드
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -168,6 +162,7 @@ const ManageProduct = () => {
     fetchProducts();
   }, []);
 
+  // 품절 상태 토글 처리
   const handleToggleSoldOut = async (id: number) => {
     try {
       const product = products.find(p => p.product_id === id);
@@ -196,6 +191,7 @@ const ManageProduct = () => {
     }
   };
 
+  // 모달 관련 핸들러
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -213,6 +209,7 @@ const ManageProduct = () => {
     });
   };
 
+  // 입력 필드 변경 처리
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setNewProduct(prev => ({
@@ -221,6 +218,7 @@ const ManageProduct = () => {
     }));
   };
 
+  // 이미지 선택 처리
   const handleImageSelect = (imageId: string) => {
     setNewProduct(prev => ({
       ...prev,
@@ -228,6 +226,7 @@ const ManageProduct = () => {
     }));
   };
 
+  // 새 물품 추가 처리
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -250,6 +249,7 @@ const ManageProduct = () => {
     }
   };
 
+  // 물품 목록 새로고침
   const refreshProductList = async () => {
     try {
       const response = await productApi.getProductList();
@@ -263,7 +263,7 @@ const ManageProduct = () => {
     }
   };
 
-  // 수정 모드 시작
+  // 수정 관련 핸들러
   const handleEditClick = (product: Product) => {
     setEditingId(product.product_id);
     setEditFormData({
@@ -273,7 +273,6 @@ const ManageProduct = () => {
     });
   };
 
-  // 수정 중인 입력값 변경 처리
   const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditFormData(prev => ({
@@ -282,12 +281,10 @@ const ManageProduct = () => {
     }));
   };
 
-  // 수정 취소
   const handleCancelEdit = () => {
     setEditingId(null);
   };
 
-  // 수정 저장
   const handleSaveEdit = async (id: number) => {
     try {
       const currentProduct = products.find(p => p.product_id === id);
@@ -310,19 +307,17 @@ const ManageProduct = () => {
     }
   };
 
-  // 삭제 모달 열기
+  // 삭제 관련 핸들러
   const handleDeleteClick = (product: Product) => {
     setProductToDelete(product);
     setIsDeleteModalOpen(true);
   };
 
-  // 삭제 모달 닫기
   const handleCloseDeleteModal = () => {
     setIsDeleteModalOpen(false);
     setProductToDelete(null);
   };
 
-  // 삭제 확인
   const handleConfirmDelete = async () => {
     if (!productToDelete) return;
 
@@ -336,9 +331,7 @@ const ManageProduct = () => {
     }
   };
 
-  // 삭제 성공 처리 함수
   const handleDeleteSuccess = (productId: number) => {
-    // products와 filteredProducts 모두 업데이트
     setProducts(prevProducts =>
       prevProducts.filter(p => p.product_id !== productId),
     );
@@ -348,7 +341,7 @@ const ManageProduct = () => {
     console.log(`물품 ID ${productId} 삭제 성공`);
   };
 
-  // 페이지네이션 계산
+  // 페이지네이션 관련 로직
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -357,12 +350,7 @@ const ManageProduct = () => {
     indexOfLastItem,
   );
 
-  // 현재 표시되는 아이템 디버깅
-  console.log("현재 페이지:", currentPage);
-  console.log("페이지당 아이템 수:", itemsPerPage);
-  console.log("현재 표시되는 아이템:", currentItems);
-
-  // 페이지 변경 핸들러
+  // 페이지 변경 처리
   const handlePageChange = (pageNumber: number) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);

@@ -7,12 +7,13 @@ import { memberApi } from "../../api/axios";
 import { User, UserSearchType } from "../../types/user";
 
 const ManageUser = () => {
-  const [tempSearchTerm, setTempSearchTerm] = useState("");
-  const [searchType, setSearchType] = useState<UserSearchType>("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState<User[]>([]);
-  const itemsPerPage = 10;
+  // 상태 관리
+  const [tempSearchTerm, setTempSearchTerm] = useState(""); // 검색어 임시 저장
+  const [searchType, setSearchType] = useState<UserSearchType>("all"); // 검색 타입 (전체/아이디/이름)
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
+  const [loading, setLoading] = useState(true); // 로딩 상태
+  const [users, setUsers] = useState<User[]>([]); // 사용자 목록
+  const itemsPerPage = 10; // 페이지당 표시할 사용자 수
 
   // API에서 사용자 데이터 가져오기
   const fetchUsers = async () => {
@@ -27,14 +28,17 @@ const ManageUser = () => {
     }
   };
 
+  // 컴포넌트 마운트 시 사용자 데이터 로드
   useEffect(() => {
     fetchUsers();
   }, []);
 
+  // 검색어 입력 처리
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTempSearchTerm(e.target.value);
   };
 
+  // 사용자 검색 실행
   const handleSearchSubmit = async () => {
     setCurrentPage(1);
 
@@ -69,24 +73,26 @@ const ManageUser = () => {
     }
   };
 
+  // Enter 키 입력 처리
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearchSubmit();
     }
   };
 
+  // 검색 타입 변경 처리
   const handleSearchTypeChange = (type: UserSearchType) => {
     setSearchType(type);
     setCurrentPage(1);
   };
 
-  // 페이지네이션 계산
+  // 페이지네이션 관련 로직
   const totalPages = Math.ceil(users.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
 
-  // 페이지 변경 핸들러
+  // 페이지 변경 처리
   const handlePageChange = (pageNumber: number) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -117,12 +123,15 @@ const ManageUser = () => {
       <div className={styles.content}>
         <Sidebar />
         <div className={styles.mainContent}>
+          {/* 페이지 헤더 */}
           <div className={styles.pageHeader}>
             <h1>사용자 관리</h1>
           </div>
 
+          {/* 검색 섹션 */}
           <div className={styles.filterSection}>
             <div className={styles.searchContainer}>
+              {/* 검색 타입 버튼 */}
               <div className={styles.searchTypeButtons}>
                 <button
                   className={`${styles.searchTypeButton} ${searchType === "all" ? styles.active : ""}`}
@@ -143,6 +152,7 @@ const ManageUser = () => {
                   이름
                 </button>
               </div>
+              {/* 검색 입력창 */}
               <div className={styles.searchBox}>
                 <input
                   type="text"
@@ -162,8 +172,10 @@ const ManageUser = () => {
             </div>
           </div>
 
+          {/* 사용자 목록 테이블 */}
           <div className={styles.tableContainer}>
             {loading ? (
+              // 로딩 상태 표시
               <div className={styles.loadingContainer}>
                 <div className={styles.loadingSpinner}>
                   <div></div>
@@ -176,6 +188,7 @@ const ManageUser = () => {
                 </p>
               </div>
             ) : (
+              // 사용자 목록 테이블
               <div className={styles.tableWrapper}>
                 <table className={styles.userTable}>
                   <thead>
@@ -211,6 +224,7 @@ const ManageUser = () => {
             )}
           </div>
 
+          {/* 페이지네이션 */}
           {totalPages > 0 && (
             <div className={styles.pagination}>
               <button

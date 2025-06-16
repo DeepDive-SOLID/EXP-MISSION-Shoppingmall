@@ -11,12 +11,13 @@ import {
 import { Order, OrderSearchType } from "../../types/order";
 
 const ManageOrder = () => {
-  const [tempSearchTerm, setTempSearchTerm] = useState("");
-  const [searchType, setSearchType] = useState<OrderSearchType>("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const itemsPerPage = 10;
+  // 상태 관리
+  const [tempSearchTerm, setTempSearchTerm] = useState(""); // 검색어 임시 저장
+  const [searchType, setSearchType] = useState<OrderSearchType>("all"); // 검색 타입 (전체/주문번호/주문날짜 등)
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
+  const [orders, setOrders] = useState<Order[]>([]); // 주문 목록
+  const [loading, setLoading] = useState(true); // 로딩 상태
+  const itemsPerPage = 10; // 페이지당 표시할 주문 수
 
   // API에서 주문 데이터 가져오기
   useEffect(() => {
@@ -35,59 +36,48 @@ const ManageOrder = () => {
     fetchOrders();
   }, []);
 
+  // 검색어 입력 처리
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTempSearchTerm(e.target.value);
   };
 
+  // 주문 검색 실행
   const handleSearchSubmit = async () => {
     setCurrentPage(1);
-
-    if (tempSearchTerm === "") {
-      // 검색어가 비어있으면 전체 목록 조회
-      try {
-        setLoading(true);
-        const response = await orderApi.getOrderList();
-        setOrders(response);
-      } catch (error) {
-        console.error("주문 데이터를 가져오는 중 오류 발생:", error);
-      } finally {
-        setLoading(false);
-      }
-      return;
-    }
-
     try {
       setLoading(true);
-      const response = await orderApi.searchOrder(searchType, tempSearchTerm);
+      const response =
+        tempSearchTerm === ""
+          ? await orderApi.getOrderList()
+          : await orderApi.searchOrder(searchType, tempSearchTerm);
       setOrders(response);
     } catch (error) {
-      console.error("주문 검색 중 오류 발생:", error);
+      console.error("주문 데이터를 가져오는 중 오류 발생:", error);
     } finally {
       setLoading(false);
     }
   };
 
+  // Enter 키 입력 처리
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearchSubmit();
     }
   };
 
+  // 검색 타입 변경 처리
   const handleSearchTypeChange = (type: OrderSearchType) => {
     setSearchType(type);
     setCurrentPage(1);
   };
 
-  // 검색어로 필터링 (클라이언트 측 필터링은 제거)
-  const filteredOrders = orders;
-
-  // 페이지네이션 계산
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  // 페이지네이션 관련 로직
+  const totalPages = Math.ceil(orders.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredOrders.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = orders.slice(indexOfFirstItem, indexOfLastItem);
 
-  // 페이지 변경 핸들러
+  // 페이지 변경 처리
   const handlePageChange = (pageNumber: number) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -118,12 +108,15 @@ const ManageOrder = () => {
       <div className={styles.content}>
         <Sidebar />
         <div className={styles.mainContent}>
+          {/* 페이지 헤더 */}
           <div className={styles.pageHeader}>
             <h1>주문 관리</h1>
           </div>
 
+          {/* 검색 섹션 */}
           <div className={styles.filterSection}>
             <div className={styles.searchContainer}>
+              {/* 검색 타입 버튼 - 첫 번째 줄 */}
               <div className={styles.searchTypeButtons}>
                 <button
                   className={`${styles.searchTypeButton} ${searchType === "all" ? styles.active : ""}`}
@@ -150,6 +143,7 @@ const ManageOrder = () => {
                   주문상태
                 </button>
               </div>
+              {/* 검색 타입 버튼 - 두 번째 줄 */}
               <div className={styles.searchTypeButtons}>
                 <button
                   className={`${styles.searchTypeButton} ${searchType === "memberId" ? styles.active : ""}`}
@@ -176,6 +170,7 @@ const ManageOrder = () => {
                   수량
                 </button>
               </div>
+              {/* 검색 입력창 */}
               <div className={styles.searchBox}>
                 <input
                   type="text"
@@ -195,8 +190,10 @@ const ManageOrder = () => {
             </div>
           </div>
 
+          {/* 주문 목록 테이블 */}
           <div className={styles.tableContainer}>
             {loading ? (
+              // 로딩 상태 표시
               <div className={styles.loadingContainer}>
                 <div className={styles.loadingSpinner}>
                   <div></div>
@@ -209,6 +206,7 @@ const ManageOrder = () => {
                 </p>
               </div>
             ) : (
+              // 주문 목록 테이블
               <div className={styles.tableWrapper}>
                 <table className={styles.orderTable}>
                   <thead>
@@ -253,6 +251,7 @@ const ManageOrder = () => {
             )}
           </div>
 
+          {/* 페이지네이션 */}
           {totalPages > 0 && (
             <div className={styles.pagination}>
               <button

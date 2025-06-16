@@ -30,20 +30,32 @@ import {
 } from "../../utils/travelUtils";
 
 const ManageTravel = () => {
+  // 검색 관련 상태
   const [tempSearchTerm, setTempSearchTerm] = useState("");
   const [searchType, setSearchType] = useState<TravelSearchType>("all");
+
+  // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // 모달 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [travelToDelete, setTravelToDelete] = useState<Travel | null>(null);
+
+  // 여행상품 데이터 상태
   const [travels, setTravels] = useState<Travel[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // 수정 관련 상태
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState<TravelFormData>({
     travel_name: "",
     travel_price: "",
     travel_amount: "",
   });
+
+  // 새 여행상품 입력 상태
   const [newTravel, setNewTravel] = useState<NewTravelInput>({
     travel_name: "",
     travel_price: "",
@@ -57,7 +69,6 @@ const ManageTravel = () => {
     travel_upload_dt: getToday(),
     travel_update_dt: getToday(),
   });
-  const itemsPerPage = 10;
 
   // API에서 여행상품 데이터 가져오기
   useEffect(() => {
@@ -139,20 +150,7 @@ const ManageTravel = () => {
       // 5. 목록 새로고침
       const updatedList: TravelListAllDto[] =
         await travelApi.getTravelListAll();
-      const formattedData = updatedList.map((item: TravelListAllDto) => ({
-        travel_id: item.travelId,
-        travel_name: item.travelName,
-        travel_price: item.travelPrice,
-        travel_amount: item.travelAmount,
-        travel_sold: item.travelSold,
-        travel_comment: item.travelComment,
-        travel_label: item.travelLabel,
-        travel_start_dt: item.travelStartDt,
-        travel_end_dt: item.travelEndDt,
-        travel_upload_dt: item.travelUploadDt,
-        travel_update_dt: item.travelUpdateDt,
-        travel_img: item.travelImg,
-      }));
+      const formattedData = updatedList.map(transformApiTravel);
       setTravels(formattedData);
     } catch (error) {
       console.error("품절 상태 변경 중 오류 발생:", error);
@@ -207,27 +205,12 @@ const ManageTravel = () => {
         travelUpdateDt: getToday(),
       };
 
-      console.log("여행상품 수정 요청 데이터:", travelData);
-
       // API 호출하여 데이터 업데이트
       await travelApi.updateTravel(id, travelData);
 
       // 여행상품 목록 다시 불러오기
       const updatedList = await travelApi.getTravelListAll();
-      const formattedData = updatedList.map(item => ({
-        travel_id: item.travelId,
-        travel_name: item.travelName,
-        travel_price: item.travelPrice,
-        travel_amount: item.travelAmount,
-        travel_sold: item.travelSold,
-        travel_comment: item.travelComment,
-        travel_label: item.travelLabel,
-        travel_start_dt: item.travelStartDt,
-        travel_end_dt: item.travelEndDt,
-        travel_upload_dt: item.travelUploadDt,
-        travel_update_dt: item.travelUpdateDt,
-        travel_img: item.travelImg,
-      }));
+      const formattedData = updatedList.map(transformApiTravel);
       setTravels(formattedData);
 
       setEditingId(null);
@@ -260,7 +243,6 @@ const ManageTravel = () => {
       setTravels(prevTravels =>
         prevTravels.filter(t => t.travel_id !== travelToDelete.travel_id),
       );
-      console.log(`여행상품 ID ${travelToDelete.travel_id} 삭제 성공`);
 
       // 모달 닫기
       handleCloseDeleteModal();
@@ -330,28 +312,12 @@ const ManageTravel = () => {
         travelUpdateDt: newTravel.travel_update_dt,
       };
 
-      console.log("여행상품 추가 요청 데이터:", travelData);
-
       // API 호출하여 새 여행상품 추가
-      const createdTravel = await travelApi.createTravel(travelData);
-      console.log("여행상품 추가 응답:", createdTravel);
+      await travelApi.createTravel(travelData);
 
       // 여행상품 목록 다시 불러오기
       const updatedList = await travelApi.getTravelListAll();
-      const formattedData = updatedList.map(item => ({
-        travel_id: item.travelId,
-        travel_name: item.travelName,
-        travel_price: item.travelPrice,
-        travel_amount: item.travelAmount,
-        travel_sold: item.travelSold,
-        travel_comment: item.travelComment,
-        travel_label: item.travelLabel,
-        travel_start_dt: item.travelStartDt,
-        travel_end_dt: item.travelEndDt,
-        travel_upload_dt: item.travelUploadDt,
-        travel_update_dt: item.travelUpdateDt,
-        travel_img: item.travelImg,
-      }));
+      const formattedData = updatedList.map(transformApiTravel);
       setTravels(formattedData);
 
       // 모달 닫기

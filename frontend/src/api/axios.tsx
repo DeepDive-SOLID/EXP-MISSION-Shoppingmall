@@ -53,6 +53,7 @@ export const memberApi = {
   },
 };
 
+// 여행상품 관리 API
 export const travelApi = {
   getTravelList: async (): Promise<TravelListDto[]> => {
     try {
@@ -84,6 +85,7 @@ export const travelApi = {
     }
   },
 
+  // 여행상품 전체 조회
   getTravelListAll: async (): Promise<TravelListAllDto[]> => {
     try {
       const response = await api.get<TravelListAllDto[]>(
@@ -96,6 +98,7 @@ export const travelApi = {
     }
   },
 
+  // 여행상품 상태 업데이트
   updateTravelStatus: async (
     travelId: number,
     isSold: boolean,
@@ -103,6 +106,7 @@ export const travelApi = {
     await api.put(`/admin/travel/updateStatus/${travelId}`, { isSold });
   },
 
+  // 여행상품 수정
   updateTravel: async (
     travelId: number,
     data: {
@@ -123,6 +127,7 @@ export const travelApi = {
     await api.put("/admin/travel/updateTravel", data);
   },
 
+  // 여행상품 삭제
   deleteTravel: async (travelId: number): Promise<void> => {
     await api.delete("/admin/travel/deleteTravel", {
       headers: {
@@ -132,6 +137,7 @@ export const travelApi = {
     });
   },
 
+  // 여행상품 추가
   createTravel: async (data: {
     travelName: string;
     travelPrice: number;

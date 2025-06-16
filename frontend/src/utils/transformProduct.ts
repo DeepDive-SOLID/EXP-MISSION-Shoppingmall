@@ -1,6 +1,7 @@
 import { ApiProduct } from "../types/product";
 import { Product } from "../types/product";
 
+// API 응답 데이터를 Product 타입으로 변환하는 함수
 export const transformApiProduct = (item: ApiProduct): Product => ({
   product_id: item.productId,
   product_name: item.productName,
