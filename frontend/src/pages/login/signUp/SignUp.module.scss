@@ -1,3 +1,11 @@
+.pageWrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f8fa;
+}
+
 .signUpContainer {
   background: #fff;
   border-radius: 18px;
@@ -21,6 +29,7 @@
   font-weight: 400;
   margin-bottom: 2rem;
   color: #4b5563;
+  text-align: center;
 }
 
 .form {
@@ -195,11 +204,4 @@
   color: #ef4444;
   font-size: 0.85rem;
   margin-left: 2px;
-}
-
-.pageWrapper {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }

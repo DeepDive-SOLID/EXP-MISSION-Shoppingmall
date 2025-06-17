@@ -9,6 +9,7 @@ import ManageTravel from "./pages/admin/manageTravel/ManageTravel";
 import ManageUser from "./pages/admin/manageUser/ManageUser";
 import ManageOrder from "./pages/admin/manageOrder/ManageOrder";
 import SignUp from "./pages/login/signUp/SignUp";
+import SignIn from "./pages/login/signIn/SignIn";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: "signup",
         element: <SignUp />,
+      },
+      {
+        path: "login",
+        element: <SignIn />,
       },
       {
         path: "dashboard",
