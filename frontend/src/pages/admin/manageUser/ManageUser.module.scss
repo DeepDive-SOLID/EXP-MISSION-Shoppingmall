@@ -282,6 +282,9 @@
 }
 
 .roleSelect {
+  margin: 0 auto;
+  display: block;
+  text-align: center;
   padding: 6px 12px;
   border-radius: 4px;
   font-size: 12px;
@@ -296,33 +299,45 @@
   background-size: 12px;
   padding-right: 28px;
   min-width: 100px;
-  text-align: center;
   height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding-left: 7px;
 
+  &.adminRole {
+    color: #4f46e5;
+  }
+  &.guestRole {
+    color: #64748b;
+  }
+  &.travelAdminRole {
+    color: #16a34a;
+  }
+
   &:focus {
     outline: none;
   }
 
   option {
-    text-align: center;
+    text-align: left;
+    padding-left: 12px;
     background-color: white;
+    color: #334155;
   }
+}
 
-  &.adminRole {
-    color: #4f46e5;
-  }
-
-  &.guestRole {
-    color: #64748b;
-  }
-
-  &.travelAdminRole {
-    color: #16a34a;
-  }
+.roleSelect.adminRole {
+  background-color: #e0e7ff;
+  color: #4f46e5;
+}
+.roleSelect.travelAdminRole {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+.roleSelect.guestRole {
+  background-color: #f1f5f9;
+  color: #64748b;
 }
 
 .actionButtons {
