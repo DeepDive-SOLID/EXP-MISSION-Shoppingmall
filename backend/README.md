@@ -181,11 +181,11 @@ return : List< DashboardWeeklySalesAmtDto >
 - order_travel : 여행 주문
 
 이번주 날짜 조건 처리
-- 오늘 날짜 (예: 2025-06-13) -> firstDayOfMonth : 이번 주 월요일(2025-06-09), firstDayOfNextMonth : 2025-06-15(이번 주 일요일)
+- 오늘 날짜 (예: 2025-06-13) -> monday : 6일 전(2025-06-07), sunday : 오늘(2025-06-13)
 - LocalDate today = LocalDate.now();
-- LocalDate monday = today.with(DayOfWeek.MONDAY);
-- LocalDate sunday = monday.plusDays(6);
-- 쿼리 : .where(orders.orderDt.between(monday, sunday).and(orders.orderState.ne(1)))
+- LocalDate startDt = today.minusDays(6);
+- LocalDate endDt = today;
+- 쿼리 : .where(orders.orderDt.between(startDt, endDt).and(orders.orderState.ne(1)))
 
 조회 조건 및 테이블 조인 관계
 - 여행상품, 물품 기준 일별 총 금액 : order_state = 1인 주문을 제외한 orderProductAmount * productPrice + orderTravelAmount * travelPrice
