@@ -16,7 +16,19 @@ const mockSearchResults = Array.from({ length: 4 }, (_, i) => ({
 const SearchMain = () => {
   return (
     <div className={styles.mainContent}>
-      <h2>"검색어" 검색 결과</h2>
+      <div className={styles.headerRow}>
+        <h2>"검색어" 검색 결과</h2>
+        <div className={styles.searchfilter}>
+          <div className={styles.filterOption}>
+            <span className={styles.filterText}>정렬 기준:</span>
+            <select className={styles.filterSelect}>
+              <option value="popular">인기순</option>
+              <option value="recent">최신순</option>
+              <option value="rating">평점순</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
       {mockSearchResults.map(item => (
         <div className={styles.searchItem} key={item.id}>

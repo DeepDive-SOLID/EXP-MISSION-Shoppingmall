@@ -3,10 +3,48 @@
   padding: 24px;
   padding-top: 80px;
 
-  h2 {
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0;
+  .headerRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+
+  .searchfilter {
+    .filterOption {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+
+      .filterText {
+        font-size: 14px;
+        font-weight: 500;
+        color: #555;
+      }
+
+      .filterSelect {
+        padding: 6px 12px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background-color: #fff;
+        color: #333;
+        cursor: pointer;
+
+        &:focus {
+          border-color: #0085ff;
+          outline: none;
+        }
+      }
+    }
   }
 }
 
