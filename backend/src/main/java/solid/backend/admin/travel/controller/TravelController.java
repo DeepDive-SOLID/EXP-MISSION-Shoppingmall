@@ -53,17 +53,20 @@ public class TravelController {
      * @param travelAddDto
      * @return ResponseBodyEntity<String>
      */
-    @ResponseBody
     @PostMapping("/addTravel")
-    public ResponseEntity<String> addTravelDto(@RequestBody TravelAddDto travelAddDto) {
+    public ResponseEntity<String> addTravelDto(@ModelAttribute TravelAddDto travelAddDto) {
         try {
             travelService.addTravelDto(travelAddDto);
             return ResponseEntity.ok("SUCCESS");
+
+        // 사용자가 잘못 입력한 경우 (ex: 파일 크기 초과 등)
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+
+        // 그 외 서버 오류
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("FAIL");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("FAIL");
         }
     }
 
