@@ -4,6 +4,7 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ko } from "date-fns/locale";
+import { format } from "date-fns";
 
 const SearchSidebar = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -17,6 +18,14 @@ const SearchSidebar = () => {
 
       <div className={styles.calendarSection}>
         <p className={styles.sectionTitle}>일정 선택</p>
+
+        {startDate && endDate && (
+          <p className={styles.helperText}>
+            선택된 기간: {format(startDate, "yyyy.MM.dd")} ~{" "}
+            {format(endDate, "yyyy.MM.dd")}
+          </p>
+        )}
+
         <DatePicker
           selected={startDate}
           onChange={dates => {
@@ -29,6 +38,7 @@ const SearchSidebar = () => {
           selectsRange
           inline
           locale={ko}
+          calendarStartDay={1}
         />
       </div>
 
@@ -37,7 +47,7 @@ const SearchSidebar = () => {
         <select className={styles.select}>
           {Array.from({ length: 10 }, (_, i) => (
             <option key={i} value={i + 1}>
-              {i + 1}명
+              {i < 9 ? `${i + 1}명` : "10명 이상"}
             </option>
           ))}
         </select>

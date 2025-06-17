@@ -52,6 +52,12 @@
 .calendarSection {
   padding: 16px 0;
 
+  .helperText {
+    font-size: 13px;
+    color: #666;
+    margin: 5px 20px;
+  }
+
   .select {
     width: 100%;
     padding: 10px 12px;
@@ -72,8 +78,7 @@
     width: 100%;
     min-width: 240px;
     border: none;
-    background-color: #fff;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
     border-radius: 12px;
     font-size: 14px;
     padding: 8px;
@@ -84,6 +89,7 @@
     border-bottom: 1px solid #ccc;
     padding: 0;
   }
+
   :global(.react-datepicker__month) {
     padding: 0;
     margin: 0;
@@ -162,13 +168,14 @@
     &:focus {
       outline: none;
       border-color: #0085ff;
-      box-shadow: 0 0 0 2px rgba(0, 133, 255, 0.2);
     }
 
     option {
-      background: #fff;
-      color: #000;
+      background-color: #f9f9f9;
+      color: #202020;
       font-size: 14px;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
     }
   }
 }
