@@ -104,6 +104,33 @@ const ManageUser = () => {
     return pageNumbers;
   };
 
+  // 권한 ID 매핑 함수
+  const getAuthId = (roleName: string): string => {
+    switch (roleName) {
+      case "관리자":
+        return "ADMIN";
+      case "여행 상품 관리자":
+        return "MANAGER";
+      case "사용자":
+        return "USER";
+      default:
+        return "USER";
+    }
+  };
+
+  // 권한 변경 처리
+  const handleRoleChange = async (memberId: string, newRole: string) => {
+    try {
+      const authId = getAuthId(newRole);
+      await memberApi.updateMemberRole(memberId, authId);
+      // 권한 변경 후 사용자 목록 새로고침
+      fetchUsers();
+    } catch (error) {
+      console.error("권한 변경 중 오류 발생:", error);
+      alert("권한 변경에 실패했습니다.");
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Header />
@@ -191,11 +218,25 @@ const ManageUser = () => {
                         <td>{user.memberEmail}</td>
                         <td>{user.memberBirth}</td>
                         <td>
-                          <span
-                            className={`${styles.roleTag} ${user.authName === "ADMIN" ? styles.adminRole : styles.guestRole}`}
+                          <select
+                            value={user.authName}
+                            onChange={e =>
+                              handleRoleChange(user.memberId, e.target.value)
+                            }
+                            className={`${styles.roleSelect} ${
+                              user.authName === "관리자"
+                                ? styles.adminRole
+                                : user.authName === "여행 상품 관리자"
+                                  ? styles.travelAdminRole
+                                  : styles.guestRole
+                            }`}
                           >
-                            {user.authName === "ADMIN" ? "관리자" : "사용자"}
-                          </span>
+                            <option value="관리자">관리자</option>
+                            <option value="여행 상품 관리자">
+                              여행 상품 관리자
+                            </option>
+                            <option value="사용자">사용자</option>
+                          </select>
                         </td>
                       </tr>
                     ))}

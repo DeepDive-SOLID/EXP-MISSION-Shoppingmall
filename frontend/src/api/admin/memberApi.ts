@@ -10,11 +10,22 @@ export const memberApi = {
   },
 
   // 사용자 검색
-  searchMember: async (params?: {
+  searchMember: async (searchParams: {
     memberId?: string;
     memberName?: string;
   }): Promise<User[]> => {
-    const response = await api.post<User[]>("/admin/member/search", params);
+    const response = await api.post<User[]>(
+      "/admin/member/search",
+      searchParams,
+    );
     return response.data;
+  },
+
+  // 회원 권한 업데이트
+  updateMemberRole: async (memberId: string, authId: string): Promise<void> => {
+    await api.put("/admin/member/updateAuth", {
+      memberId,
+      authId,
+    });
   },
 };
