@@ -3,7 +3,6 @@ import { home_banner } from "../../../assets";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { useState } from "react";
-
 import "swiper/css";
 import "swiper/css/navigation";
 

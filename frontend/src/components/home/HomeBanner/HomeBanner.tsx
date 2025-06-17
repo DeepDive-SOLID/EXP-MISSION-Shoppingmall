@@ -52,7 +52,7 @@ const HomeBanner = () => {
 
           <div className={styles.inputGroup}>
             <label htmlFor="date">출발 일정</label>
-            <input id="date" type="text" placeholder="출발 일정" />
+            <input id="date" type="date" placeholder="출발 일정" />
           </div>
 
           <div className={styles.inputGroup}>

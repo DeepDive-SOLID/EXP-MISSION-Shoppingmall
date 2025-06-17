@@ -42,7 +42,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 28px;
   }
 
   .inputGroup {
@@ -88,6 +88,40 @@
 
       &:focus {
         border-color: #005fcc;
+      }
+    }
+
+    input[type="date"] {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      font-size: 16px;
+      font-family: "Pretendard";
+      color: #202020;
+      border: 1px solid #0085ff;
+      border-radius: 8px;
+      background-color: white;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.3s;
+
+      &::placeholder {
+        color: transparent;
+      }
+
+      &:focus {
+        border-color: #005fcc;
+      }
+
+      &::-webkit-calendar-picker-indicator {
+        filter: brightness(0) saturate(100%) invert(33%) sepia(83%)
+          saturate(2600%) hue-rotate(185deg) brightness(96%) contrast(95%);
+        cursor: pointer;
+      }
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-clear-button {
+        display: none;
       }
     }
   }
