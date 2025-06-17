@@ -9,5 +9,4 @@ export const transformApiProduct = (item: ApiProduct): Product => ({
   product_sold: item.productSold,
   product_upload_dt: item.productUploadDt,
   product_update_dt: item.productUpdateDt,
-  product_img: item.productImg,
 });
