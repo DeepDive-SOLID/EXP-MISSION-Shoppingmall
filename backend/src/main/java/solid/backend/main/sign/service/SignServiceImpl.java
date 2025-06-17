@@ -2,14 +2,20 @@ package solid.backend.main.sign.service;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import solid.backend.config.JwtUtil;
 import solid.backend.entity.Auth;
 import solid.backend.entity.Member;
+import solid.backend.main.sign.dto.SignInDto;
+import solid.backend.main.sign.dto.SignMemberInfoDto;
 import solid.backend.main.sign.dto.SignUpDto;
 import solid.backend.main.sign.repository.SignRepository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +24,12 @@ public class SignServiceImpl implements SignService{
     private final SignRepository signRepository;
     private final EntityManager em;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
+    /**
+     * 설명: 회원가입
+     * @param signUpDto
+     */
     @Override
     public void signUpDto(SignUpDto signUpDto) {
         Member member = new Member();
@@ -36,7 +47,46 @@ public class SignServiceImpl implements SignService{
         signRepository.save(member);
     }
 
-    public boolean isDuplicatedId(String memberId) {
+    /**
+     * 설명: 회원가입 아이디 중복 확인
+     * @param memberId
+     * @return
+     */
+    @Override
+    public Boolean isDuplicatedId(String memberId) {
         return signRepository.findById(memberId).isPresent();
+    }
+
+    /**
+     * 설명: 로그인 시 토큰 발급
+     * @param signInDto
+     * @return token
+     */
+    @Override
+    public String login(SignInDto signInDto) {
+        // 1. 사용자 조회
+        Optional<Member> optionalMember = signRepository.findById(signInDto.getMemberId());
+        if (optionalMember.isEmpty()) {
+            throw new UsernameNotFoundException("존재하지 않는 사용자입니다.");
+        }
+
+        Member member = optionalMember.get();
+
+        // 2. 비밀번호 확인
+        if (!passwordEncoder.matches(signInDto.getMemberPw(), member.getMemberPassword())) {
+            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3. 토큰에 담을 최소한의 사용자 정보 구성
+        SignMemberInfoDto dto = SignMemberInfoDto.builder()
+                .memberId(member.getMemberId())
+                .authId(member.getAuthId().getAuthId()) // 권한 코드 (예: "ADMIN")
+                .build();
+
+        // 4. JWT 발급
+        String token = jwtUtil.createAccessToken(dto);
+
+        // 5. access token 반환
+        return token;
     }
 }
