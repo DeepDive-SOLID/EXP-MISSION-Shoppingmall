@@ -10,6 +10,8 @@ import ManageUser from "./pages/admin/manageUser/ManageUser";
 import ManageOrder from "./pages/admin/manageOrder/ManageOrder";
 import SignUp from "./pages/login/signUp/SignUp";
 import SignIn from "./pages/login/signIn/SignIn";
+import FindId from "./pages/login/findPw/FindId";
+import FindPw from "./pages/login/findPw/FindPw";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,14 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <SignIn />,
+      },
+      {
+        path: "find-id",
+        element: <FindId />,
+      },
+      {
+        path: "find-pw",
+        element: <FindPw />,
       },
       {
         path: "dashboard",

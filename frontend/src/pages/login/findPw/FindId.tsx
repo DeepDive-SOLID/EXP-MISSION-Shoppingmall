@@ -4,25 +4,24 @@ import { Link, useNavigate } from "react-router-dom";
 import { logo } from "../../../assets";
 import backIcon from "../../../assets/icons/back.svg";
 
-const FindPw: React.FC = () => {
+const FindId: React.FC = () => {
   const navigate = useNavigate();
-  const [id, setId] = useState("");
   const [email, setEmail] = useState("");
-  const [foundPw, setFoundPw] = useState("");
-  const [tab, setTab] = useState(1);
+  const [foundId, setFoundId] = useState("");
+  const [tab, setTab] = useState(0);
 
   const handleTab = (idx: number) => {
     setTab(idx);
-    if (idx === 0) {
-      navigate("/find-id"); // 아이디 찾기 경로로 이동
+    if (idx === 1) {
+      navigate("/find-pw"); // 비밀번호 찾기 경로로 이동 (수정 필요시 경로 변경)
     }
   };
 
-  const handleFindPw = () => {
-    if (id === "testuser" && email === "test@example.com") {
-      setFoundPw("password1234");
+  const handleFindId = () => {
+    if (email === "test@example.com") {
+      setFoundId("user1234");
     } else {
-      setFoundPw("일치하는 사용자가 없습니다");
+      setFoundId("일치하는 사용자가 없습니다");
     }
   };
 
@@ -64,19 +63,9 @@ const FindPw: React.FC = () => {
           className={styles.form}
           onSubmit={e => {
             e.preventDefault();
-            handleFindPw();
+            handleFindId();
           }}
         >
-          <div className={styles.inputGroup}>
-            <label htmlFor="id">ID</label>
-            <input
-              id="id"
-              type="text"
-              placeholder="아이디를 입력하세요"
-              value={id}
-              onChange={e => setId(e.target.value)}
-            />
-          </div>
           <div className={styles.inputGroup}>
             <label htmlFor="email">이메일</label>
             <input
@@ -87,14 +76,14 @@ const FindPw: React.FC = () => {
               onChange={e => setEmail(e.target.value)}
             />
           </div>
-          {foundPw && (
+          {foundId && (
             <div className={styles.inputGroup}>
-              <label htmlFor="pw">비밀번호</label>
-              <div className={styles["id-box"]}>{foundPw}</div>
+              <label htmlFor="id">ID</label>
+              <div className={styles["id-box"]}>{foundId}</div>
             </div>
           )}
           <button className={styles.button} type="submit">
-            비밀번호 찾기
+            아이디 찾기
           </button>
         </form>
         <div className={styles["bottom-text"]}>
@@ -108,4 +97,4 @@ const FindPw: React.FC = () => {
   );
 };
 
-export default FindPw;
+export default FindId;

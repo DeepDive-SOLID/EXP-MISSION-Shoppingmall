@@ -110,7 +110,7 @@ const SignIn: React.FC = () => {
             </div>
             {pwError && <div className={styles.inputError}>{pwError}</div>}
           </div>
-          <Link to="/find-pw" className={styles.forgotPwLink}>
+          <Link to="/find-id" className={styles.forgotPwLink}>
             비밀번호를 잊으셨나요?
           </Link>
           <button className={styles.button} type="submit">
