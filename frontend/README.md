@@ -100,7 +100,7 @@ npm run dev
 ![image](https://github.com/user-attachments/assets/1e5f9c3c-1fce-4b3d-a173-e84987d53823)
 
 ### 사용자 관리 페이지
-![image](https://github.com/user-attachments/assets/3e54bb2d-f068-4e91-9625-1637ac00f238)
+![image](https://github.com/user-attachments/assets/5df4d359-a15f-4414-b8b0-23642957dcf4)
 
 ### 물품 관리 페이지
 ![image](https://github.com/user-attachments/assets/6c17442d-43fb-4f0c-b19f-e3b9fcecff0d)
