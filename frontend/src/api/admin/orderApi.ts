@@ -30,7 +30,7 @@ export const orderApi = {
     orderId: number,
     orderState: number,
   ): Promise<void> => {
-    await api.put("/admin/orders/update", { orderId, orderState });
+    await api.put("/admin/orders/updateOrderState", { orderId, orderState });
   },
 
   // 주문 상세 정보 조회
