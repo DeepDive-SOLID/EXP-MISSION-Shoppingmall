@@ -234,7 +234,7 @@ return : List< DashboardWeeklySalesAmtDto >
 
 ### [상태 수정]
 - HTTP Method: PUT
-- HTTP URL: /admin/orders/update
+- HTTP URL: /admin/orders/updateOrderState
 - RequestBody Param: OrdersUpdateDto
 - return: List\<OrdersManagementDto\>
 ---
