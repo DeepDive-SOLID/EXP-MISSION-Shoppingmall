@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { AxiosError } from 'axios';
 import Header from "../../../components/common/Header_dash/Header";
 import Sidebar from "../../../components/common/Sidebar/Sidebar";
 import styles from "./ManageTravel.module.scss";
@@ -12,7 +13,6 @@ import {
   FiCheck,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { product1 } from "../../../assets";
 import { travelApi } from "../../../api/admin/travelApi";
 import {
   Travel,
@@ -61,7 +61,6 @@ const ManageTravel = () => {
     travel_price: "",
     travel_amount: "",
     travel_sold: false,
-    travel_img: "",
     travel_start_dt: "",
     travel_end_dt: "",
     travel_comment: "",
@@ -69,6 +68,9 @@ const ManageTravel = () => {
     travel_upload_dt: getToday(),
     travel_update_dt: getToday(),
   });
+
+  // 파일 객체 상태
+  const [newFile, setNewFile] = useState<File | null>(null);
 
   // API에서 여행상품 데이터 가져오기
   useEffect(() => {
@@ -88,15 +90,6 @@ const ManageTravel = () => {
 
     fetchTravels();
   }, []);
-
-  // 이미지 목록
-  const travelImages = [
-    { id: "product1", src: product1 },
-    { id: "product2", src: product1 },
-    { id: "product3", src: product1 },
-    { id: "product4", src: product1 },
-    { id: "product5", src: product1 },
-  ];
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTempSearchTerm(e.target.value);
@@ -264,7 +257,6 @@ const ManageTravel = () => {
       travel_price: "",
       travel_amount: "",
       travel_sold: false,
-      travel_img: "",
       travel_start_dt: "",
       travel_end_dt: "",
       travel_comment: "",
@@ -280,17 +272,18 @@ const ManageTravel = () => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
 
-    setNewTravel(prev => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleImageSelect = (imageId: string) => {
-    setNewTravel(prev => ({
-      ...prev,
-      travel_img: imageId,
-    }));
+    if (type === "file") {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        setNewFile(file);
+      }
+    } else {
+      setNewTravel(prev => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked :
+          name === "travel_label" ? value.replace(/\s/g, "") : value,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -298,22 +291,25 @@ const ManageTravel = () => {
 
     try {
       // 폼 데이터를 API 형식에 맞게 변환
-      const travelData = {
-        travelName: newTravel.travel_name,
-        travelPrice: parseInt(newTravel.travel_price),
-        travelAmount: parseInt(newTravel.travel_amount),
-        travelSold: false,
-        travelImg: newTravel.travel_img || "product1", // 기본 이미지 설정
-        travelStartDt: newTravel.travel_start_dt,
-        travelEndDt: newTravel.travel_end_dt,
-        travelComment: newTravel.travel_comment,
-        travelLabel: newTravel.travel_label,
-        travelUploadDt: newTravel.travel_upload_dt,
-        travelUpdateDt: newTravel.travel_update_dt,
-      };
+      const formData = new FormData();
+      formData.append("travelName", newTravel.travel_name);
+      formData.append("travelPrice", newTravel.travel_price);
+      formData.append("travelAmount", newTravel.travel_amount);
+      formData.append("travelSold", "false");
+      formData.append("travelStartDt", newTravel.travel_start_dt);
+      formData.append("travelEndDt", newTravel.travel_end_dt);
+      formData.append("travelComment", newTravel.travel_comment);
+      formData.append("travelLabel", newTravel.travel_label);
+      formData.append("travelUploadDt", newTravel.travel_upload_dt);
+      formData.append("travelUpdateDt", newTravel.travel_update_dt);
+
+      // 실제 이미지 파일
+      if (newFile) {
+        formData.append("travelImg", newFile);
+      }
 
       // API 호출하여 새 여행상품 추가
-      await travelApi.createTravel(travelData);
+      await travelApi.createTravel(formData);
 
       // 여행상품 목록 다시 불러오기
       const updatedList = await travelApi.getTravelListAll();
@@ -322,8 +318,14 @@ const ManageTravel = () => {
 
       // 모달 닫기
       closeModal();
-    } catch (error) {
-      console.error("여행상품 추가 중 오류 발생:", error);
+
+    } catch (err) {
+      const error = err as AxiosError;
+      if (error.response && typeof error.response.data === "string") {
+        alert(error.response.data);
+      } else {
+        alert("알 수 없는 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -652,16 +654,18 @@ const ManageTravel = () => {
                   </div>
                   <div className={styles.formGroup}>
                     <label>이미지 선택</label>
-                    <div className={styles.imageSelector}>
-                      {travelImages.map(img => (
-                        <div
-                          key={img.id}
-                          className={`${styles.imageOption} ${newTravel.travel_img === img.id ? styles.selected : ""}`}
-                          onClick={() => handleImageSelect(img.id)}
-                        >
-                          <img src={img.src} alt={img.id} />
-                        </div>
-                      ))}
+                    <div className={styles.fileNotice}>
+                      <p><strong>최대 첨부 파일 크기:</strong> 1MB</p>
+                      <p><strong>허용 확장자:</strong> jpg, png</p>
+                      <p><strong>파일명 길이 제한:</strong> 300자 이하</p>
+                    </div>
+                    <div className={styles.fileInput}>
+                      <input
+                        id="imageUpload"
+                        type="file"
+                        onChange={handleInputChange}
+                        accept=".jpg,.jpeg,.png"
+                      />
                     </div>
                   </div>
                   <div className={styles.modalActions}>

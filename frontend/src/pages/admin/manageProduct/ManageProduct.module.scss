@@ -449,13 +449,6 @@
   }
 }
 
-.imageSelector {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-top: 8px;
-}
-
 .imageOption {
   border: 2px solid #e2e8f0;
   border-radius: 8px;
@@ -761,4 +754,30 @@
   100% {
     transform: translate(24px, 0);
   }
+}
+
+.fileInput {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: white;
+}
+
+.fileNotice {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  box-sizing: border-box;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.fileNotice p {
+  margin: 0.3rem 0;
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { AxiosError } from 'axios';
 import Header from "../../../components/common/Header_dash/Header";
 import Sidebar from "../../../components/common/Sidebar/Sidebar";
 import styles from "./ManageProduct.module.scss";
@@ -18,7 +19,6 @@ import {
   ProductListDto,
 } from "../../../types/admin/product";
 import { getToday } from "../../../utils/formatDate";
-import { productImages } from "../../../utils/productImg";
 
 // API 응답 데이터를 Product 타입으로 변환하는 유틸리티 함수
 const transformApiProduct = (item: ProductListDto): Product => ({
@@ -29,7 +29,6 @@ const transformApiProduct = (item: ProductListDto): Product => ({
   product_sold: item.productSold,
   product_upload_dt: getToday(), // 기본값으로 현재 날짜 사용
   product_update_dt: getToday(), // 기본값으로 현재 날짜 사용
-  product_img: "", // 기본값으로 빈 문자열 사용
 });
 
 const ManageProduct = () => {
@@ -56,11 +55,13 @@ const ManageProduct = () => {
     product_price: "",
     product_amount: "",
     product_sold: false,
-    product_img: "",
     product_upload_dt: getToday(),
     product_update_dt: getToday(),
   });
   const itemsPerPage = 10; // 페이지당 표시할 아이템 수
+
+  // 파일 객체 상태
+  const [newFile, setNewFile] = useState<File | null>(null);
 
   // 검색어 입력 처리
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,7 +101,6 @@ const ManageProduct = () => {
           product_sold: item.productSold,
           product_upload_dt: "",
           product_update_dt: "",
-          product_img: "",
         }));
         setFilteredProducts(transformedData);
       } else {
@@ -169,7 +169,6 @@ const ManageProduct = () => {
         productPrice: product.product_price,
         productAmount: product.product_amount,
         productSold: !product.product_sold,
-        productImg: product.product_img,
         productUploadDt: product.product_upload_dt,
         productUpdateDt: getToday(),
       };
@@ -198,7 +197,6 @@ const ManageProduct = () => {
       product_price: "",
       product_amount: "",
       product_sold: false,
-      product_img: "",
       product_upload_dt: getToday(),
       product_update_dt: getToday(),
     });
@@ -207,18 +205,18 @@ const ManageProduct = () => {
   // 입력 필드 변경 처리
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setNewProduct(prev => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
 
-  // 이미지 선택 처리
-  const handleImageSelect = (imageId: string) => {
-    setNewProduct(prev => ({
-      ...prev,
-      product_img: imageId,
-    }));
+    if (type === "file") {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        setNewFile(file);
+      }
+    } else {
+      setNewProduct(prev => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }
   };
 
   // 새 물품 추가 처리
@@ -226,21 +224,29 @@ const ManageProduct = () => {
     e.preventDefault();
 
     try {
-      const productData = {
-        productName: newProduct.product_name,
-        productPrice: parseInt(newProduct.product_price),
-        productAmount: parseInt(newProduct.product_amount),
-        productSold: false,
-        productImg: newProduct.product_img || "carrier",
-        productUploadDt: newProduct.product_upload_dt,
-        productUpdateDt: newProduct.product_update_dt,
-      };
+      const formData = new FormData();
+      formData.append("productName", newProduct.product_name);
+      formData.append("productPrice", parseInt(newProduct.product_price).toString());
+      formData.append("productAmount", parseInt(newProduct.product_amount).toString());
+      formData.append("productSold", "false");
+      formData.append("productUploadDt", newProduct.product_upload_dt);
+      formData.append("productUpdateDt", newProduct.product_update_dt);
 
-      await productApi.addProduct(productData);
+      // 실제 이미지 파일
+      if (newFile) {
+        formData.append("productImg", newFile);
+      }
+
+      await productApi.addProduct(formData);
       await refreshProductList();
       closeModal();
-    } catch (error) {
-      console.error("물품 추가 중 오류 발생:", error);
+    } catch (err) {
+      const error = err as AxiosError;
+      if (error.response && typeof error.response.data === "string") {
+        alert(error.response.data);
+      } else {
+        alert("알 수 없는 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -629,16 +635,18 @@ const ManageProduct = () => {
                   </div>
                   <div className={styles.formGroup}>
                     <label>이미지 선택</label>
-                    <div className={styles.imageSelector}>
-                      {productImages.map(img => (
-                        <div
-                          key={img.id}
-                          className={`${styles.imageOption} ${newProduct.product_img === img.id ? styles.selected : ""}`}
-                          onClick={() => handleImageSelect(img.id)}
-                        >
-                          <img src={img.src} alt={img.id} />
-                        </div>
-                      ))}
+                    <div className={styles.fileNotice}>
+                      <p><strong>최대 첨부 파일 크기:</strong> 1MB</p>
+                      <p><strong>허용 확장자:</strong> jpg, png</p>
+                      <p><strong>파일명 길이 제한:</strong> 300자 이하</p>
+                    </div>
+                    <div className={styles.fileInput}>
+                      <input
+                        id="imageUpload"
+                        type="file"
+                        onChange={handleInputChange}
+                        accept=".jpg,.jpeg,.png"
+                      />
                     </div>
                   </div>
                   <div className={styles.modalActions}>

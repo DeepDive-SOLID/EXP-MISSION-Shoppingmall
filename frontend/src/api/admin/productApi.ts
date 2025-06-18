@@ -18,15 +18,18 @@ export const productApi = {
     ),
 
   // 물품 추가
-  addProduct: (productData: {
-    productName: string;
-    productPrice: number;
-    productAmount: number;
-    productSold: boolean;
-    productImg: string;
-    productUploadDt: string;
-    productUpdateDt: string;
-  }) => api.post<ProductListDto>("/admin/product/addProductDto", productData),
+  addProduct: async (formData: FormData): Promise<ProductListDto> => {
+    const response = await api.post<ProductListDto>(
+      "/admin/product/addProductDto",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  },
 
   // 물품 수정
   updateProduct: (productData: {

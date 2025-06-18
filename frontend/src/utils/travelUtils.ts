@@ -13,7 +13,6 @@ export const transformApiTravel = (item: TravelListAllDto): Travel => ({
   travel_end_dt: item.travelEndDt || "",
   travel_upload_dt: item.travelUploadDt || "",
   travel_update_dt: item.travelUpdateDt || "",
-  travel_img: item.travelImg || "",
 });
 
 // 검색 파라미터 생성 함수

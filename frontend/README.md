@@ -84,7 +84,6 @@ npm run dev
   - delay.ts  → 지정된 시간만큼 지연시키는 Promise 반환 함수
   - formatDate.ts  → 날짜 문자열을 YYYY-MM-DD 형식으로 변환하는 함수, 오늘 날짜 반환
   - orderUtils.ts  → 주문 상태에 따른 텍스트 및 CSS 클래스 반환
-  - productImg.ts  → 상품 이미지 리스트와 타입 정의
   - transformProduct.ts  → API 응답 데이터를 Product 타입으로 변환
   - travelUtils.ts  → 여행 상품 변환, 검색 파라미터 생성, 페이지네이션 계산 등 유틸 함수
 
