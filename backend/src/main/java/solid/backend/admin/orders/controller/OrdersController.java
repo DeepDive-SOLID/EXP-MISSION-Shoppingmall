@@ -47,7 +47,7 @@ public class OrdersController {
      * @return ResponseEntity<String>
      */
     @ResponseBody
-    @PutMapping("/update")
+    @PutMapping("/updateOrderState")
     public ResponseEntity<String> updateOrderState(@RequestBody OrdersUpdateDto ordersUpdateDto ) {
         try {
             ordersService.updateOrderState(ordersUpdateDto);
