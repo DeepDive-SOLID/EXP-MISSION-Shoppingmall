@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import solid.backend.config.JwtUtil;
 import solid.backend.entity.Auth;
 import solid.backend.entity.Member;
-import solid.backend.main.sign.dto.SignFindIdDto;
-import solid.backend.main.sign.dto.SignInDto;
-import solid.backend.main.sign.dto.SignMemberInfoDto;
-import solid.backend.main.sign.dto.SignUpDto;
+import solid.backend.main.sign.dto.*;
 import solid.backend.main.sign.repository.SignRepository;
 
 import java.time.LocalDate;
@@ -104,5 +101,33 @@ public class SignServiceImpl implements SignService{
                 .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
 
         return member.getMemberId();
+    }
+
+    /**
+     * 설명: 아이디 이메일 체크
+     * @param signCheckIIdEmailDto
+     */
+    @Override
+    public void checkIdEmail(SignCheckIIdEmailDto signCheckIIdEmailDto) {
+        Member member = signRepository.findById(signCheckIIdEmailDto.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+
+        member = signRepository.findByMemberEmail(signCheckIIdEmailDto.getMemberEmail())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+    }
+
+    /**
+     * 설명: 비밀번호 재설정
+     * @param signUpdPwDto
+     */
+    @Override
+    public void updPw(SignUpdPwDto signUpdPwDto) {
+        Member member = signRepository.findById(signUpdPwDto.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+
+        String encodedPw = passwordEncoder.encode(signUpdPwDto.getMemberPw());
+        member.setMemberPassword(encodedPw);
+
+        signRepository.save(member);
     }
 }

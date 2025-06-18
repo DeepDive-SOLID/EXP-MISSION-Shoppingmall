@@ -1,8 +1,6 @@
 package solid.backend.main.sign.service;
 
-import solid.backend.main.sign.dto.SignFindIdDto;
-import solid.backend.main.sign.dto.SignInDto;
-import solid.backend.main.sign.dto.SignUpDto;
+import solid.backend.main.sign.dto.*;
 
 
 public interface SignService {
@@ -15,9 +13,30 @@ public interface SignService {
     /**
      * 설명: 회원가입 아이디 중복 확인
      * @param memberId
-     * @return
      */
     Boolean isDuplicatedId(String memberId);
+
+    /**
+     * 설명: 로그인
+     * @param signInDto
+     */
     String login(SignInDto signInDto);
+
+    /**
+     * 설명: 아이디 찾기
+     * @param signFindIdDto
+     */
     String findMemberId(SignFindIdDto signFindIdDto);
+
+    /**
+     * 설명: 아이디 이메일 체크
+     * @param signCheckIIdEmailDto
+     */
+    void checkIdEmail(SignCheckIIdEmailDto signCheckIIdEmailDto);
+
+    /**
+     * 설명: 비밀번호 재설정
+     * @param signUpdPwDto
+     */
+    void updPw(SignUpdPwDto signUpdPwDto);
 }

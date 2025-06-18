@@ -6,21 +6,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import solid.backend.main.sign.dto.SignFindIdDto;
-import solid.backend.main.sign.dto.SignInDto;
-import solid.backend.main.sign.dto.SignUpCheckIdDto;
-import solid.backend.main.sign.dto.SignUpDto;
+import org.springframework.web.bind.annotation.*;
+import solid.backend.main.sign.dto.*;
 import solid.backend.main.sign.service.SignService;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/main/sign")
 public class SignController {
-    private final SignService SignService;
+    private final SignService signService;
 
     /**
      * 설명: 회원가입
@@ -30,7 +24,7 @@ public class SignController {
     @PostMapping("/signUp")
     public ResponseEntity<String> signUp(@RequestBody SignUpDto signUpDto) {
         try {
-            SignService.signUpDto(signUpDto);
+            signService.signUpDto(signUpDto);
             return ResponseEntity.ok("SUCCESS");
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,7 +41,7 @@ public class SignController {
      */
     @PostMapping("/checkId")
     public ResponseEntity<Boolean> checkId(@RequestBody SignUpCheckIdDto signInCheckIdDto) {
-        boolean isDuplicate = SignService.isDuplicatedId(signInCheckIdDto.getMemberId());
+        boolean isDuplicate = signService.isDuplicatedId(signInCheckIdDto.getMemberId());
         return ResponseEntity.ok(isDuplicate);
     }
 
@@ -59,7 +53,7 @@ public class SignController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody SignInDto signInDto) {
         try {
-            String token = SignService.login(signInDto);
+            String token = signService.login(signInDto);
             return ResponseEntity.ok(token);
         } catch (UsernameNotFoundException | BadCredentialsException e) {
             return ResponseEntity
@@ -81,14 +75,44 @@ public class SignController {
     @ResponseBody
     @PostMapping("/findId")
     public String findMemberId(@RequestBody SignFindIdDto signFindIdDto) {
-        return SignService.findMemberId(signFindIdDto);
+        return signService.findMemberId(signFindIdDto);
     }
 
     /**
      * 설명: 아이디, 이메일 확인
+     * @param signCheckIIdEmailDto
+     * @return ResponseEntity<String>
      */
+    @ResponseBody
+    @PostMapping("/checkIdEmail")
+    public ResponseEntity<String> checkIdEmail(@RequestBody SignCheckIIdEmailDto signCheckIIdEmailDto) {
+        try {
+            signService.checkIdEmail(signCheckIIdEmailDto);
+            return ResponseEntity.ok("SUCCESS");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("FAIL");
+        }
+    }
 
     /**
      * 설명: 비밀번호 재설정
+     * @param signUpdPwDto
+     * @return ResponseEntity<String>
      */
+    @ResponseBody
+    @PutMapping("/updPw")
+    public ResponseEntity<String> updPw(@RequestBody SignUpdPwDto signUpdPwDto) {
+        try {
+            signService.updPw(signUpdPwDto);
+            return ResponseEntity.ok("SUCCESS");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("FAIL");
+        }
+    }
 }
