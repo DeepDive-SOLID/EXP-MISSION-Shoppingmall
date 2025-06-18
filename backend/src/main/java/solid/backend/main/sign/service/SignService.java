@@ -1,5 +1,6 @@
 package solid.backend.main.sign.service;
 
+import solid.backend.main.sign.dto.SignFindIdDto;
 import solid.backend.main.sign.dto.SignInDto;
 import solid.backend.main.sign.dto.SignUpDto;
 
@@ -18,4 +19,5 @@ public interface SignService {
      */
     Boolean isDuplicatedId(String memberId);
     String login(SignInDto signInDto);
+    String findMemberId(SignFindIdDto signFindIdDto);
 }

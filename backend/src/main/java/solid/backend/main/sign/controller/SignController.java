@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import solid.backend.main.sign.dto.SignFindIdDto;
 import solid.backend.main.sign.dto.SignInDto;
 import solid.backend.main.sign.dto.SignUpCheckIdDto;
 import solid.backend.main.sign.dto.SignUpDto;
@@ -70,4 +72,23 @@ public class SignController {
                     .body("LOGIN_ERROR: 알 수 없는 오류가 발생했습니다.");
         }
     }
+
+    /**
+     * 설명: 아이디 찾기 (이메일 확인 후 아이디 반환)
+     * @param signFindIdDto
+     * @return String
+     */
+    @ResponseBody
+    @PostMapping("/findId")
+    public String findMemberId(@RequestBody SignFindIdDto signFindIdDto) {
+        return SignService.findMemberId(signFindIdDto);
+    }
+
+    /**
+     * 설명: 아이디, 이메일 확인
+     */
+
+    /**
+     * 설명: 비밀번호 재설정
+     */
 }

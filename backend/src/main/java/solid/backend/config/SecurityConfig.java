@@ -13,7 +13,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/**", "/main/**").permitAll()  // 테스트를 위해 admin, main 인증 없이 허용
+                        .requestMatchers("/**").permitAll()  // 테스트를 위해 admin, main 인증 없이 허용
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())

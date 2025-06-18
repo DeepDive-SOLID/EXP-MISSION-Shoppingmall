@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import solid.backend.config.JwtUtil;
 import solid.backend.entity.Auth;
 import solid.backend.entity.Member;
+import solid.backend.main.sign.dto.SignFindIdDto;
 import solid.backend.main.sign.dto.SignInDto;
 import solid.backend.main.sign.dto.SignMemberInfoDto;
 import solid.backend.main.sign.dto.SignUpDto;
@@ -88,5 +89,20 @@ public class SignServiceImpl implements SignService{
 
         // 5. access token 반환
         return token;
+    }
+
+    /**
+     * 설명: 아이디 찾기
+     * @param
+     * @return memberId
+     */
+    @Override
+    public String findMemberId(SignFindIdDto signFindIdDto) {
+        if(signFindIdDto.getMemberEmail() == null)
+            throw new IllegalArgumentException("회원이 없습니다.");
+        Member member = signRepository.findByMemberEmail(signFindIdDto.getMemberEmail())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+
+        return member.getMemberId();
     }
 }
