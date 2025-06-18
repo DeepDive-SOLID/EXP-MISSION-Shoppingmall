@@ -26,8 +26,8 @@ public class MemberServiceImpl implements MemberService {
                 .map(member -> new MemberListDto(
                         member.getMemberId(),
                         member.getMemberName(),
-                        member.getMemberPhone(),
                         member.getMemberEmail(),
+                        member.getMemberPhone(),
                         member.getMemberBirth(),
                         member.getAuthId().getAuthName()
                 )).collect(Collectors.toList());
