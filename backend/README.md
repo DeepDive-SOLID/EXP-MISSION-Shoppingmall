@@ -231,6 +231,12 @@ return : List< DashboardWeeklySalesAmtDto >
 - RequestBody Param: OrdersSearchDto
 - return: List\<OrdersManagementDto\>
 - 테이블 조인 관계: orders + orderTravels + orderProducts + travel + product
+
+### [상태 수정]
+- HTTP Method: PUT
+- HTTP URL: /admin/orders/update
+- RequestBody Param: OrdersUpdateDto
+- return: List\<OrdersManagementDto\>
 ---
 ## 여행 상품 관리 : admin/travel
 - controller(컨트롤러)
