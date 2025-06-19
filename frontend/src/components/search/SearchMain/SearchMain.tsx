@@ -1,27 +1,52 @@
 import styles from "./SearchMain.module.scss";
-import { home_banner2 } from "../../../assets/";
 import { FaStar } from "react-icons/fa6";
 import { FaComments } from "react-icons/fa";
-
-const mockSearchResults = Array.from({ length: 4 }, (_, i) => ({
-  id: i,
-  title: "[부산] 먹방투어",
-  badges: ["# 먹방", "# 부산", "# 투어"],
-  date: "1박 2일 (2025.06.02 ~ 2025.06.03)",
-  rating: 4.8,
-  comments: 12,
-  price: "150,000원",
-}));
+import { useMemo, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { searchTravels } from "../../../api/home/homeApi";
+import { HomeTravelDto } from "../../../types/home/homeTravel";
 
 const SearchMain = () => {
+  const [results, setResults] = useState<HomeTravelDto[]>([]);
+  const [sorted, setSorted] = useState<1 | 2 | 3>(1); // 1: 최신순, 2: 인기순, 3: 평점순
+  const location = useLocation();
+  const baseParams = useMemo(() => location.state || {}, [location.state]);
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await searchTravels({ ...baseParams, sorted });
+        setResults(res);
+      } catch (err) {
+        console.error("검색 실패:", err);
+      }
+    };
+    fetch();
+  }, [sorted, baseParams]);
+
   return (
     <div className={styles.mainContent}>
       <div className={styles.headerRow}>
-        <h2>"검색어" 검색 결과</h2>
+        <h2>
+          {baseParams.name
+            ? `"${baseParams.name}" 검색 결과`
+            : "전체 검색 결과"}
+        </h2>
         <div className={styles.searchfilter}>
           <div className={styles.filterOption}>
             <span className={styles.filterText}>정렬 기준:</span>
-            <select className={styles.filterSelect}>
+            <select
+              className={styles.filterSelect}
+              value={
+                sorted === 2 ? "popular" : sorted === 3 ? "rating" : "recent"
+              }
+              onChange={e => {
+                const value = e.target.value;
+                if (value === "popular") setSorted(2);
+                else if (value === "rating") setSorted(3);
+                else setSorted(1);
+              }}
+            >
               <option value="popular">인기순</option>
               <option value="recent">최신순</option>
               <option value="rating">평점순</option>
@@ -30,33 +55,37 @@ const SearchMain = () => {
         </div>
       </div>
 
-      {mockSearchResults.map(item => (
-        <div className={styles.searchItem} key={item.id}>
+      {results.map(item => (
+        <div className={styles.searchItem} key={item.travelId}>
           <div className={styles.leftSection}>
             <img
-              src={home_banner2}
+              src={item.travelImg}
               alt="검색 배너"
               className={styles.listImg}
             />
           </div>
           <div className={styles.rightSection}>
             <div className={styles.listHeader}>
-              <p className={styles.listTitle}>{item.title}</p>
+              <p className={styles.listTitle}>{item.travelName}</p>
               <div className={styles.listBadge}>
-                {item.badges.map((badge, idx) => (
+                {item.travelLabel.split(",").map((badge, idx) => (
                   <span className={styles.badge} key={idx}>
-                    {badge}
+                    #{badge.trim()}
                   </span>
                 ))}
               </div>
-              <p className={styles.listDate}>{item.date}</p>
+              <p className={styles.listDate}>
+                {item.travelStartDt} ~ {item.travelEndDt}
+              </p>
             </div>
             <div className={styles.listContent}>
               <FaStar className={styles.starIcon} />
-              <span className={styles.starRating}>{item.rating}</span>
+              <span className={styles.starRating}>{item.rate.toFixed(1)}</span>
               <FaComments className={styles.commentIcon} />
-              <span className={styles.commentCount}>{item.comments}</span>
-              <span className={styles.price}>{item.price}</span>
+              <span className={styles.commentCount}>{item.reviewCount}</span>
+              <span className={styles.price}>
+                {item.travelPrice.toLocaleString()}원
+              </span>
             </div>
           </div>
         </div>

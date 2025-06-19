@@ -8,6 +8,7 @@ import {
   home_banner5,
 } from "../../../assets";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const banners = [
   home_banner,
@@ -19,6 +20,24 @@ const banners = [
 ];
 
 const HomeBanner = () => {
+  const [destination, setDestination] = useState("");
+  const [date, setDate] = useState("");
+  const [people, setPeople] = useState(1);
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    navigate("/search", {
+      state: {
+        name: destination,
+        travelStartDt: date,
+        travelAmount: people,
+        sorted: 1,
+      },
+    });
+  };
+
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -44,20 +63,39 @@ const HomeBanner = () => {
       </div>
 
       <div className={styles.right}>
-        <form className={styles.formCard}>
+        <form className={styles.formCard} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>
             <label htmlFor="destination">여행지</label>
-            <input id="destination" type="text" placeholder="여행지" />
+            <input
+              id="destination"
+              type="text"
+              placeholder="여행지"
+              value={destination}
+              onChange={e => setDestination(e.target.value)}
+            />
           </div>
 
           <div className={styles.inputGroup}>
             <label htmlFor="date">출발 일정</label>
-            <input id="date" type="date" placeholder="출발 일정" />
+            <input
+              id="date"
+              type="date"
+              placeholder="출발 일정"
+              value={date}
+              onChange={e => setDate(e.target.value)}
+            />
           </div>
 
           <div className={styles.inputGroup}>
             <label htmlFor="people">인원</label>
-            <input id="people" type="number" placeholder="인원" />
+            <input
+              id="people"
+              type="number"
+              placeholder="인원"
+              value={people}
+              onChange={e => setPeople(Number(e.target.value))}
+              min={1}
+            />
           </div>
 
           <button type="submit" className={styles.submitButton}>
