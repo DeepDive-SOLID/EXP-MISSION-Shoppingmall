@@ -1,28 +1,49 @@
 import styles from "./Review.module.scss";
 import { profile_img } from "../../../assets";
 import { FaStar } from "react-icons/fa6";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { fetchReviews } from "../../../api/home/reviewApi";
+import { ReviewDto } from "../../../types/home/review";
 
 const Review = () => {
+  const location = useLocation();
+  const travelData = location.state;
+  const [reviews, setReviews] = useState<ReviewDto[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const travelId = travelData?.travelId;
+        if (!travelId) return;
+
+        const res = await fetchReviews(travelId);
+        setReviews(res);
+      } catch (err) {
+        console.error("리뷰 로딩 실패:", err);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <div className={styles.reviewWrapper}>
       <p className={styles.title}>리뷰</p>
-      <div className={styles.reviewContainer}>
-        <div className={styles.reviewHeader}>
-          <img
-            src={profile_img}
-            alt="Profile"
-            className={styles.profileImage}
-          />
-          <p className={styles.username}>user1</p>
-          {[...Array(5)].map((_, i) => (
-            <FaStar key={i} className={styles.starIcon} />
-          ))}
+      {reviews.map((review, idx) => (
+        <div className={styles.reviewContainer} key={idx}>
+          <div className={styles.reviewHeader}>
+            <img
+              src={profile_img}
+              alt="Profile"
+              className={styles.profileImage}
+            />
+            <p className={styles.username}>{review.username}</p>
+            {[...Array(review.star)].map((_, i) => (
+              <FaStar key={i} className={styles.starIcon} />
+            ))}
+          </div>
+          <p className={styles.reviewText}>{review.content}</p>
         </div>
-        <p className={styles.reviewText}>
-          정말 재미있고 유익한 경험이었습니다! 가이드님이 친절하게 설명해주셔서
-          좋았어요.
-        </p>
-      </div>
+      ))}
     </div>
   );
 };
