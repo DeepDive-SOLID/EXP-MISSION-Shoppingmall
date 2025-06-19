@@ -1,11 +1,9 @@
 .rightSection {
   flex: 1.2;
-  flex-basis: 480px;
   display: flex;
   flex-direction: column;
   gap: 20px;
   padding: 24px;
-  background: #fff;
   border-left: 1px solid #eee;
 }
 
@@ -152,7 +150,6 @@
 .selectionSection {
   display: flex;
   flex-direction: column;
-  gap: 16px;
   border-top: 1px solid #eee;
   padding-top: 20px;
 }
@@ -161,14 +158,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0;
   padding: 2px 0;
   border-bottom: 1px solid #eee;
 }
 
 .productLabel {
   flex: 1;
-
   font-size: 14px;
   font-weight: 500;
   color: #202020;
@@ -183,7 +178,7 @@
 .productPrice {
   font-size: 14px;
   color: #202020;
-  width: 60px;
+  width: 80px;
   text-align: right;
 }
 
@@ -213,6 +208,7 @@
   .productPrice {
     font-weight: 700;
     color: #202020;
+    width: 105px;
   }
 }
 

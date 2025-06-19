@@ -64,7 +64,7 @@ const Info = ({ data }: InfoProps) => {
     peopleCount + selectedProducts.reduce((sum, item) => sum + item.count, 0);
 
   const totalPrice =
-    peopleCount * 20000 +
+    peopleCount * data.travelPrice +
     selectedProducts.reduce((sum, item) => sum + item.count * item.price, 0);
 
   const removeProduct = (label: string) => {
@@ -106,7 +106,8 @@ const Info = ({ data }: InfoProps) => {
                 예약 인원 {data.reservedCount}명
               </span>
               <span className={styles.personCount}>
-                (잔여 개수 {data.maxPeople - data.reservedCount}개)
+                (잔여 개수 {(data.maxPeople ?? 0) - (data.reservedCount ?? 0)}
+                개)
               </span>
             </div>
             <p className={styles.minPeopleCount}>
@@ -187,13 +188,13 @@ const Info = ({ data }: InfoProps) => {
           <CounterBox
             label=""
             count={peopleCount}
-            price={20000}
+            price={data.travelPrice}
             hidePrice={true}
             onDecrease={() => setPeopleCount(prev => Math.max(1, prev - 1))}
             onIncrease={() => setPeopleCount(prev => prev + 1)}
           />
           <span className={styles.productPrice}>
-            {(peopleCount * 20000).toLocaleString()}원
+            {(peopleCount * data.travelPrice).toLocaleString()}원
           </span>
         </div>
       </div>

@@ -4,11 +4,12 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding-top: 60px;
+  padding-top: 50px;
 }
 
 .mainImg {
   width: 100%;
+  height: 300px;
   border-radius: 12px;
   object-fit: cover;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
