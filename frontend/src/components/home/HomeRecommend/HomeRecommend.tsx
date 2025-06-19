@@ -1,53 +1,27 @@
 import styles from "./HomeRecommend.module.scss";
-import { home_banner } from "../../../assets";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
-
-const mockRecommends = [
-  {
-    title: "경주 당일치기",
-    date: "25.06.02(화) 출발",
-    price: "20,000원",
-    img: home_banner,
-  },
-  {
-    title: "경주 당일치기",
-    date: "25.06.02(화) 출발",
-    price: "20,000원",
-    img: home_banner,
-  },
-  {
-    title: "경주 당일치기",
-    date: "25.06.02(화) 출발",
-    price: "20,000원",
-    img: home_banner,
-  },
-  {
-    title: "경주 당일치기",
-    date: "25.06.02(화) 출발",
-    price: "20,000원",
-    img: home_banner,
-  },
-  {
-    title: "경주 당일치기",
-    date: "25.06.02(화) 출발",
-    price: "20,000원",
-    img: home_banner,
-  },
-  {
-    title: "경주 당일치기",
-    date: "25.06.02(화) 출발",
-    price: "20,000원",
-    img: home_banner,
-  },
-];
+import { HomeTravelDto } from "../../../types/home/homeTravel";
+import { fetchRecommendedTravels } from "../../../api/home/homeApi";
 
 const HomeRecommend = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const [recommendations, setRecommendations] = useState<HomeTravelDto[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await fetchRecommendedTravels();
+        setRecommendations(data);
+      } catch (err) {
+        console.error("추천 상품 로딩 실패", err);
+      }
+    };
+    load();
+  }, []);
 
   return (
     <div
@@ -87,14 +61,18 @@ const HomeRecommend = () => {
         }}
         className={styles.slider}
       >
-        {mockRecommends.map((item, idx) => (
-          <SwiperSlide key={idx}>
+        {recommendations.map(item => (
+          <SwiperSlide key={item.travelId}>
             <div className={styles.card}>
-              <img src={item.img} alt={item.title} />
+              <img src={item.travelImg} alt={item.travelName} />
               <div className={styles.info}>
-                <p className={styles.name}>{item.title}</p>
-                <p className={styles.date}>{item.date}</p>
-                <p className={styles.price}>{item.price}</p>
+                <p className={styles.name}>{item.travelName}</p>
+                <p className={styles.date}>
+                  {item.travelStartDt} ~ {item.travelEndDt}
+                </p>
+                <p className={styles.price}>
+                  {item.travelPrice.toLocaleString()}원
+                </p>
               </div>
             </div>
           </SwiperSlide>
