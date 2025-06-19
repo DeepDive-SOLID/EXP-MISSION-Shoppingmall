@@ -9,6 +9,7 @@ import ManageTravel from "./pages/admin/manageTravel/ManageTravel";
 import ManageUser from "./pages/admin/manageUser/ManageUser";
 import ManageOrder from "./pages/admin/manageOrder/ManageOrder";
 import Search from "./pages/search/Search";
+import Detail from "./pages/detail/Detail";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: "search",
         element: <Search />,
+      },
+      {
+        path: "detail",
+        element: <Detail />,
       },
       {
         path: "dashboard",

@@ -3,6 +3,7 @@ export { default as mini_logo } from "./icons/mini_logo.png";
 export { default as logout } from "./icons/logout.svg";
 export { default as menu_bar } from "./icons/menu_bar.svg";
 export { default as shopping_cart } from "./icons/shopping_cart.svg";
+export { default as people } from "./icons/People.svg";
 
 // 물품 이미지
 export { default as product1 } from "./images/product/carrier.jpg";
