@@ -22,3 +22,4 @@ export { default as home_banner4 } from "./images/home_banner/home_banner4.jpg";
 export { default as home_banner5 } from "./images/home_banner/home_banner5.jpg";
 
 export { default as korea_map } from "./images/korea_map.png";
+export { default as profile_img } from "./images/profile_img.png";

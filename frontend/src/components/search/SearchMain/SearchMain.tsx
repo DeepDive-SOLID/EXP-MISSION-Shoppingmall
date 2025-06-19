@@ -1,6 +1,6 @@
 import styles from "./SearchMain.module.scss";
 import { home_banner2 } from "../../../assets/";
-import { FaRegStar } from "react-icons/fa6";
+import { FaStar } from "react-icons/fa6";
 import { FaComments } from "react-icons/fa";
 
 const mockSearchResults = Array.from({ length: 4 }, (_, i) => ({
@@ -52,7 +52,7 @@ const SearchMain = () => {
               <p className={styles.listDate}>{item.date}</p>
             </div>
             <div className={styles.listContent}>
-              <FaRegStar className={styles.starIcon} />
+              <FaStar className={styles.starIcon} />
               <span className={styles.starRating}>{item.rating}</span>
               <FaComments className={styles.commentIcon} />
               <span className={styles.commentCount}>{item.comments}</span>

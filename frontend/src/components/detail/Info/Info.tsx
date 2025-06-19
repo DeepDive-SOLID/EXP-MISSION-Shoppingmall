@@ -1,6 +1,6 @@
 import styles from "./Info.module.scss";
 import { people } from "../../../assets";
-import { FaRegStar, FaComments, FaRegCalendarCheck } from "react-icons/fa6";
+import { FaStar, FaComments, FaRegCalendarCheck } from "react-icons/fa6";
 import { LuHotel, LuTicket } from "react-icons/lu";
 import { IoMdBus } from "react-icons/io";
 import CounterBox from "../../common/CounterBox/CounterBox";
@@ -61,7 +61,7 @@ const Info = () => {
       </div>
 
       <div className={styles.rate}>
-        <FaRegStar className={styles.starIcon} />
+        <FaStar className={styles.starIcon} />
         <span className={styles.starRating}>4.8</span>
         <FaComments className={styles.commentIcon} />
         <span className={styles.commentCount}>23</span>
