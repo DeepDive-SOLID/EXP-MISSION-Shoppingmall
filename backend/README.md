@@ -24,6 +24,10 @@ src/main/java/solid/backend
   - CompoundKey : 조합키
 - config: 설정파일
   - QueryDsl: QueryDSL 빈 등록
+  - FileStorageConfig : 파일 설정 값 관리
+  - FileStorageHandlerConfig : 업로드 파일에 대한 정적 리소스 핸들링 설정
+- common : 공통 기능
+  - FileManager : 파일 관리 모듈
 ---
 ### 사용자 관리 : admin/member
 - controller(컨트롤러)
