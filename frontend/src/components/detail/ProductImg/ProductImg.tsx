@@ -44,7 +44,7 @@ const ProductImg = () => {
           <Swiper
             modules={[Navigation]}
             spaceBetween={16}
-            slidesPerView={4}
+            slidesPerView={3}
             loop={true}
             navigation={{
               prevEl: prevRef.current,
