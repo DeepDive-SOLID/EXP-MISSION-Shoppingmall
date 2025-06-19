@@ -4,31 +4,52 @@ import { FaStar, FaComments, FaRegCalendarCheck } from "react-icons/fa6";
 import { LuHotel, LuTicket } from "react-icons/lu";
 import { IoMdBus } from "react-icons/io";
 import CounterBox from "../../common/CounterBox/CounterBox";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { HomeTravelDto } from "../../../types/home/homeTravel";
+import { productApi } from "../../../api/admin/productApi";
+import { Product } from "../../../types/admin/product";
+import { transformApiProduct } from "../../../utils/productUtils";
 
-const Info = () => {
+interface InfoProps {
+  data: HomeTravelDto;
+}
+
+const Info = ({ data }: InfoProps) => {
+  const [productList, setProductList] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const res = await productApi.getProductList();
+      if (Array.isArray(res.data)) {
+        const transformed = res.data.map(transformApiProduct);
+        setProductList(transformed);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const [peopleCount, setPeopleCount] = useState(1);
   const [selectedProducts, setSelectedProducts] = useState<
     { label: string; price: number; count: number }[]
   >([]);
 
-  const productList = [
-    { label: "우산 (+1,000원)", price: 1000 },
-    { label: "스노클링 세트 (+1,000원)", price: 1000 },
-    { label: "샤워기 필터 세트 (+1,000원)", price: 1000 },
-    { label: "목베게 (+1,000원)", price: 1000 },
-    { label: "여행용 파우치 (+1,000원)", price: 1000 },
-  ];
-
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const label = e.target.value;
-    const exists = selectedProducts.find(p => p.label === label);
-    if (exists) return;
-
-    const found = productList.find(p => p.label === label);
+    const productId = Number(e.target.value);
+    const found = productList.find(p => p.product_id === productId);
     if (!found) return;
 
-    setSelectedProducts(prev => [...prev, { ...found, count: 1 }]);
+    const exists = selectedProducts.find(p => p.label === found.product_name);
+    if (exists) return;
+
+    setSelectedProducts(prev => [
+      ...prev,
+      {
+        label: found.product_name,
+        price: found.product_price,
+        count: 1,
+      },
+    ]);
   };
 
   const updateProductCount = (label: string, delta: number) => {
@@ -52,64 +73,81 @@ const Info = () => {
 
   return (
     <div className={styles.rightSection}>
-      <p className={styles.title}>[부산] 회먹고 국밥먹고 시장까지 먹방 투어</p>
+      <p className={styles.title}>{data.travelName}</p>
 
       <div className={styles.infoBadge}>
-        <span className={styles.badge}># 부산</span>
-        <span className={styles.badge}># 우정여행</span>
-        <span className={styles.badge}># 먹방투어</span>
+        {data.travelLabel.split(",").map((label, idx) => (
+          <span key={idx} className={styles.badge}>
+            #{label.trim()}
+          </span>
+        ))}
       </div>
 
       <div className={styles.rate}>
         <FaStar className={styles.starIcon} />
-        <span className={styles.starRating}>4.8</span>
+        <span className={styles.starRating}>{data.rate.toFixed(1)}</span>
         <FaComments className={styles.commentIcon} />
-        <span className={styles.commentCount}>23</span>
+        <span className={styles.commentCount}>{data.reviewCount}</span>
       </div>
 
       <div className={styles.detailInfo}>
         <div className={styles.dateInfo}>
           <FaRegCalendarCheck className={styles.calendarIcon} />
-          <span className={styles.date}>2025.06.03 ~ 2025.06.05</span>
+          <span className={styles.date}>
+            {data.travelStartDt} ~ {data.travelEndDt}
+          </span>
         </div>
 
         <div className={styles.personInfo}>
           <img src={people} alt="People Icon" className={styles.peopleIcon} />
           <div className={styles.personText}>
             <div className={styles.personTop}>
-              <span className={styles.personCount}>예약 인원 n명</span>
-              <span className={styles.personCount}>(잔여 개수 n개)</span>
+              <span className={styles.personCount}>
+                예약 인원 {data.reservedCount}명
+              </span>
+              <span className={styles.personCount}>
+                (잔여 개수 {data.maxPeople - data.reservedCount}개)
+              </span>
             </div>
-            <p className={styles.minPeopleCount}>최소 출발 인원 : n명</p>
+            <p className={styles.minPeopleCount}>
+              최소 출발 인원 : {data.minPeople}명
+            </p>
           </div>
         </div>
 
         <div className={styles.hotelInfo}>
           <LuHotel className={styles.hotelIcon} />
-          <span className={styles.hotelDetails}>부산 광안리 호텔</span>
+          <span className={styles.hotelDetails}>{data.hotelInfo}</span>
         </div>
 
         <div className={styles.adventureInfo}>
           <LuTicket className={styles.ticketIcon} />
-          <span className={styles.adventureDetails}>
-            크루즈 포함 + 루지 포함
-          </span>
+          <span className={styles.adventureDetails}>{data.ticketInfo}</span>
         </div>
 
         <div className={styles.trafficInfo}>
           <IoMdBus className={styles.busIcon} />
-          <span className={styles.trafficDetails}>버스 대여 O</span>
+          <span className={styles.trafficDetails}>
+            버스 대여 {data.busIncluded ? "O" : "X"}
+          </span>
         </div>
       </div>
 
       <div className={styles.subProductInfo}>
         <p className={styles.subProductTitle}>추가 구매 상품</p>
-        <select className={styles.productSelect} onChange={handleSelect}>
-          <option disabled selected>
+        <select
+          className={styles.productSelect}
+          onChange={handleSelect}
+          defaultValue=""
+        >
+          <option value="" disabled>
             상품을 선택하세요
           </option>
-          {productList.map(p => (
-            <option key={p.label}>{p.label}</option>
+          {productList.map(product => (
+            <option key={product.product_id} value={product.product_id}>
+              {product.product_name} (+{product.product_price.toLocaleString()}
+              원)
+            </option>
           ))}
         </select>
       </div>

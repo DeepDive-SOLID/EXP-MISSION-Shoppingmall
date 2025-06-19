@@ -25,7 +25,7 @@ const router = createBrowserRouter([
         element: <Search />,
       },
       {
-        path: "detail",
+        path: "detail/:travelId",
         element: <Detail />,
       },
       {

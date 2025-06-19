@@ -6,10 +6,12 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { HomeTravelDto } from "../../../types/home/homeTravel";
 import { fetchPopularTravels } from "../../../api/home/homeApi";
+import { useNavigate } from "react-router-dom";
 
 const HomePopular = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [populars, setPopulars] = useState<HomeTravelDto[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadPopulars = async () => {
@@ -63,7 +65,12 @@ const HomePopular = () => {
       >
         {populars.map(item => (
           <SwiperSlide key={item.travelId}>
-            <div className={styles.card}>
+            <div
+              className={styles.card}
+              onClick={() =>
+                navigate(`/detail/${item.travelId}`, { state: item })
+              }
+            >
               <img src={item.travelImg} alt={item.travelName} />
               <div className={styles.info}>
                 <p className={styles.name}>{item.travelName}</p>

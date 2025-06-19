@@ -6,18 +6,15 @@ import "swiper/css/navigation";
 import type { Swiper as SwiperType } from "swiper";
 import { useRef, useEffect } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import {
-  carrier,
-  pilow,
-  travelkit,
-  snorkel,
-  umbrella,
-  home_banner,
-} from "../../../assets";
+import { carrier, pilow, travelkit, snorkel, umbrella } from "../../../assets";
 
 const subItems = [carrier, pilow, travelkit, snorkel, umbrella];
 
-const ProductImg = () => {
+interface ProductImgProps {
+  travelImg: string;
+}
+
+const ProductImg = ({ travelImg }: ProductImgProps) => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const swiperRef = useRef<SwiperType | null>(null);
@@ -39,7 +36,7 @@ const ProductImg = () => {
   return (
     <div>
       <div className={styles.leftSection}>
-        <img src={home_banner} alt="Main Poster" className={styles.mainImg} />
+        <img src={travelImg} alt="Main Poster" className={styles.mainImg} />
         <div className={styles.sliderWrapper}>
           <Swiper
             modules={[Navigation]}

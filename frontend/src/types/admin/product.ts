@@ -27,6 +27,9 @@ export interface ProductListDto {
   productPrice: number;
   productAmount: number;
   productSold: boolean;
+  productUploadDt: string;
+  productUpdateDt: string;
+  productImg: string;
 }
 
 // 물품 관리 페이지 검색 타입
