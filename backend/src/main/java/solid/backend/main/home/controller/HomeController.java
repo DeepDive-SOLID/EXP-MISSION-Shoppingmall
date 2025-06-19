@@ -39,6 +39,11 @@ public class HomeController {
         return homeService.searchTravel(search);
     }
 
+    /**
+     * 설명: 상세 페이지 해당하는 상품, 물품, 리뷰 데이터 리스트
+     * @param travelId
+     * @return HomeDetailDto
+     */
     @ResponseBody
     @GetMapping("/detail-page")
     public HomeDetailDto getTravelDetailPage(@RequestParam Integer travelId) {

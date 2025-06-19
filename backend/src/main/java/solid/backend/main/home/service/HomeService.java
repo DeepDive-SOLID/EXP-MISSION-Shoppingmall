@@ -22,5 +22,10 @@ public interface HomeService {
      */
     List<HomeTravelDto> searchTravel(HomeSearchDto homeSearchDto);
 
+    /**
+     * 설명: 상세 페이지 상품, 물품, 리뷰 데이터
+     * @param travelId
+     * @return HomeDetailDto
+     */
     HomeDetailDto getTravelDetailPage(Integer travelId);
 }

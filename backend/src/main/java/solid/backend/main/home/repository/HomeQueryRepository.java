@@ -54,6 +54,11 @@ public class HomeQueryRepository {
                 .fetch();
     }
 
+    /**
+     * 설명: 해당하는 상품에 대한 리뷰 리스트
+     * @param travelId
+     * @return List<HomeReviewDto>
+     */
     public List<HomeReviewDto> getTravelReviewList(Integer travelId) {
         return queryFactory.select(Projections.constructor(HomeReviewDto.class,
                         review.reviewRate.intValue(),
