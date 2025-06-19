@@ -1,4 +1,4 @@
-package solid.backend.config;
+package solid.backend.Jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -10,7 +10,7 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import solid.backend.main.sign.dto.SignMemberInfoDto;
+
 import java.security.Key;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -20,36 +20,48 @@ import java.util.Date;
 public class JwtUtil {
     private final Key key;
     private final long accessTokenExpTime;
+    private final long refreshTokenExpTime;
 
     public JwtUtil(
             @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expiration_time}") long accessTokenExpTime
+            @Value("${jwt.expiration_time}") long accessTokenExpTime,
+            @Value("${jwt.refresh_expiration_time}") long refreshTokenExpTime
     ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpTime = accessTokenExpTime;
+        this.refreshTokenExpTime = refreshTokenExpTime;
     }
 
     /**
      * 설명: Access Token 생성
-     * @param signMemberInfoDto
-     * @return Access Token String
+     * @param accessToken
+     * @return createAccess() - Access Token 생성 메서드
      */
-    public String createAccessToken(SignMemberInfoDto signMemberInfoDto) {
-        return createToken(signMemberInfoDto, accessTokenExpTime);
+    public String createAccessToken(AccessToken accessToken) {
+        return createAccess(accessToken, accessTokenExpTime);
+    }
+
+    /**
+     * 설명: Refresh Token 생성
+     * @param accessToken
+     * @return createRefresh() - Refresh Token 생성 메서드
+     */
+    public String createRefreshToken(AccessToken accessToken) {
+        return createRefresh(accessToken, refreshTokenExpTime);
     }
 
 
     /**
      * 설명: JWT 생성
-     * @param signMemberInfoDto
+     * @param accessToken
      * @param expireTime
      * @return JWT String
      */
-    private String createToken(SignMemberInfoDto signMemberInfoDto, long expireTime) {
+    private String createAccess(AccessToken accessToken, long expireTime) {
         Claims claims = Jwts.claims();
-        claims.put("memberId", signMemberInfoDto.getMemberId());
-        claims.put("authId", signMemberInfoDto.getAuthId());
+        claims.put("memberId", accessToken.getMemberId());
+        claims.put("authId", accessToken.getAuthId());
 
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime tokenValidity = now.plusSeconds(expireTime);
@@ -58,6 +70,29 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setIssuedAt(Date.from(now.toInstant()))
                 .setExpiration(Date.from(tokenValidity.toInstant()))
+                .signWith(key)
+                .compact();
+    }
+
+    /**
+     * 설명: Refresh Token 생성
+     * @param accessToken
+     * @param refreshTokenExpTime
+     * @return refreshToken
+     */
+    public String createRefresh(AccessToken accessToken, long refreshTokenExpTime) {
+        Claims claims = Jwts.claims();
+        claims.put("memberId", accessToken.getMemberId());
+        claims.put("type", "refresh");
+
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime tokenValidity = now.plusSeconds(refreshTokenExpTime);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(Date.from(now.toInstant()))
+                .setExpiration(Date.from(tokenValidity.toInstant()))
+                .signWith(key)
                 .compact();
     }
 
@@ -66,8 +101,17 @@ public class JwtUtil {
      * @param accessToken
      * @return memberId
      */
-    public Long getMemberId(String accessToken) {
-        return parseClaims(accessToken).get("memberId", Long.class);
+    public String getMemberId(String accessToken) {
+        return parseClaims(accessToken).get("memberId", String.class);
+    }
+
+    /**
+     * 설명: Token에서 AuthId 추출
+     * @param accessToken
+     * @return AuthId
+     */
+    public String getAuthId(String accessToken) {
+        return parseClaims(accessToken).get("authId", String.class);
     }
 
     /**
@@ -98,10 +142,13 @@ public class JwtUtil {
      */
     public Claims parseClaims(String accessToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(accessToken)
+                    .getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
-        return null;
     }
 }

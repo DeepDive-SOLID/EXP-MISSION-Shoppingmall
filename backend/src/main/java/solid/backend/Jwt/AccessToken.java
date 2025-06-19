@@ -1,11 +1,11 @@
-package solid.backend.main.sign.dto;
+package solid.backend.Jwt;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class SignMemberInfoDto {
+public class AccessToken {
     private String memberId;
     private String authId;
 }

@@ -6,7 +6,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import solid.backend.config.JwtUtil;
+import solid.backend.Jwt.JwtUtil;
+import solid.backend.Jwt.AccessToken;
 import solid.backend.entity.Auth;
 import solid.backend.entity.Member;
 import solid.backend.main.sign.dto.*;
@@ -76,16 +77,19 @@ public class SignServiceImpl implements SignService{
         }
 
         // 3. 토큰에 담을 최소한의 사용자 정보 구성
-        SignMemberInfoDto dto = SignMemberInfoDto.builder()
+        AccessToken dto = AccessToken.builder()
                 .memberId(member.getMemberId())
                 .authId(member.getAuthId().getAuthId()) // 권한 코드 (예: "ADMIN")
                 .build();
 
         // 4. JWT 발급
-        String token = jwtUtil.createAccessToken(dto);
+        String accessToken = jwtUtil.createAccessToken(dto);
+
+        // refreshToken은 백엔드에서 저장 필요.
+        String refreshToken = jwtUtil.createRefreshToken(dto);
 
         // 5. access token 반환
-        return token;
+        return accessToken;
     }
 
     /**
