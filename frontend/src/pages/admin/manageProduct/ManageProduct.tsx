@@ -11,7 +11,7 @@ import {
   FiCheck,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { productApi } from "../../../api/admin/productApi";
+import { productApi } from "../../../api";
 import {
   ProductSearchType,
   Product,

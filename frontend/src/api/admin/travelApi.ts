@@ -2,7 +2,7 @@ import api from "../axios";
 import { TravelListDto, TravelListAllDto } from "../../types/admin/travel";
 
 // 여행상품 관리 API
-export const travelApi = {
+const travelApi = {
   getTravelList: async (): Promise<TravelListDto[]> => {
     try {
       const response = await api.get<TravelListDto[]>(
@@ -106,3 +106,4 @@ export const travelApi = {
     return response.data;
   },
 };
+export default travelApi;

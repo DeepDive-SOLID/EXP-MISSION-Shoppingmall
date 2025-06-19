@@ -6,7 +6,7 @@ import { IoMdBus } from "react-icons/io";
 import CounterBox from "../../common/CounterBox/CounterBox";
 import { useState, useEffect } from "react";
 import { HomeTravelDto } from "../../../types/home/homeTravel";
-import { productApi } from "../../../api/admin/productApi";
+import { productApi } from "../../../api";
 import { Product } from "../../../types/admin/product";
 import { transformApiProduct } from "../../../utils/productUtils";
 

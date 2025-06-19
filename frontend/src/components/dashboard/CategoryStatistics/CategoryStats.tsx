@@ -3,7 +3,7 @@ import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import styles from "./CategoryStats.module.scss";
 import { DashboardCategoryStatsDto } from "../../../types/admin/dashboard";
-import { dashboardApi } from "../../../api/admin/dashboardApi";
+import { dashboardApi } from "../../../api";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

@@ -13,7 +13,7 @@ import {
   FiAlertTriangle,
 } from "react-icons/fi";
 import { product1 } from "../../../assets";
-import { travelApi } from "../../../api/admin/travelApi";
+import { travelApi } from "../../../api";
 import {
   Travel,
   TravelFormData,
