@@ -21,7 +21,7 @@ public class Payment {
 
     @Column(name = "payment_num", nullable = false)
     @Comment("카드 번호")
-    private Long paymentNum;
+    private String paymentNum;
 
     @Column(name = "payment_end_dt", nullable = false)
     @Comment("카드 만료일")
@@ -33,11 +33,11 @@ public class Payment {
 
     @Column(name = "payment_security", nullable = false)
     @Comment("카드 보안코드")
-    private Integer paymentSecurity;
+    private String paymentSecurity;
 
     @Column(name = "payment_pw", nullable = false)
     @Comment("카드 비밀번호")
-    private Integer paymentPw;
+    private String paymentPw;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
