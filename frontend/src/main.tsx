@@ -13,6 +13,8 @@ import SignIn from "./pages/login/signIn/SignIn";
 import FindId from "./pages/login/findPw/FindId";
 import FindPw from "./pages/login/findPw/FindPw";
 import SignInFromPayment from "./pages/login/signIn/SignInFromPayment";
+import OrderList from "./pages/mypage/orderList/OrderList";
+import EditProfile from "./pages/mypage/editProfile/EditProfile";
 
 const router = createBrowserRouter([
   {
@@ -62,6 +64,14 @@ const router = createBrowserRouter([
       {
         path: "manage-order",
         element: <ManageOrder />,
+      },
+      {
+        path: "mypage/order-list",
+        element: <OrderList />,
+      },
+      {
+        path: "mypage/edit-profile",
+        element: <EditProfile />,
       },
     ],
   },

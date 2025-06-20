@@ -1,8 +1,15 @@
 import styles from "./Header.module.scss";
 import { logo, logout, shopping_cart, menu_bar } from "../../../assets/index";
 import { IoIosSearch } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
+
+  const handleMyPageClick = () => {
+    navigate("/mypage/order-list");
+  };
+
   return (
     <div>
       <header className={styles.header}>
@@ -34,7 +41,7 @@ const Header = () => {
             <p className={styles.menuText}>장바구니</p>
           </div>
 
-          <div className={styles.menu}>
+          <div className={styles.menu} onClick={handleMyPageClick}>
             <img src={menu_bar} alt="menu_bar" className={styles.menuIcon} />
             <p className={styles.menuText}>마이페이지</p>
           </div>
