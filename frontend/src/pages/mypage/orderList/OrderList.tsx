@@ -215,87 +215,91 @@ const OrderList = () => {
       <div className={styles.mainContent}>
         <Sidebar userName={userName} />
         <div className={styles.orderListContainer}>
-          <div
-            className={styles.noticeBox}
-            dangerouslySetInnerHTML={{ __html: noticeMessage }}
-          />
-          <div className={styles.orderList}>
-            {orders.length === 0 ? (
-              <div className={styles.emptyState}>
-                <FiPackage className={styles.emptyIcon} />
-                <p>주문 내역이 없습니다</p>
-              </div>
-            ) : (
-              orders.map(order => (
-                <div key={order.orderNumber} className={styles.orderCard}>
-                  <div className={styles.orderHeader}>
-                    <div className={styles.orderInfo}>
-                      <span className={styles.orderNumber}>
-                        {order.orderNumber}
-                      </span>
-                      <span className={styles.orderDate}>
-                        {order.orderDate}
-                      </span>
-                    </div>
-                    <div
-                      className={styles.statusBadge}
-                      style={{ backgroundColor: getStatusColor(order.status) }}
-                    >
-                      {getStatusIcon(order.status)}
-                      <span>{getStatusText(order.status)}</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.orderContent}>
-                    <div className={styles.travelInfo}>
-                      <img
-                        src={order.travelImage}
-                        alt={order.travelName}
-                        className={styles.travelImage}
-                      />
-                      <div className={styles.travelDetails}>
-                        <h3 className={styles.travelName}>
-                          {order.travelName}
-                        </h3>
-                        <p className={styles.travelMeta}>
-                          인원: {order.quantity}명
-                        </p>
-                        <p className={styles.travelMeta}>
-                          여행기간: {order.travel_start_dt} ~{" "}
-                          {order.travel_end_dt}
-                        </p>
+          <div className={styles.orderListForm}>
+            <div
+              className={styles.noticeBox}
+              dangerouslySetInnerHTML={{ __html: noticeMessage }}
+            />
+            <div className={styles.orderList}>
+              {orders.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <FiPackage className={styles.emptyIcon} />
+                  <p>주문 내역이 없습니다</p>
+                </div>
+              ) : (
+                orders.map(order => (
+                  <div key={order.orderNumber} className={styles.orderCard}>
+                    <div className={styles.orderHeader}>
+                      <div className={styles.orderInfo}>
+                        <span className={styles.orderNumber}>
+                          {order.orderNumber}
+                        </span>
+                        <span className={styles.orderDate}>
+                          {order.orderDate}
+                        </span>
+                      </div>
+                      <div
+                        className={styles.statusBadge}
+                        style={{
+                          backgroundColor: getStatusColor(order.status),
+                        }}
+                      >
+                        {getStatusIcon(order.status)}
+                        <span>{getStatusText(order.status)}</span>
                       </div>
                     </div>
-                    <div className={styles.priceInfo}>
-                      <span className={styles.price}>
-                        {order.price.toLocaleString()}원
-                      </span>
-                    </div>
-                  </div>
 
-                  {(order.status === "3" || order.status === "0") && (
-                    <div className={styles.orderActions}>
-                      {order.status === "3" && (
-                        <button
-                          className={styles.actionButton}
-                          onClick={() => handleReviewOrder(order)}
-                        >
-                          리뷰 작성
-                        </button>
-                      )}
-                      {order.status === "0" && (
-                        <button
-                          className={styles.actionButton}
-                          onClick={() => handleCancelOrder(order)}
-                        >
-                          예약취소
-                        </button>
-                      )}
+                    <div className={styles.orderContent}>
+                      <div className={styles.travelInfo}>
+                        <img
+                          src={order.travelImage}
+                          alt={order.travelName}
+                          className={styles.travelImage}
+                        />
+                        <div className={styles.travelDetails}>
+                          <h3 className={styles.travelName}>
+                            {order.travelName}
+                          </h3>
+                          <p className={styles.travelMeta}>
+                            인원: {order.quantity}명
+                          </p>
+                          <p className={styles.travelMeta}>
+                            여행기간: {order.travel_start_dt} ~{" "}
+                            {order.travel_end_dt}
+                          </p>
+                        </div>
+                      </div>
+                      <div className={styles.priceInfo}>
+                        <span className={styles.price}>
+                          {order.price.toLocaleString()}원
+                        </span>
+                      </div>
                     </div>
-                  )}
-                </div>
-              ))
-            )}
+
+                    {(order.status === "3" || order.status === "0") && (
+                      <div className={styles.orderActions}>
+                        {order.status === "3" && (
+                          <button
+                            className={styles.actionButton}
+                            onClick={() => handleReviewOrder(order)}
+                          >
+                            리뷰 작성
+                          </button>
+                        )}
+                        {order.status === "0" && (
+                          <button
+                            className={styles.actionButton}
+                            onClick={() => handleCancelOrder(order)}
+                          >
+                            예약취소
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>

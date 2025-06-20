@@ -4,6 +4,38 @@ import Header from "../../../components/common/Header_login/Header";
 import Sidebar from "../../../components/common/Sidebar_mypage/Sidebar";
 import profileImg from "../../../assets/images/profile1.jpg";
 
+const EyeIcon = ({ visible }: { visible: boolean }) =>
+  visible ? (
+    <svg
+      width="24"
+      height="24"
+      fill="none"
+      stroke="#6b7280"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
+    >
+      <ellipse cx="12" cy="12" rx="8" ry="5" />
+      <circle cx="12" cy="12" r="2.5" />
+    </svg>
+  ) : (
+    <svg
+      width="24"
+      height="24"
+      fill="none"
+      stroke="#6b7280"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
+    >
+      <ellipse cx="12" cy="12" rx="8" ry="5" />
+      <circle cx="12" cy="12" r="2.5" />
+      <line x1="4" y1="4" x2="20" y2="20" />
+    </svg>
+  );
+
 const EditProfile = () => {
   const userName = "사용자";
   const [form, setForm] = useState({
@@ -13,6 +45,7 @@ const EditProfile = () => {
     password: "",
     birth: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showFinalConfirm, setShowFinalConfirm] = useState(false);
@@ -117,13 +150,26 @@ const EditProfile = () => {
             </div>
             <div className={styles.inputGroup}>
               <label>비밀번호</label>
-              <input
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="비밀번호를 입력하세요"
-                type="password"
-              />
+              <div className={styles.passwordInputWrapper}>
+                <input
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="비밀번호를 입력하세요"
+                  type={showPassword ? "text" : "password"}
+                />
+                <button
+                  type="button"
+                  className={styles.eyeBtn}
+                  onClick={() => setShowPassword(v => !v)}
+                  tabIndex={-1}
+                  aria-label={
+                    showPassword ? "비밀번호 숨기기" : "비밀번호 보기"
+                  }
+                >
+                  <EyeIcon visible={showPassword} />
+                </button>
+              </div>
             </div>
             <div className={styles.inputGroup}>
               <label>생년월일</label>

@@ -12,14 +12,31 @@
 
 .orderListContainer {
   flex: 1;
-  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   max-width: 100%;
+  padding: 24px;
+}
+
+.orderListForm {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  padding: 48px 48px 32px 48px;
+  min-width: 380px;
+  max-width: 1082px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .orderList {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
 
   .emptyState {
     text-align: center;
@@ -179,6 +196,11 @@
     padding: 16px;
   }
 
+  .orderListForm {
+    padding: 24px;
+    min-width: auto;
+  }
+
   .orderCard {
     .orderHeader {
       flex-direction: column;
@@ -222,6 +244,7 @@
   margin-bottom: 32px;
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
   letter-spacing: 0.01em;
+  width: 100%;
 }
 .noticeBox b {
   font-weight: 700;
