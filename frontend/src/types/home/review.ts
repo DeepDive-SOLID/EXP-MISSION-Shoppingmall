@@ -1,5 +1,5 @@
 export interface ReviewDto {
-  username: string;
-  star: number;
-  content: string;
+  reviewRate: number;
+  reviewComment: string;
+  memberName: string;
 }

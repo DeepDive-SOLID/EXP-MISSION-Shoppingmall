@@ -36,12 +36,12 @@ const Review = () => {
               alt="Profile"
               className={styles.profileImage}
             />
-            <p className={styles.username}>{review.username}</p>
-            {[...Array(review.star)].map((_, i) => (
+            <p className={styles.username}>{review.memberName}</p>
+            {[...Array(review.reviewRate)].map((_, i) => (
               <FaStar key={i} className={styles.starIcon} />
             ))}
           </div>
-          <p className={styles.reviewText}>{review.content}</p>
+          <p className={styles.reviewText}>{review.reviewComment}</p>
         </div>
       ))}
     </div>
