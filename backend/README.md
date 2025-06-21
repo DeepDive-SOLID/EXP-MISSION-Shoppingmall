@@ -49,7 +49,6 @@ src/main/java/solid/backend
     - MemberUpdDto.java
 - repository(jpa)
     - MemberQueryRepository.java
-    - MemberRepository.java
 - service(비즈니스 로직)
     - MemberService.java
     - MemberServiceImpl.java
@@ -82,7 +81,6 @@ src/main/java/solid/backend
     - ProductUpdateDto.java
     - ProductSearchDto.java
 - repository(jpa)
-    - ProductRepository.java
     - ProductQueryRepository.java
 - service(비즈니스 로직)
     - ProductService.java
@@ -271,7 +269,6 @@ return : List< DashboardWeeklySalesAmtDto >
     - TravelUpdDto.java
 - repository(jpa)
     - TravelQueryRepository.java
-    - TravelRepository.java
 - service(비즈니스 로직)
     - TravelService.java
     - TravelServiceImpl.java
