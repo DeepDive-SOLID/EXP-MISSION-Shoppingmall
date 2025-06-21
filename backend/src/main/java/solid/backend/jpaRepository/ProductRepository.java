@@ -1,4 +1,4 @@
-package solid.backend.admin.product.repository;
+package solid.backend.jpaRepository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import solid.backend.entity.Product;

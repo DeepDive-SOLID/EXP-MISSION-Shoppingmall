@@ -7,7 +7,7 @@ import solid.backend.admin.member.dto.MemberListDto;
 import solid.backend.admin.member.dto.MemberSearchDto;
 import solid.backend.admin.member.dto.MemberUpdDto;
 import solid.backend.admin.member.repository.MemberQueryRepository;
-import solid.backend.admin.member.repository.MemberRepository;
+import solid.backend.jpaRepository.MemberRepository;
 import solid.backend.entity.Auth;
 import solid.backend.entity.Member;
 

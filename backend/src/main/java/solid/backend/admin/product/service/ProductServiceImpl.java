@@ -7,7 +7,7 @@ import solid.backend.admin.product.dto.ProductListDto;
 import solid.backend.admin.product.dto.ProductSearchDto;
 import solid.backend.admin.product.dto.ProductUpdDto;
 import solid.backend.admin.product.repository.ProductQueryRepository;
-import solid.backend.admin.product.repository.ProductRepository;
+import solid.backend.jpaRepository.ProductRepository;
 import solid.backend.common.FileManager;
 import solid.backend.entity.Product;
 
