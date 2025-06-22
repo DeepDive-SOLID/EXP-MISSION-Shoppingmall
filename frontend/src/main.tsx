@@ -15,7 +15,10 @@ import FindPw from "./pages/login/findPw/FindPw";
 import SignInFromPayment from "./pages/login/signIn/SignInFromPayment";
 import OrderList from "./pages/mypage/orderList/OrderList";
 import EditProfile from "./pages/mypage/editProfile/EditProfile";
-import CardInfo from "./pages/mypage/cardInfo/CardInfo";
+import CardInfo from "./pages/mypage/cardInfo/cardInfo/CardInfo";
+import CardAdd from "./pages/mypage/cardInfo/cardAdd/CardAdd";
+import AddComplete from "./pages/mypage/cardInfo/addComplete/AddComplete";
+import AddFail from "./pages/mypage/cardInfo/addFail/AddFail";
 
 const router = createBrowserRouter([
   {
@@ -77,6 +80,18 @@ const router = createBrowserRouter([
       {
         path: "mypage/card-info",
         element: <CardInfo />,
+      },
+      {
+        path: "mypage/card-add",
+        element: <CardAdd />,
+      },
+      {
+        path: "mypage/card-add/complete",
+        element: <AddComplete />,
+      },
+      {
+        path: "mypage/card-add/fail",
+        element: <AddFail />,
       },
     ],
   },
