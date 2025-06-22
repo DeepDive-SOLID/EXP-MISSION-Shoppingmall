@@ -306,7 +306,7 @@ const CardAdd = () => {
                         e.target.value.replace(/\D/g, ""),
                       )
                     }
-                    placeholder="123"
+                    placeholder="CVV/CVC"
                     maxLength={4}
                     className={errors.cvv ? styles.error : ""}
                   />

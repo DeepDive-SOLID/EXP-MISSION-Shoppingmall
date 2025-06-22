@@ -46,17 +46,98 @@ const EditProfile = () => {
     birth: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showFinalConfirm, setShowFinalConfirm] = useState(false);
 
+  // 전화번호 형식 검증 함수
+  const validatePhoneNumber = (phone: string): boolean => {
+    const phoneRegex = /^010-\d{4}-\d{4}$/;
+    return phoneRegex.test(phone);
+  };
+
+  // 이메일 형식 검증 함수
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // 비밀번호 형식 검증 함수
+  const validatePassword = (password: string): boolean => {
+    const passwordRegex =
+      /^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z0-9!@#$%^&*(),.?":{}|<>]{8,}$/;
+    return passwordRegex.test(password);
+  };
+
+  // 생년월일 검증 함수
+  const validateBirthDate = (birth: string): boolean => {
+    const selectedDate = new Date(birth);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // 오늘 날짜의 마지막 시간으로 설정
+    return selectedDate <= today;
+  };
+
+  // 폼 검증 함수
+  const validateForm = (): boolean => {
+    const newErrors: { [key: string]: string } = {};
+
+    // 이름 검증
+    if (!form.name.trim()) {
+      newErrors.name = "이름을 입력해주세요.";
+    }
+
+    // 이메일 검증
+    if (!form.email.trim()) {
+      newErrors.email = "이메일을 입력해주세요.";
+    } else if (!validateEmail(form.email)) {
+      newErrors.email = "올바른 이메일 형식을 입력해주세요.";
+    }
+
+    // 전화번호 검증
+    if (!form.phone.trim()) {
+      newErrors.phone = "전화번호를 입력해주세요.";
+    } else if (!validatePhoneNumber(form.phone)) {
+      newErrors.phone = "전화번호는 010-XXXX-XXXX 형식으로 입력해주세요.";
+    }
+
+    // 비밀번호 검증
+    if (!form.password.trim()) {
+      newErrors.password = "비밀번호를 입력해주세요.";
+    } else if (!validatePassword(form.password)) {
+      newErrors.password = "최소 8자 이상, 숫자와 특수문자 포함";
+    }
+
+    // 생년월일 검증
+    if (!form.birth) {
+      newErrors.birth = "생년월일을 입력해주세요.";
+    } else if (!validateBirthDate(form.birth)) {
+      newErrors.birth = "생년월일은 오늘 이후 날짜를 입력할 수 없습니다.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
+
+    // 실시간 검증 (에러가 있을 때만)
+    if (errors[name]) {
+      const newErrors = { ...errors };
+      delete newErrors[name];
+      setErrors(newErrors);
+    }
   };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     // 저장 로직
     alert("회원정보가 저장되었습니다.");
   };
@@ -120,36 +201,48 @@ const EditProfile = () => {
               </div>
             </div>
             <div className={styles.inputGroup}>
-              <label>이름</label>
+              <label>이름 *</label>
               <input
                 name="name"
                 value={form.name}
                 onChange={handleChange}
                 placeholder="이름을 입력하세요"
+                className={errors.name ? styles.errorInput : ""}
               />
+              {errors.name && (
+                <span className={styles.errorMessage}>{errors.name}</span>
+              )}
             </div>
             <div className={styles.inputGroup}>
-              <label>이메일</label>
+              <label>이메일 *</label>
               <input
                 name="email"
                 value={form.email}
                 onChange={handleChange}
                 placeholder="이메일을 입력하세요"
                 type="email"
+                className={errors.email ? styles.errorInput : ""}
               />
+              {errors.email && (
+                <span className={styles.errorMessage}>{errors.email}</span>
+              )}
             </div>
             <div className={styles.inputGroup}>
-              <label>전화번호</label>
+              <label>전화번호 *</label>
               <input
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
-                placeholder="전화번호를 입력하세요"
+                placeholder="010-XXXX-XXXX"
                 type="tel"
+                className={errors.phone ? styles.errorInput : ""}
               />
+              {errors.phone && (
+                <span className={styles.errorMessage}>{errors.phone}</span>
+              )}
             </div>
             <div className={styles.inputGroup}>
-              <label>비밀번호</label>
+              <label>비밀번호 *</label>
               <div className={styles.passwordInputWrapper}>
                 <input
                   name="password"
@@ -157,6 +250,7 @@ const EditProfile = () => {
                   onChange={handleChange}
                   placeholder="비밀번호를 입력하세요"
                   type={showPassword ? "text" : "password"}
+                  className={errors.password ? styles.errorInput : ""}
                 />
                 <button
                   type="button"
@@ -170,16 +264,23 @@ const EditProfile = () => {
                   <EyeIcon visible={showPassword} />
                 </button>
               </div>
+              {errors.password && (
+                <span className={styles.errorMessage}>{errors.password}</span>
+              )}
             </div>
             <div className={styles.inputGroup}>
-              <label>생년월일</label>
+              <label>생년월일 *</label>
               <input
                 name="birth"
                 value={form.birth}
                 onChange={handleChange}
                 placeholder="생년월일을 입력하세요"
                 type="date"
+                className={errors.birth ? styles.errorInput : ""}
               />
+              {errors.birth && (
+                <span className={styles.errorMessage}>{errors.birth}</span>
+              )}
             </div>
             <button className={styles.saveButton} type="submit">
               저장하기

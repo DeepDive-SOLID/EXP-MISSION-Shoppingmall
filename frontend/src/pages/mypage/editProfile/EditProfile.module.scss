@@ -89,6 +89,18 @@
   cursor: not-allowed;
 }
 
+.errorInput {
+  border-color: #ef4444 !important;
+  background: #fef2f2 !important;
+}
+
+.errorMessage {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
 .passwordInputWrapper {
   position: relative;
   width: 100%;
