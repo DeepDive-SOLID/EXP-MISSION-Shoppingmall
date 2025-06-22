@@ -45,6 +45,20 @@ function isValidPassword(password: string) {
   );
 }
 
+// 전화번호 형식 검증 함수
+function isValidPhoneNumber(phone: string) {
+  const phoneRegex = /^010-\d{4}-\d{4}$/;
+  return phoneRegex.test(phone);
+}
+
+// 생년월일 검증 함수
+function isValidBirthDate(birth: string) {
+  const selectedDate = new Date(birth);
+  const today = new Date();
+  today.setHours(23, 59, 59, 999); // 오늘 날짜의 마지막 시간으로 설정
+  return selectedDate <= today;
+}
+
 const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
     memberName: "",
@@ -164,10 +178,15 @@ const SignUp: React.FC = () => {
 
     if (!formData.memberPhone.trim()) {
       errors.memberPhone = "전화번호를 입력해주세요";
+    } else if (!isValidPhoneNumber(formData.memberPhone)) {
+      errors.memberPhone =
+        "올바른 전화번호 형식을 입력해주세요 (010-XXXX-XXXX)";
     }
 
     if (!formData.memberBirth) {
       errors.memberBirth = "생년월일을 선택해주세요";
+    } else if (!isValidBirthDate(formData.memberBirth)) {
+      errors.memberBirth = "올바른 생년월일을 선택해주세요";
     }
 
     setFieldErrors(errors);
@@ -310,7 +329,7 @@ const SignUp: React.FC = () => {
               className={`${styles.input} ${fieldErrors.memberPhone ? styles.inputError : ""}`}
               type="tel"
               name="memberPhone"
-              placeholder="전화번호를 입력해주세요"
+              placeholder="010-XXXX-XXXX"
               value={formData.memberPhone}
               onChange={handleChange}
               required
