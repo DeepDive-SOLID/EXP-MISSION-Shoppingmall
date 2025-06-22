@@ -28,6 +28,17 @@ src/main/java/solid/backend
   - FileStorageHandlerConfig : 업로드 파일에 대한 정적 리소스 핸들링 설정
 - common : 공통 기능
   - FileManager : 파일 관리 모듈
+- jpaRepository : JPA Repository
+  - AuthRepository : 권한
+  - BasketRepository : 장바구니
+  - MemberRepository : 회원
+  - OrderProductRepository : 물품 주문
+  - OrdersRepository : 주문
+  - OrderTravelRepository : 여행 주문
+  - PaymentRepository : 결제수단
+  - ProductRepository : 물품
+  - ReviewRepository : 리뷰
+  - TravelRepository : 여행상품
 ---
 ### 사용자 관리 : admin/member
 - controller(컨트롤러)
@@ -38,7 +49,6 @@ src/main/java/solid/backend
     - MemberUpdDto.java
 - repository(jpa)
     - MemberQueryRepository.java
-    - MemberRepository.java
 - service(비즈니스 로직)
     - MemberService.java
     - MemberServiceImpl.java
@@ -71,7 +81,6 @@ src/main/java/solid/backend
     - ProductUpdateDto.java
     - ProductSearchDto.java
 - repository(jpa)
-    - ProductRepository.java
     - ProductQueryRepository.java
 - service(비즈니스 로직)
     - ProductService.java
@@ -260,7 +269,6 @@ return : List< DashboardWeeklySalesAmtDto >
     - TravelUpdDto.java
 - repository(jpa)
     - TravelQueryRepository.java
-    - TravelRepository.java
 - service(비즈니스 로직)
     - TravelService.java
     - TravelServiceImpl.java

@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import solid.backend.admin.travel.repository.TravelQueryRepository;
-import solid.backend.admin.travel.repository.TravelRepository;
+import solid.backend.jpaRepository.TravelRepository;
 import solid.backend.admin.travel.dto.*;
 import solid.backend.common.FileManager;
 import solid.backend.entity.Travel;
