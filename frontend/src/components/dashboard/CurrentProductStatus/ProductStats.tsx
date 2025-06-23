@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { dashboardApi } from "../../../api/admin/dashboardApi";
+import { dashboardApi } from "../../../api";
 import styles from "./ProductStats.module.scss";
 import { DashboardProductStatsDto } from "../../../types/admin/dashboard";
 

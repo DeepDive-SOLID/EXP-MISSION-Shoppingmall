@@ -2,7 +2,7 @@ import api from "../axios";
 import { ProductListDto } from "../../types/admin/product";
 
 // 물품 관리 API
-export const productApi = {
+const productApi = {
   // 물품 목록 조회
   getProductList: () =>
     api.get<ProductListDto[]>("/admin/product/getProductList"),
@@ -47,3 +47,4 @@ export const productApi = {
       data: productId,
     }),
 };
+export default productApi;

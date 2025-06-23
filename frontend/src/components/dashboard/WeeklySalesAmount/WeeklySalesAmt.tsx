@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { dashboardApi } from "../../../api/admin/dashboardApi";
+import { dashboardApi } from "../../../api";
 import {
   Chart as ChartJS,
   LineElement,

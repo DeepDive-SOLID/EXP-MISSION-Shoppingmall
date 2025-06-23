@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AxiosError } from 'axios';
+import { AxiosError } from "axios";
 import Header from "../../../components/common/Header_dash/Header";
 import Sidebar from "../../../components/common/Sidebar/Sidebar";
 import styles from "./ManageTravel.module.scss";
@@ -13,7 +13,7 @@ import {
   FiCheck,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { travelApi } from "../../../api/admin/travelApi";
+import { travelApi } from "../../../api";
 import {
   Travel,
   TravelFormData,
@@ -280,8 +280,12 @@ const ManageTravel = () => {
     } else {
       setNewTravel(prev => ({
         ...prev,
-        [name]: type === "checkbox" ? checked :
-          name === "travel_label" ? value.replace(/\s/g, "") : value,
+        [name]:
+          type === "checkbox"
+            ? checked
+            : name === "travel_label"
+              ? value.replace(/\s/g, "")
+              : value,
       }));
     }
   };
@@ -318,7 +322,6 @@ const ManageTravel = () => {
 
       // 모달 닫기
       closeModal();
-
     } catch (err) {
       const error = err as AxiosError;
       if (error.response && typeof error.response.data === "string") {
@@ -655,9 +658,15 @@ const ManageTravel = () => {
                   <div className={styles.formGroup}>
                     <label>이미지 선택</label>
                     <div className={styles.fileNotice}>
-                      <p><strong>최대 첨부 파일 크기:</strong> 1MB</p>
-                      <p><strong>허용 확장자:</strong> jpg, png</p>
-                      <p><strong>파일명 길이 제한:</strong> 300자 이하</p>
+                      <p>
+                        <strong>최대 첨부 파일 크기:</strong> 1MB
+                      </p>
+                      <p>
+                        <strong>허용 확장자:</strong> jpg, png
+                      </p>
+                      <p>
+                        <strong>파일명 길이 제한:</strong> 300자 이하
+                      </p>
                     </div>
                     <div className={styles.fileInput}>
                       <input

@@ -7,7 +7,7 @@ import {
   DashboardWeeklySalesAmtDto,
 } from "../../types/admin/dashboard";
 
-export const dashboardApi = {
+const dashboardApi = {
   // 카테고리 통계 API
   getCategoryStats: async (): Promise<DashboardCategoryStatsDto[]> => {
     const res = await api.get<DashboardCategoryStatsDto[]>(
@@ -34,3 +34,4 @@ export const dashboardApi = {
     return res.data;
   },
 };
+export default dashboardApi;
