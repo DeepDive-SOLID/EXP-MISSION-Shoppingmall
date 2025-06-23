@@ -5,12 +5,14 @@ import { useMemo, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { searchTravels } from "../../../api/home/homeApi";
 import { HomeTravelDto } from "../../../types/home/homeTravel";
+import { useNavigate } from "react-router-dom";
 
 const SearchMain = () => {
   const [results, setResults] = useState<HomeTravelDto[]>([]);
   const [sorted, setSorted] = useState<1 | 2 | 3>(1); // 1: 최신순, 2: 인기순, 3: 평점순
   const location = useLocation();
   const baseParams = useMemo(() => location.state || {}, [location.state]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetch = async () => {
@@ -56,7 +58,11 @@ const SearchMain = () => {
       </div>
 
       {results.map(item => (
-        <div className={styles.searchItem} key={item.travelId}>
+        <div
+          className={styles.searchItem}
+          key={item.travelId}
+          onClick={() => navigate(`/detail/${item.travelId}`, { state: item })}
+        >
           <div className={styles.leftSection}>
             <img
               src={item.travelImg}
@@ -80,7 +86,9 @@ const SearchMain = () => {
             </div>
             <div className={styles.listContent}>
               <FaStar className={styles.starIcon} />
-              <span className={styles.starRating}>{item.rate.toFixed(1)}</span>
+              <span className={styles.starRating}>
+                {(item.rate ?? 0).toFixed(1)}
+              </span>
               <FaComments className={styles.commentIcon} />
               <span className={styles.commentCount}>{item.reviewCount}</span>
               <span className={styles.price}>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./SignIn.module.scss";
 import { logo } from "../../../assets/index";
+import { useNavigate } from "react-router-dom";
 
 const EyeIcon = ({ visible }: { visible: boolean }) =>
   visible ? (
@@ -67,10 +68,17 @@ const SignIn: React.FC = () => {
     console.log("로그인 시도:", formData);
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.signInContainer}>
-        <img src={logo} alt="로고" className={styles.logo} />
+        <img
+          src={logo}
+          alt="로고"
+          className={styles.logo}
+          onClick={() => navigate("/")}
+        />
         <h1 className={styles.title}>계정에 로그인하세요</h1>
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>

@@ -85,7 +85,7 @@ const Info = ({ data }: InfoProps) => {
 
       <div className={styles.rate}>
         <FaStar className={styles.starIcon} />
-        <span className={styles.starRating}>{data.rate.toFixed(1)}</span>
+        <span className={styles.starRating}>{(data.rate ?? 0).toFixed(1)}</span>
         <FaComments className={styles.commentIcon} />
         <span className={styles.commentCount}>{data.reviewCount}</span>
       </div>

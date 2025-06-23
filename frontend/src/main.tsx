@@ -26,6 +26,34 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
+        path: "search",
+        element: <Search />,
+      },
+      {
+        path: "detail/:travelId",
+        element: <Detail />,
+      },
+      {
+        path: "signup",
+        element: <SignUp />,
+      },
+      {
+        path: "login",
+        element: <SignIn />,
+      },
+      {
+        path: "login/fromPayment",
+        element: <SignInFromPayment />,
+      },
+      {
+        path: "find-id",
+        element: <FindId />,
+      },
+      {
+        path: "find-pw",
+        element: <FindPw />,
+      },
+      {
         path: "dashboard",
         element: <Dashboard />,
       },
