@@ -14,6 +14,7 @@ import FindId from "./pages/login/findPw/FindId";
 import FindPw from "./pages/login/findPw/FindPw";
 import SignInFromPayment from "./pages/login/signIn/SignInFromPayment";
 import Cart from "./pages/cart/Cart";
+import Order from "./pages/order/order";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: "cart",
         element: <Cart />,
+      },
+      {
+        path: "order",
+        element: <Order />,
       },
       {
         path: "dashboard",

@@ -5,7 +5,6 @@ export { default as menu_bar } from "./icons/menu_bar.svg";
 export { default as shopping_cart } from "./icons/shopping_cart.svg";
 
 // 물품 이미지
-export { default as product1 } from "./images/carrier.jpg";
 export { default as carrier } from "./images/carrier.jpg";
 export { default as pilow } from "./images/pilow.jpg";
 export { default as travelkit } from "./images/travelkit.jpg";

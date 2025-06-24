@@ -87,7 +87,6 @@ const Cart = () => {
         </div>
 
         <div className={styles.cartContentWrapper}>
-          {/* 상품 목록 */}
           <div className={styles.productList}>
             {items.map(item => (
               <div key={item.id} className={styles.productSection}>
