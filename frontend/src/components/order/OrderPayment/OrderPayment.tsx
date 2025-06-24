@@ -1,78 +1,132 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import styles from "./OrderPayment.module.scss";
 import { FaCheckCircle } from "react-icons/fa";
+import { useState } from "react";
 
-const terms = [
-  {
-    title: "[필수] 개인정보 수집 및 이용 동의",
-    description: `본인은 아래의 내용에 동의합니다.
+interface FormData {
+  name: string;
+  birthYear: string;
+  birthMonth: string;
+  phone: string;
+  emailId: string;
+  emailDomain: string;
+  address: string;
+  detailAddress: string;
+}
 
-· 수집 항목: 성명, 생년월일, 연락처, 이메일 등
-· 수집 목적: 예약 정보 확인, 고객 응대, 서비스 제공
-· 보유 및 이용 기간: 수집일로부터 1년간 보관 후 파기
+const OrderPayment = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>();
 
-※ 귀하는 개인정보 수집 및 이용에 대한 동의를 거부할 권리가 있으며, 거부 시 서비스 이용이 제한될 수 있습니다.`,
-  },
-  {
-    title: "[필수] 취소 및 환불 수수료 정책 동의",
-    description: `예약 취소는 여행 시작일 기준 7일 전까지 가능하며, 이후 취소 시 아래 기준에 따라 수수료가 부과됩니다.
+  const [selectedCard, setSelectedCard] = useState<number | null>(0);
 
-· 출발 7일 전까지 취소: 전액 환불  
-· 출발 6~3일 전 취소: 상품가의 30% 공제 후 환불  
-· 출발 2일 전~당일 취소: 환불 불가
-
-※ 예약 후 취소 시점에 따라 수수료가 달라지므로 신중히 예약해주시기 바랍니다.`,
-  },
-];
-
-const OrderAgreement = () => {
-  const [agreements, setAgreements] = useState([false, false]);
-  const allChecked = agreements.every(Boolean);
-
-  const handleAllToggle = () => {
-    setAgreements([!allChecked, !allChecked]);
+  const onSubmit = (data: FormData) => {
+    console.log("입력된 정보:", data);
   };
 
-  const handleIndividualToggle = (index: number) => {
-    setAgreements(prev => {
-      const newArr = [...prev];
-      newArr[index] = !newArr[index];
-      return newArr;
-    });
+  const handleCardSelect = (index: number) => {
+    setSelectedCard(index);
   };
-
   return (
-    <div className={styles.agreementWrapper}>
-      <h3 className={styles.sectionTitle}>취소 및 약관 개인정보 이용 동의</h3>
+    <div className={styles.paymentWrapper}>
+      <form onSubmit={handleSubmit(onSubmit)} className={styles.infoSection}>
+        <h3 className={styles.sectionTitle}>여행자 정보 입력</h3>
 
-      <div className={styles.allCheck} onClick={handleAllToggle}>
-        <FaCheckCircle
-          className={allChecked ? styles.checked : styles.unchecked}
-        />
-        <span>약관 전체 동의</span>
-      </div>
+        <div className={styles.formRow}>
+          <label>이름</label>
+          <input
+            {...register("name", { required: "이름은 필수입니다." })}
+            placeholder="이름을 입력하세요"
+          />
+          {errors.name && <p className={styles.error}>{errors.name.message}</p>}
+        </div>
 
-      {terms.map((term, i) => (
-        <div key={i} className={styles.termBlock}>
-          <div className={styles.termBox}>
-            <div className={styles.termText}>
-              <strong>{term.title}</strong>
-              <pre className={styles.description}>{term.description}</pre>
-            </div>
-          </div>
-          <div
-            onClick={() => handleIndividualToggle(i)}
-            className={styles.checkArea}
-          >
-            <FaCheckCircle
-              className={agreements[i] ? styles.checked : styles.unchecked}
-            />
-            <span className={styles.label}>동의함</span>
+        <div className={styles.formRow}>
+          <label>생년 월일</label>
+          <div className={styles.birthGroup}>
+            <input {...register("birthYear")} placeholder="YYYY" />
+            <span>-</span>
+            <input {...register("birthMonth")} placeholder="MM" />
           </div>
         </div>
-      ))}
+
+        <div className={styles.formRow}>
+          <label>연락처</label>
+          <input {...register("phone")} placeholder="연락처를 입력하세요" />
+        </div>
+
+        <div className={styles.formRow}>
+          <label>이메일</label>
+          <div className={styles.emailGroup}>
+            <input {...register("emailId")} placeholder="아이디" />
+            <span>@</span>
+            <input {...register("emailDomain")} placeholder="도메인" />
+          </div>
+        </div>
+
+        <div className={styles.formRow}>
+          <label>주소</label>
+          <div className={styles.addressGroup}>
+            <input {...register("address")} placeholder="주소를 입력하세요" />
+            <button type="button">주소확인</button>
+
+            <input
+              {...register("detailAddress")}
+              placeholder="상세 주소를 입력하세요"
+            />
+          </div>
+        </div>
+      </form>
+
+      <div className={styles.cardSection}>
+        <h3 className={styles.sectionTitle}>결제 수단</h3>
+        <div className={styles.cardTop}>
+          <span className={styles.cardLabel}>카드 관리</span>
+        </div>
+
+        <div className={styles.cardBox}>
+          <div className={styles.savedCard} onClick={() => handleCardSelect(0)}>
+            <p>
+              <strong>Samsung Card</strong> <span>3434-33**</span>
+            </p>
+            <div className={styles.allCheck}>
+              <FaCheckCircle
+                className={
+                  selectedCard === 0 ? styles.checked : styles.unchecked
+                }
+              />
+            </div>
+          </div>
+
+          <div className={styles.cardImage}></div>
+          <p className={styles.cardNumber}>9999-9999-9999-9999</p>
+          <p className={styles.cardExpiry}>02/22</p>
+          <p className={styles.cardName}>삼성카드</p>
+        </div>
+
+        <div className={styles.savedCard} onClick={() => handleCardSelect(1)}>
+          <p>
+            <strong>Hyundai Card</strong> <span>5433-33**</span>
+          </p>
+          <div className={styles.allCheck}>
+            <FaCheckCircle
+              className={selectedCard === 1 ? styles.checked : styles.unchecked}
+            />
+          </div>
+        </div>
+
+        <div className={styles.newCardBox}>
+          <div className={styles.plus}>+</div>
+          <p>카드등록하고 1초만에 결제하세요</p>
+        </div>
+
+        <button className={styles.payBtn}>결제하기</button>
+      </div>
     </div>
   );
 };
 
-export default OrderAgreement;
+export default OrderPayment;
