@@ -10,3 +10,6 @@ export { default as pilow } from "./images/pilow.jpg";
 export { default as travelkit } from "./images/travelkit.jpg";
 export { default as snorkel } from "./images/snorkel.jpg";
 export { default as umbrella } from "./images/umbrella.jpg";
+
+// 카드 이미지
+export { default as card } from "./images/kakao_card.jpg";

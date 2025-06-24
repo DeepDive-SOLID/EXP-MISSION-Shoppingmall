@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import styles from "./OrderPayment.module.scss";
 import { FaCheckCircle } from "react-icons/fa";
 import { useState } from "react";
+import AddCard from "../AddCard/AddCard";
 
 interface FormData {
   name: string;
@@ -30,6 +31,11 @@ const OrderPayment = () => {
   const handleCardSelect = (index: number) => {
     setSelectedCard(index);
   };
+
+  const [showAddCard, setShowAddCard] = useState(false);
+  const openAddCardModal = () => setShowAddCard(true);
+  const closeAddCardModal = () => setShowAddCard(false);
+
   return (
     <div className={styles.paymentWrapper}>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.infoSection}>
@@ -118,13 +124,14 @@ const OrderPayment = () => {
           </div>
         </div>
 
-        <div className={styles.newCardBox}>
+        <div className={styles.newCardBox} onClick={openAddCardModal}>
           <div className={styles.plus}>+</div>
           <p>카드등록하고 1초만에 결제하세요</p>
         </div>
 
         <button className={styles.payBtn}>결제하기</button>
       </div>
+      {showAddCard && <AddCard onClose={closeAddCardModal} />}
     </div>
   );
 };
