@@ -93,3 +93,46 @@
   font-weight: 700;
   font-size: 40px;
 }
+
+// 실패 화면 스타일
+
+.failIcon {
+  color: #e63946;
+  font-size: 100px;
+  margin-top: 40px;
+}
+
+.resultFailText {
+  font-size: 28px;
+  font-weight: 700;
+  color: #e63946;
+  margin-bottom: 32px;
+}
+
+.failMessage {
+  border-top: 1px solid #d5d5d5;
+  margin-top: 32px;
+  padding-top: 24px;
+
+  font-size: 24px;
+  font-weight: 400;
+  color: #202020;
+}
+
+.retryButton {
+  margin: 50px auto 0;
+  display: block;
+  background-color: #e63946;
+  color: #fff;
+  font-size: 18px;
+
+  padding: 12px 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #c5303b;
+  }
+}
