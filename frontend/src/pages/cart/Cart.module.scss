@@ -1,0 +1,220 @@
+.cartContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+.checklist {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  font-size: 18px;
+}
+
+.cartContentWrapper {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.productList {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.productSection {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  align-items: flex-start;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.productCheckbox {
+  margin-top: 10px;
+}
+
+.leftSection {
+  width: 140px;
+  height: 140px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+}
+
+.rightSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.travelInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  .title {
+    font-weight: 700;
+    font-size: 18px;
+    margin: 1px;
+  }
+
+  .days,
+  .date {
+    font-size: 14px;
+    color: #555;
+    margin: 2px;
+  }
+
+  .changeButton {
+    margin-top: 20px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    background-color: #0085ff;
+    color: white;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #006fe0;
+    }
+  }
+}
+
+.extraAndPrice {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 12px;
+  border-top: 1px solid #ddd;
+}
+
+.extra {
+  .extraTitle {
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .extraItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    .amount {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      button {
+        width: 24px;
+        height: 24px;
+        border: 1px solid #ddd;
+        background-color: #f6f6f6;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #202020;
+
+        &:hover {
+          background-color: #e0e0e0;
+        }
+      }
+
+      span {
+        min-width: 24px;
+        text-align: center;
+        font-size: 15px;
+      }
+    }
+  }
+}
+
+.summary {
+  text-align: right;
+
+  .totalPrice {
+    font-weight: bold;
+    color: red;
+    font-size: 18px;
+  }
+}
+
+.totalPriceSection {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #fff;
+  padding: 20px;
+  min-width: 240px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  .summaryTitle {
+    font-weight: bold;
+    margin-bottom: 12px;
+    font-size: 18px;
+  }
+
+  .priceRow,
+  .finalRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+  }
+
+  .finalRow {
+    border-top: 1px solid #ddd;
+    padding-top: 12px;
+    margin-top: 10px;
+  }
+
+  .finalPrice {
+    font-size: 20px;
+    font-weight: bold;
+    color: red;
+  }
+
+  .payButton {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    background-color: #0085ff;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #006fe0;
+    }
+  }
+}
