@@ -3,6 +3,8 @@ import styles from "./OrderPayment.module.scss";
 import { FaCheckCircle } from "react-icons/fa";
 import { useState } from "react";
 import AddCard from "../AddCard/AddCard";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface FormData {
   name: string;
@@ -24,10 +26,6 @@ const OrderPayment = () => {
 
   const [selectedCard, setSelectedCard] = useState<number | null>(0);
 
-  const onSubmit = (data: FormData) => {
-    console.log("입력된 정보:", data);
-  };
-
   const handleCardSelect = (index: number) => {
     setSelectedCard(index);
   };
@@ -35,6 +33,22 @@ const OrderPayment = () => {
   const [showAddCard, setShowAddCard] = useState(false);
   const openAddCardModal = () => setShowAddCard(true);
   const closeAddCardModal = () => setShowAddCard(false);
+
+  const navigate = useNavigate();
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      const res = await axios.post("/api/payment", data);
+      if (res.data.status === "success") {
+        navigate("/order/payresult/success");
+      } else {
+        navigate("/order/payresult/fail");
+      }
+    } catch (error) {
+      console.error("결제 오류:", error);
+      navigate("/order/payresult/fail");
+    }
+  };
 
   return (
     <div className={styles.paymentWrapper}>
@@ -129,7 +143,9 @@ const OrderPayment = () => {
           <p>카드등록하고 1초만에 결제하세요</p>
         </div>
 
-        <button className={styles.payBtn}>결제하기</button>
+        <button className={styles.payBtn} onClick={handleSubmit(onSubmit)}>
+          결제하기
+        </button>
       </div>
       {showAddCard && <AddCard onClose={closeAddCardModal} />}
     </div>

@@ -2,8 +2,10 @@ import Header from "../../components/common/Header_login/Header";
 import { FaTimesCircle } from "react-icons/fa";
 import styles from "./payResult.module.scss";
 import { home_banner } from "../../assets";
+import { useNavigate } from "react-router-dom";
 
 const PayFail = () => {
+  const navigate = useNavigate();
   return (
     <div className={styles.wrapper}>
       <Header />
@@ -23,7 +25,12 @@ const PayFail = () => {
           다른 결제 수단을 이용해 주세요.
         </div>
 
-        <button className={styles.retryButton}>결제하러 가기</button>
+        <button
+          className={styles.retryButton}
+          onClick={() => navigate("/order")}
+        >
+          결제하러 가기
+        </button>
       </div>
     </div>
   );
