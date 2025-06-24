@@ -15,6 +15,8 @@ import FindPw from "./pages/login/findPw/FindPw";
 import SignInFromPayment from "./pages/login/signIn/SignInFromPayment";
 import Cart from "./pages/cart/Cart";
 import Order from "./pages/order/Order";
+import PaySuccess from "./pages/payresult/paySuccess";
+import PayFail from "./pages/payresult/payFail";
 
 const router = createBrowserRouter([
   {
@@ -52,6 +54,14 @@ const router = createBrowserRouter([
       {
         path: "order",
         element: <Order />,
+      },
+      {
+        path: "order/payresult/success",
+        element: <PaySuccess />,
+      },
+      {
+        path: "order/payresult/fail",
+        element: <PayFail />,
       },
       {
         path: "dashboard",
