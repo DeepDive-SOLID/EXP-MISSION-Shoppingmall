@@ -42,7 +42,7 @@ public class Product {
     @Comment("물품 수정일")
     private LocalDate productUpdateDt;
 
-    @Column(name = "product_img", length = 100)
+    @Column(name = "product_img", length = 500)
     @Comment("이미지")
     private String productImg;
 

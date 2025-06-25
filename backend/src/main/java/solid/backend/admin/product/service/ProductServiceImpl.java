@@ -7,7 +7,8 @@ import solid.backend.admin.product.dto.ProductListDto;
 import solid.backend.admin.product.dto.ProductSearchDto;
 import solid.backend.admin.product.dto.ProductUpdDto;
 import solid.backend.admin.product.repository.ProductQueryRepository;
-import solid.backend.admin.product.repository.ProductRepository;
+import solid.backend.jpaRepository.ProductRepository;
+import solid.backend.common.FileManager;
 import solid.backend.entity.Product;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductQueryRepository productQueryRepository;
+    private final FileManager fileManager;
 
     /**
      * 설명 : 물품 리스트 정보 가져오기
@@ -50,6 +52,13 @@ public class ProductServiceImpl implements ProductService {
         product.setProductSold(productDto.getProductSold());
         product.setProductUploadDt(productDto.getProductUploadDt());
         product.setProductUpdateDt(productDto.getProductUpdateDt());
+
+        // 파일을 로컬 디렉토리에 저장
+        String savedPath = fileManager.addFile(productDto.getProductImg(), "product");
+        if (savedPath != null) {
+            product.setProductImg(savedPath);
+        }
+
         productRepository.save(product);
     }
 
@@ -62,7 +71,6 @@ public class ProductServiceImpl implements ProductService {
     public void updateProductDto(ProductUpdDto productDto) {
         Product product = productRepository.findById(productDto.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 물품이 존재하지 않습니다: id = " + productDto.getProductId()));
-        product.setProductId(productDto.getProductId());
         product.setProductName(productDto.getProductName());
         product.setProductPrice(productDto.getProductPrice());
         product.setProductAmount(productDto.getProductAmount());
@@ -78,6 +86,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void deleteProductDto(Integer productId) {
+        if(productId == null) throw new IllegalArgumentException("삭제할 여행 상품이 없습니다.");
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 여행 상품이 존재하지 않습니다."));
+
+        // 이미지 파일 삭제
+        fileManager.deleteFile(product.getProductImg());
+
         productRepository.deleteById(productId);
     }
 

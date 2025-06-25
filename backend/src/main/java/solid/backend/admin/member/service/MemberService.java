@@ -2,6 +2,7 @@ package solid.backend.admin.member.service;
 
 import solid.backend.admin.member.dto.MemberListDto;
 import solid.backend.admin.member.dto.MemberSearchDto;
+import solid.backend.admin.member.dto.MemberUpdDto;
 
 import java.util.List;
 public interface MemberService {
@@ -18,4 +19,10 @@ public interface MemberService {
      * @return List<MemberlListDto>
      * */
     List<MemberListDto> searchMemberList(MemberSearchDto memberSearchDto);
+
+    /**
+     * 설명: 사용자 권한 변경
+     * @param memberUpdDto
+     */
+    void updMemberDto(MemberUpdDto memberUpdDto);
 }
