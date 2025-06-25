@@ -3,6 +3,8 @@ package solid.backend.main.home.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import solid.backend.admin.product.repository.ProductRepository;
+import solid.backend.common.FileManager;
+import solid.backend.entity.Product;
 import solid.backend.entity.Travel;
 import solid.backend.main.home.dto.HomeDetailDto;
 import solid.backend.main.home.dto.HomeSearchDto;
@@ -20,6 +22,7 @@ public class HomeServiceImpl implements HomeService {
     private final HomeRepository homeRepository;
     private final HomeQueryRepository homeQueryRepository;
     private final ProductRepository productRepository;
+    private final FileManager fileManager;
 
     /**
      * 설명: 홈 화면에 나오는 여행상품 리스트
@@ -38,14 +41,15 @@ public class HomeServiceImpl implements HomeService {
      */
     @Override
     public List<HomeTravelDto> searchTravel(HomeSearchDto homeSearchDto) {
-        switch (homeSearchDto.getSorted()) {
-            case 1:
-                return homeQueryRepository.searchTravelSortedNew(homeSearchDto);
-            case 2:
-                return homeQueryRepository.searchTravelSortedPopular(homeSearchDto);
-            default:
-                return homeQueryRepository.searchTravelSortedReview(homeSearchDto);
-        }
+
+        List<HomeTravelDto> list = switch (homeSearchDto.getSorted()) {
+            case 1 -> homeQueryRepository.searchTravelSortedNew(homeSearchDto);
+            case 2 -> homeQueryRepository.searchTravelSortedPopular(homeSearchDto);
+            default -> homeQueryRepository.searchTravelSortedReview(homeSearchDto);
+        };
+        // 이미지 경로 재설정
+        list.forEach(items -> items.setTravelImg(fileManager.getFileUrl(items.getTravelImg())));
+        return list;
     }
 
     /**
@@ -59,7 +63,11 @@ public class HomeServiceImpl implements HomeService {
         homeDetailDto.setTravel(homeRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 하는 상품이 없습니다.")));
         homeDetailDto.setReviews(homeQueryRepository.getTravelReviewList(travelId));
-        homeDetailDto.setProduct(productRepository.findAll());
+
+        // 이미지 경로 재설정
+        List<Product> product = productRepository.findAll();
+        product.forEach(items -> items.setProductImg(fileManager.getFileUrl(items.getProductImg())));
+        homeDetailDto.setProduct(product);
 
         return homeDetailDto;
     }
