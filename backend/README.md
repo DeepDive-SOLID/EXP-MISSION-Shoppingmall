@@ -24,6 +24,21 @@ src/main/java/solid/backend
   - CompoundKey : 조합키
 - config: 설정파일
   - QueryDsl: QueryDSL 빈 등록
+  - FileStorageConfig : 파일 설정 값 관리
+  - FileStorageHandlerConfig : 업로드 파일에 대한 정적 리소스 핸들링 설정
+- common : 공통 기능
+  - FileManager : 파일 관리 모듈
+- jpaRepository : JPA Repository
+  - AuthRepository : 권한
+  - BasketRepository : 장바구니
+  - MemberRepository : 회원
+  - OrderProductRepository : 물품 주문
+  - OrdersRepository : 주문
+  - OrderTravelRepository : 여행 주문
+  - PaymentRepository : 결제수단
+  - ProductRepository : 물품
+  - ReviewRepository : 리뷰
+  - TravelRepository : 여행상품
 ---
 ### 사용자 관리 : admin/member
 - controller(컨트롤러)
@@ -31,9 +46,9 @@ src/main/java/solid/backend
 - dto(객체정보)
     - MemberListDto.java
     - MemberSearchDto.java
+    - MemberUpdDto.java
 - repository(jpa)
     - MemberQueryRepository.java
-    - MemberRepository.java
 - service(비즈니스 로직)
     - MemberService.java
     - MemberServiceImpl.java
@@ -50,6 +65,12 @@ src/main/java/solid/backend
 - HTTP request URL : /admin/member/search 
 - param : MemberSearchDto 
 - return : MemberListDto(List)
+
+[권한 변경]
+- HTTP method : PUT  
+- HTTP request URL : /admin/member/updateAuth
+- param : MemberUpdDto
+- return : ResponseEntity<String>
 ---
 ### 물품관리 : admin/product
 - controller(컨트롤러)
@@ -60,7 +81,6 @@ src/main/java/solid/backend
     - ProductUpdateDto.java
     - ProductSearchDto.java
 - repository(jpa)
-    - ProductRepository.java
     - ProductQueryRepository.java
 - service(비즈니스 로직)
     - ProductService.java
@@ -231,6 +251,12 @@ return : List< DashboardWeeklySalesAmtDto >
 - RequestBody Param: OrdersSearchDto
 - return: List\<OrdersManagementDto\>
 - 테이블 조인 관계: orders + orderTravels + orderProducts + travel + product
+
+### [상태 수정]
+- HTTP Method: PUT
+- HTTP URL: /admin/orders/updateOrderState
+- RequestBody Param: OrdersUpdateDto
+- return: List\<OrdersManagementDto\>
 ---
 ## 여행 상품 관리 : admin/travel
 - controller(컨트롤러)
@@ -243,7 +269,6 @@ return : List< DashboardWeeklySalesAmtDto >
     - TravelUpdDto.java
 - repository(jpa)
     - TravelQueryRepository.java
-    - TravelRepository.java
 - service(비즈니스 로직)
     - TravelService.java
     - TravelServiceImpl.java

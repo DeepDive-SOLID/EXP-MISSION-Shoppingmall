@@ -8,9 +8,9 @@ import org.hibernate.annotations.Comment;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "auth")
-@Data
 public class Auth {
 
     @Id
