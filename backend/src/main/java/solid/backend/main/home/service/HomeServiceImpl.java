@@ -2,15 +2,16 @@ package solid.backend.main.home.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import solid.backend.admin.product.repository.ProductRepository;
+
 import solid.backend.common.FileManager;
 import solid.backend.entity.Product;
 import solid.backend.entity.Travel;
+import solid.backend.jpaRepository.ProductRepository;
+import solid.backend.jpaRepository.TravelRepository;
 import solid.backend.main.home.dto.HomeDetailDto;
 import solid.backend.main.home.dto.HomeSearchDto;
 import solid.backend.main.home.dto.HomeTravelDto;
 import solid.backend.main.home.repository.HomeQueryRepository;
-import solid.backend.main.home.repository.HomeRepository;
 
 
 import java.util.List;
@@ -19,9 +20,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HomeServiceImpl implements HomeService {
 
-    private final HomeRepository homeRepository;
+
     private final HomeQueryRepository homeQueryRepository;
     private final ProductRepository productRepository;
+    private final TravelRepository travelRepository;
     private final FileManager fileManager;
 
     /**
@@ -30,7 +32,7 @@ public class HomeServiceImpl implements HomeService {
      */
     @Override
     public List<Travel> getTravelList() {
-        return homeRepository.findAll();
+        return travelRepository.findAll();
     }
 
     /**
@@ -60,7 +62,7 @@ public class HomeServiceImpl implements HomeService {
     @Override
     public HomeDetailDto getTravelDetailPage(Integer travelId) {
         HomeDetailDto homeDetailDto = new HomeDetailDto();
-        homeDetailDto.setTravel(homeRepository.findById(travelId)
+        homeDetailDto.setTravel(travelRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 하는 상품이 없습니다.")));
         homeDetailDto.setReviews(homeQueryRepository.getTravelReviewList(travelId));
 
