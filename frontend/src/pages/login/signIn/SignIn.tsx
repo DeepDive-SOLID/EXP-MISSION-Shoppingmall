@@ -50,7 +50,14 @@ const SignIn: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+
+    // spacebar 방지: 아이디와 비밀번호 필드에서 공백 제거
+    const processedValue =
+      name === "memberId" || name === "memberPw"
+        ? value.replace(/\s/g, "")
+        : value;
+
+    setFormData(prev => ({ ...prev, [name]: processedValue }));
     if (name === "memberId") setIdError("");
     if (name === "memberPw") setPwError("");
     setSubmitError(""); // 제출 에러도 초기화

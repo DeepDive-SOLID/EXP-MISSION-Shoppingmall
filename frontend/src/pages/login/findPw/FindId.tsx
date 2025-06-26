@@ -42,7 +42,9 @@ const FindId: React.FC = () => {
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
+    // spacebar 방지: 이메일 필드에서 공백 제거
+    const processedValue = e.target.value.replace(/\s/g, "");
+    setEmail(processedValue);
     setFoundId("");
     setError("");
   };

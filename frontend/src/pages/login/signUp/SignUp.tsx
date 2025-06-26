@@ -92,9 +92,19 @@ const SignUp: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    // spacebar 방지: 아이디, 비밀번호, 이메일, 전화번호 필드에서 공백 제거
+    const processedValue =
+      name === "memberId" ||
+      name === "memberPw" ||
+      name === "memberEmail" ||
+      name === "memberPhone"
+        ? value.replace(/\s/g, "")
+        : value;
+
     setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [name]: processedValue,
     }));
 
     // 필드 에러 초기화
