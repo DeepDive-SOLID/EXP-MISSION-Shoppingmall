@@ -121,7 +121,14 @@ const EditProfile = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+
+    // spacebar 방지: 이메일, 전화번호, 비밀번호 필드에서 공백 제거
+    const processedValue =
+      name === "email" || name === "phone" || name === "password"
+        ? value.replace(/\s/g, "")
+        : value;
+
+    setForm(prev => ({ ...prev, [name]: processedValue }));
 
     // 실시간 검증 (에러가 있을 때만)
     if (errors[name]) {
