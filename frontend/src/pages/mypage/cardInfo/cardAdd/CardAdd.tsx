@@ -5,6 +5,39 @@ import Header from "../../../../components/common/Header_login/Header";
 import Sidebar from "../../../../components/common/Sidebar_mypage/Sidebar";
 import kbCard from "../../../../assets/images/kb.jpg";
 
+// 비밀번호 보이기/숨기기 아이콘 컴포넌트
+const EyeIcon = ({ visible }: { visible: boolean }) =>
+  visible ? (
+    <svg
+      width="24"
+      height="24"
+      fill="none"
+      stroke="#6b7280"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
+    >
+      <ellipse cx="12" cy="12" rx="8" ry="5" />
+      <circle cx="12" cy="12" r="2.5" />
+    </svg>
+  ) : (
+    <svg
+      width="24"
+      height="24"
+      fill="none"
+      stroke="#6b7280"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
+    >
+      <ellipse cx="12" cy="12" rx="8" ry="5" />
+      <circle cx="12" cy="12" r="2.5" />
+      <line x1="4" y1="4" x2="20" y2="20" />
+    </svg>
+  );
+
 const CardAdd = () => {
   const navigate = useNavigate();
   const userName = "사용자";
@@ -26,6 +59,10 @@ const CardAdd = () => {
     expiryDate: "",
     cvv: "",
   });
+
+  // 비밀번호 보이기/숨기기 상태
+  const [showCvv, setShowCvv] = useState(false);
+  const [showCardPassword, setShowCardPassword] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setNewCard(prev => ({ ...prev, [field]: value }));
@@ -296,20 +333,29 @@ const CardAdd = () => {
 
                 <div className={styles.formGroup}>
                   <label htmlFor="cvv">보안 코드(CVV/CVC) *</label>
-                  <input
-                    type="password"
-                    id="cvv"
-                    value={newCard.cvv}
-                    onChange={e =>
-                      handleInputChange(
-                        "cvv",
-                        e.target.value.replace(/\D/g, ""),
-                      )
-                    }
-                    placeholder="CVV/CVC"
-                    maxLength={4}
-                    className={errors.cvv ? styles.error : ""}
-                  />
+                  <div className={styles.cvvGroup}>
+                    <input
+                      type={showCvv ? "text" : "password"}
+                      id="cvv"
+                      value={newCard.cvv}
+                      onChange={e =>
+                        handleInputChange(
+                          "cvv",
+                          e.target.value.replace(/\D/g, ""),
+                        )
+                      }
+                      placeholder="CVV/CVC"
+                      maxLength={4}
+                      className={errors.cvv ? styles.error : ""}
+                    />
+                    <button
+                      type="button"
+                      className={styles.eyeButton}
+                      onClick={() => setShowCvv(!showCvv)}
+                    >
+                      <EyeIcon visible={showCvv} />
+                    </button>
+                  </div>
                   {errors.cvv && (
                     <span className={styles.errorText}>{errors.cvv}</span>
                   )}
@@ -318,20 +364,29 @@ const CardAdd = () => {
 
               <div className={styles.formGroup}>
                 <label htmlFor="cardPassword">카드 비밀번호 *</label>
-                <input
-                  type="password"
-                  id="cardPassword"
-                  value={newCard.cardPassword}
-                  onChange={e =>
-                    handleInputChange(
-                      "cardPassword",
-                      e.target.value.replace(/\D/g, ""),
-                    )
-                  }
-                  placeholder="카드 비밀번호 4자리"
-                  maxLength={4}
-                  className={errors.cardPassword ? styles.error : ""}
-                />
+                <div className={styles.cardPasswordGroup}>
+                  <input
+                    type={showCardPassword ? "text" : "password"}
+                    id="cardPassword"
+                    value={newCard.cardPassword}
+                    onChange={e =>
+                      handleInputChange(
+                        "cardPassword",
+                        e.target.value.replace(/\D/g, ""),
+                      )
+                    }
+                    placeholder="카드 비밀번호 4자리"
+                    maxLength={4}
+                    className={errors.cardPassword ? styles.error : ""}
+                  />
+                  <button
+                    type="button"
+                    className={styles.eyeButton}
+                    onClick={() => setShowCardPassword(!showCardPassword)}
+                  >
+                    <EyeIcon visible={showCardPassword} />
+                  </button>
+                </div>
                 {errors.cardPassword && (
                   <span className={styles.errorText}>
                     {errors.cardPassword}

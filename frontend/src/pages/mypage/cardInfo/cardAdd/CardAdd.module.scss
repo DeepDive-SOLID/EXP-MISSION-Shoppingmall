@@ -153,6 +153,49 @@
   }
 }
 
+// 보안코드와 카드 비밀번호 필드의 눈 아이콘 스타일
+.cvvGroup,
+.cardPasswordGroup {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    flex: 1;
+    padding-right: 3rem; // 눈 아이콘을 위한 공간 확보
+  }
+
+  .eyeButton {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #f3f4f6;
+    }
+
+    &:focus {
+      outline: none;
+      background-color: #f3f4f6;
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -163,7 +206,6 @@
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
-  margin-top: 2rem;
   padding-top: 1.5rem;
 
   button {
