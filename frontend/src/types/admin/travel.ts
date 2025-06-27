@@ -10,7 +10,6 @@ export interface Travel {
   travel_end_dt: string;
   travel_upload_dt: string;
   travel_update_dt: string;
-  travel_img: string;
 }
 
 export interface TravelFormData {
@@ -24,7 +23,6 @@ export interface NewTravelInput {
   travel_price: string;
   travel_amount: string;
   travel_sold: boolean;
-  travel_img: string;
   travel_start_dt: string;
   travel_end_dt: string;
   travel_comment: string;
@@ -53,7 +51,6 @@ export interface TravelListAllDto {
   travelEndDt: string;
   travelUploadDt: string;
   travelUpdateDt: string;
-  travelImg: string;
 }
 
 // 여행 상품 관리 페이지 검색 타입

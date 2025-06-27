@@ -68,7 +68,6 @@ const travelApi = {
       travelStartDt: string;
       travelEndDt: string;
       travelUpdateDt: string;
-      travelImg: string;
     },
   ): Promise<void> => {
     console.log("여행상품 수정 요청 데이터:", data);
@@ -86,22 +85,15 @@ const travelApi = {
   },
 
   // 여행상품 추가
-  createTravel: async (data: {
-    travelName: string;
-    travelPrice: number;
-    travelAmount: number;
-    travelSold: boolean;
-    travelImg: string;
-    travelStartDt: string;
-    travelEndDt: string;
-    travelComment: string;
-    travelLabel: string;
-    travelUploadDt: string;
-    travelUpdateDt: string;
-  }): Promise<TravelListDto> => {
+  createTravel: async (formData: FormData): Promise<TravelListDto> => {
     const response = await api.post<TravelListDto>(
       "/admin/travel/addTravel",
-      data,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
     return response.data;
   },

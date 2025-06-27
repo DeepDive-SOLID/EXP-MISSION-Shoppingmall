@@ -8,6 +8,7 @@ import {
   getOrderStatusText,
   getOrderStatusClass,
 } from "../../../utils/orderUtils";
+
 import { Order, OrderSearchType } from "../../../types/admin/order";
 
 const ManageOrder = () => {
@@ -111,6 +112,19 @@ const ManageOrder = () => {
     }
 
     return pageNumbers;
+  };
+
+  // 주문 상태 변경 처리
+  const handleOrderStateChange = async (orderId: number, newState: number) => {
+    try {
+      await orderApi.updateOrderStatus(orderId, newState);
+      // 상태 변경 후 주문 목록 새로고침
+      const response = await orderApi.getOrderList();
+      setOrders(response);
+    } catch (error) {
+      console.error("주문 상태 변경 중 오류 발생:", error);
+      alert("주문 상태 변경에 실패했습니다.");
+    }
   };
 
   return (
@@ -233,14 +247,24 @@ const ManageOrder = () => {
                         <td>{order.orderProductAmount}</td>
                         <td>{order.orderDt}</td>
                         <td>
-                          <span
-                            className={`${styles.statusTag} ${getOrderStatusClass(
+                          <select
+                            value={order.orderState}
+                            onChange={e =>
+                              handleOrderStateChange(
+                                order.orderId,
+                                parseInt(e.target.value),
+                              )
+                            }
+                            className={`${styles.statusSelect} ${getOrderStatusClass(
                               order.orderState,
                               styles,
                             )}`}
                           >
-                            {getOrderStatusText(order.orderState)}
-                          </span>
+                            <option value={0}>주문완료</option>
+                            <option value={1}>주문취소</option>
+                            <option value={2}>배송중</option>
+                            <option value={3}>배송완료</option>
+                          </select>
                         </td>
                       </tr>
                     ))}

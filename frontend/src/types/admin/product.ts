@@ -6,7 +6,6 @@ export interface Product {
   product_sold: boolean;
   product_upload_dt: string;
   product_update_dt: string;
-  product_img: string;
 }
 
 // API 응답 타입 정의
@@ -18,7 +17,6 @@ export interface ApiProduct {
   productSold: boolean;
   productUploadDt: string;
   productUpdateDt: string;
-  productImg: string;
 }
 
 export interface ProductListDto {

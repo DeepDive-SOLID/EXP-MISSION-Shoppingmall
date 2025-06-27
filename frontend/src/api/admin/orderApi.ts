@@ -26,8 +26,11 @@ const orderApi = {
   },
 
   // 주문 상태 업데이트
-  updateOrderStatus: async (orderId: number, status: number): Promise<void> => {
-    await api.put(`/admin/order/status/${orderId}`, { status });
+  updateOrderStatus: async (
+    orderId: number,
+    orderState: number,
+  ): Promise<void> => {
+    await api.put("/admin/orders/updateOrderState", { orderId, orderState });
   },
 
   // 주문 상세 정보 조회
