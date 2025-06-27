@@ -1,11 +1,12 @@
 import styles from "./Info.module.scss";
-import { people } from "../../../assets";
+// import { people } from "../../../assets";
 import { FaStar, FaComments, FaRegCalendarCheck } from "react-icons/fa6";
 import CounterBox from "../../common/CounterBox/CounterBox";
 import { useState, useEffect } from "react";
 import { HomeTravelDto } from "../../../types/home/homeTravel";
 import { ProductListDto } from "../../../types/home/homeProduct";
-import { transformApiProduct } from "../../../utils/transformApiProduct";
+import { ReviewDto } from "../../../types/home/review";
+import { fetchReviews } from "../../../api/home/reviewApi";
 import api from "../../../api/axios";
 
 interface InfoProps {
@@ -15,6 +16,7 @@ interface InfoProps {
 const Info = ({ travelId }: InfoProps) => {
   const [travel, setTravel] = useState<HomeTravelDto | null>(null);
   const [productList, setProductList] = useState<ProductListDto[]>([]);
+  const [reviews, setReviews] = useState<ReviewDto[]>([]);
   const [peopleCount, setPeopleCount] = useState(1);
   const [selectedProducts, setSelectedProducts] = useState<
     { id: number; label: string; price: number; count: number }[]
@@ -26,11 +28,11 @@ const Info = ({ travelId }: InfoProps) => {
         const res = await api.get("/home/detail-page", {
           params: { travelId },
         });
-
-        console.log(" 받아온 product 데이터:", res.data.product);
+        const reviewRes = await fetchReviews(travelId);
 
         setTravel(res.data.travel);
-        setProductList(res.data.product.map(transformApiProduct));
+        setProductList(res.data.product);
+        setReviews(reviewRes);
       } catch (err) {
         console.error("상세 데이터 로딩 실패", err);
       }
@@ -74,6 +76,12 @@ const Info = ({ travelId }: InfoProps) => {
 
   if (!travel) return <div>로딩 중...</div>;
 
+  const reviewCount = reviews.length;
+  const averageRate =
+    reviewCount === 0
+      ? 0
+      : reviews.reduce((sum, r) => sum + r.reviewRate, 0) / reviewCount;
+
   const totalCount =
     peopleCount + selectedProducts.reduce((sum, item) => sum + item.count, 0);
   const totalPrice =
@@ -94,11 +102,9 @@ const Info = ({ travelId }: InfoProps) => {
 
       <div className={styles.rate}>
         <FaStar className={styles.starIcon} />
-        <span className={styles.starRating}>
-          {(travel.rate ?? 0).toFixed(1)}
-        </span>
+        <span className={styles.starRating}>{averageRate.toFixed(1)}</span>
         <FaComments className={styles.commentIcon} />
-        <span className={styles.commentCount}>{travel.reviewCount}</span>
+        <span className={styles.commentCount}>{reviewCount}</span>
       </div>
 
       <div className={styles.detailInfo}>
@@ -109,7 +115,7 @@ const Info = ({ travelId }: InfoProps) => {
           </span>
         </div>
 
-        <div className={styles.personInfo}>
+        {/* <div className={styles.personInfo}>
           <img src={people} alt="People Icon" className={styles.peopleIcon} />
           <div className={styles.personText}>
             <div className={styles.personTop}>
@@ -125,7 +131,7 @@ const Info = ({ travelId }: InfoProps) => {
               최소 출발 인원 : {travel.minPeople}명
             </p>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className={styles.subProductInfo}>
@@ -160,9 +166,7 @@ const Info = ({ travelId }: InfoProps) => {
               onIncrease={() => updateProductCount(item.id, 1)}
             />
             <span className={styles.productPrice}>
-              <span className={styles.productPrice}>
-                {Number(item.count * item.price || 0).toLocaleString()}원
-              </span>
+              {Number(item.count * item.price || 0).toLocaleString()}원
             </span>
             <button
               className={styles.removeButton}
