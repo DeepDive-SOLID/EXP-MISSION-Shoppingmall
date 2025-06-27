@@ -1,10 +1,22 @@
 import styles from "./Header.module.scss";
 import { logo, logout, shopping_cart, menu_bar } from "../../../assets/index";
 import { IoIosSearch } from "react-icons/io";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+
+  const handleSearch = () => {
+    if (!searchTerm.trim()) return;
+
+    navigate("/search", {
+      state: {
+        name: searchTerm,
+        sorted: 1,
+      },
+    });
 
   const handleMyPageClick = () => {
     navigate("/mypage/order-list");
@@ -14,7 +26,12 @@ const Header = () => {
     <div>
       <header className={styles.header}>
         <div className={styles.left}>
-          <img src={logo} alt="Logo" className={styles.logo} />
+          <img
+            src={logo}
+            alt="Logo"
+            className={styles.logo}
+            onClick={() => navigate("/")}
+          />
         </div>
 
         <div className={styles.center}>
@@ -22,8 +39,13 @@ const Header = () => {
             type="text"
             placeholder="검색어를 입력하세요"
             className={styles.searchInput}
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === "Enter") handleSearch();
+            }}
           />
-          <IoIosSearch />
+          <IoIosSearch className={styles.searchIcon} onClick={handleSearch} />
         </div>
 
         <div className={styles.right}>

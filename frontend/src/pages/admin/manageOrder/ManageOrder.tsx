@@ -3,8 +3,12 @@ import Header from "../../../components/common/Header_dash/Header";
 import Sidebar from "../../../components/common/Sidebar/Sidebar";
 import styles from "./ManageOrder.module.scss";
 import { FiSearch } from "react-icons/fi";
-import { orderApi } from "../../../api/admin/orderApi";
-import { getOrderStatusClass } from "../../../utils/orderUtils";
+import { orderApi } from "../../../api";
+import {
+  getOrderStatusText,
+  getOrderStatusClass,
+} from "../../../utils/orderUtils";
+
 import { Order, OrderSearchType } from "../../../types/admin/order";
 
 const ManageOrder = () => {

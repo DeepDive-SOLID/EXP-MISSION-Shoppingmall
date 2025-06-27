@@ -8,6 +8,8 @@ import ManageProduct from "./pages/admin/manageProduct/ManageProduct";
 import ManageTravel from "./pages/admin/manageTravel/ManageTravel";
 import ManageUser from "./pages/admin/manageUser/ManageUser";
 import ManageOrder from "./pages/admin/manageOrder/ManageOrder";
+import Search from "./pages/search/Search";
+import Detail from "./pages/detail/Detail";
 import SignUp from "./pages/login/signUp/SignUp";
 import SignIn from "./pages/login/signIn/SignIn";
 import FindId from "./pages/login/findPw/FindId";
@@ -30,6 +32,13 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
+        path: "search",
+        element: <Search />,
+      },
+      {
+        path: "detail/:travelId",
+        element: <Detail />,
+      },
         path: "signup",
         element: <SignUp />,
       },
