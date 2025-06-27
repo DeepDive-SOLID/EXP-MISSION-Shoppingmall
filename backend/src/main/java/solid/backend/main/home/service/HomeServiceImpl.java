@@ -19,11 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HomeServiceImpl implements HomeService {
 
-
     private final HomeQueryRepository homeQueryRepository;
-    private final ProductRepository productRepository;
     private final TravelRepository travelRepository;
-    private final ReviewRepository reviewRepository;
     private final FileManager fileManager;
 
     /**
