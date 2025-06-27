@@ -14,7 +14,7 @@ const Detail = () => {
       <Header />
       <div className={styles.wrapper}>
         <ProductImg travelId={travel.travelId} travelImg={travel.travelImg} />
-        <Info travelId={travel.travelId} />
+        <Info travelId={travel.travelId} travel={travel} />
       </div>
       <div>
         <Review travelId={travel.travelId} />

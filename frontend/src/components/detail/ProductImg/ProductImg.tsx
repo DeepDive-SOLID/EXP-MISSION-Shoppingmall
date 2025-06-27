@@ -6,8 +6,8 @@ import "swiper/css/navigation";
 import type { Swiper as SwiperType } from "swiper";
 import { useRef, useEffect, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { ProductListDto } from "../../../types/home/homeProduct";
-import api from "../../../api/axios";
+import { ProductDto } from "../../../types/home/homeProduct";
+import { fetchProducts } from "../../../api/home/homeApi";
 
 interface ProductImgProps {
   travelId: number;
@@ -16,37 +16,34 @@ interface ProductImgProps {
 
 const ProductImg = ({ travelId, travelImg }: ProductImgProps) => {
   const [subItems, setSubItems] = useState<string[]>([]);
-  const prevRef = useRef(null);
-  const nextRef = useRef(null);
+  const prevRef = useRef<HTMLDivElement | null>(null);
+  const nextRef = useRef<HTMLDivElement | null>(null);
   const swiperRef = useRef<SwiperType | null>(null);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const loadSubImages = async () => {
       try {
-        const res = await api.get("/home/detail-page", {
-          params: { travelId },
-        });
-
-        const products: ProductListDto[] = res.data.product;
-
-        const imgUrls = products
+        const allProducts: ProductDto[] = await fetchProducts();
+        const filtered = allProducts
           .filter(p => !!p.productImg && !p.productSold)
           .map(p => p.productImg as string);
 
-        setSubItems(imgUrls);
+        setSubItems(filtered);
       } catch (err) {
         console.error("서브 이미지 불러오기 실패:", err);
       }
     };
 
-    fetchProducts();
+    loadSubImages();
   }, [travelId]);
 
   useEffect(() => {
     if (
       swiperRef.current &&
       swiperRef.current.params.navigation &&
-      typeof swiperRef.current.params.navigation !== "boolean"
+      typeof swiperRef.current.params.navigation !== "boolean" &&
+      prevRef.current &&
+      nextRef.current
     ) {
       swiperRef.current.params.navigation.prevEl = prevRef.current;
       swiperRef.current.params.navigation.nextEl = nextRef.current;
@@ -54,7 +51,7 @@ const ProductImg = ({ travelId, travelImg }: ProductImgProps) => {
       swiperRef.current.navigation.init();
       swiperRef.current.navigation.update();
     }
-  }, []);
+  }, [subItems]);
 
   return (
     <div>
@@ -71,7 +68,7 @@ const ProductImg = ({ travelId, travelImg }: ProductImgProps) => {
               prevEl: prevRef.current,
               nextEl: nextRef.current,
             }}
-            onBeforeInit={swiper => {
+            onSwiper={swiper => {
               swiperRef.current = swiper;
             }}
             className={styles.slider}

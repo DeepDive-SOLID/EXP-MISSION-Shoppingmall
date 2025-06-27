@@ -2,7 +2,7 @@ import styles from "./Review.module.scss";
 import { profile_img } from "../../../assets";
 import { FaStar } from "react-icons/fa6";
 import { useEffect, useState } from "react";
-import { fetchReviews } from "../../../api/home/reviewApi";
+import { fetchReviews } from "../../../api/home/homeApi";
 import { ReviewDto } from "../../../types/home/review";
 
 interface ReviewProps {

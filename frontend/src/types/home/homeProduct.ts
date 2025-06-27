@@ -1,21 +1,7 @@
-export interface Product {
+export interface ProductDto {
   productId: number;
   productName: string;
   productPrice: number;
-  productAmount: number;
+  productImg: string | null;
   productSold: boolean;
-  productUploadDt: string;
-  productUpdateDt: string;
-  productImg?: string | null;
-}
-
-export interface ProductListDto {
-  productId: number;
-  productName: string;
-  productPrice: number;
-  productAmount: number;
-  productSold: boolean;
-  productUploadDt: string;
-  productUpdateDt: string;
-  productImg: string;
 }

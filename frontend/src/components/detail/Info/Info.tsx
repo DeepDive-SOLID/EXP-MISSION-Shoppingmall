@@ -4,18 +4,17 @@ import { FaStar, FaComments, FaRegCalendarCheck } from "react-icons/fa6";
 import CounterBox from "../../common/CounterBox/CounterBox";
 import { useState, useEffect } from "react";
 import { HomeTravelDto } from "../../../types/home/homeTravel";
-import { ProductListDto } from "../../../types/home/homeProduct";
+import { ProductDto } from "../../../types/home/homeProduct";
 import { ReviewDto } from "../../../types/home/review";
-import { fetchReviews } from "../../../api/home/reviewApi";
-import api from "../../../api/axios";
+import { fetchProducts, fetchReviews } from "../../../api/home/homeApi";
 
 interface InfoProps {
   travelId: number;
+  travel: HomeTravelDto;
 }
 
-const Info = ({ travelId }: InfoProps) => {
-  const [travel, setTravel] = useState<HomeTravelDto | null>(null);
-  const [productList, setProductList] = useState<ProductListDto[]>([]);
+const Info = ({ travelId, travel }: InfoProps) => {
+  const [productList, setProductList] = useState<ProductDto[]>([]);
   const [reviews, setReviews] = useState<ReviewDto[]>([]);
   const [peopleCount, setPeopleCount] = useState(1);
   const [selectedProducts, setSelectedProducts] = useState<
@@ -23,22 +22,17 @@ const Info = ({ travelId }: InfoProps) => {
   >([]);
 
   useEffect(() => {
-    const fetchDetailData = async () => {
+    const fetchData = async () => {
       try {
-        const res = await api.get("/home/detail-page", {
-          params: { travelId },
-        });
-        const reviewRes = await fetchReviews(travelId);
-
-        setTravel(res.data.travel);
-        setProductList(res.data.product);
-        setReviews(reviewRes);
+        const productData = await fetchProducts();
+        const reviewData = await fetchReviews(travelId);
+        setProductList(productData);
+        setReviews(reviewData);
       } catch (err) {
-        console.error("상세 데이터 로딩 실패", err);
+        console.error(err);
       }
     };
-
-    fetchDetailData();
+    fetchData();
   }, [travelId]);
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -73,8 +67,6 @@ const Info = ({ travelId }: InfoProps) => {
   const removeProduct = (id: number) => {
     setSelectedProducts(prev => prev.filter(p => p.id !== id));
   };
-
-  if (!travel) return <div>로딩 중...</div>;
 
   const reviewCount = reviews.length;
   const averageRate =
