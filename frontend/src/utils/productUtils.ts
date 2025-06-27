@@ -1,14 +1,13 @@
-import { ProductListDto, Product } from "../types/admin/product";
-import { getToday } from "./formatDate";
+import { Product, ProductListDto } from "../types/home/homeProduct";
 
-// API 응답 데이터를 Product 타입으로 변환하는 유틸리티 함수
-export const transformApiProduct = (item: ProductListDto): Product => ({
-  product_id: item.productId,
-  product_name: item.productName,
-  product_price: item.productPrice,
-  product_amount: item.productAmount,
-  product_sold: item.productSold,
-  product_upload_dt: getToday(), // 기본값으로 현재 날짜 사용
-  product_update_dt: getToday(), // 기본값으로 현재 날짜 사용
-  product_img: "", // 기본값으로 빈 문자열 사용
+// utils/productUtils.ts
+export const transformApiProduct = (p: Product): ProductListDto => ({
+  productId: p.product_id,
+  productName: p.product_name,
+  productPrice: p.product_price,
+  productAmount: p.product_amount,
+  productSold: p.product_sold,
+  productUploadDt: p.product_upload_dt,
+  productUpdateDt: p.product_update_dt,
+  productImg: p.product_img ?? "",
 });

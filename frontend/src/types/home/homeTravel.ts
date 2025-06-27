@@ -11,7 +11,4 @@ export interface HomeTravelDto {
   reservedCount: number;
   maxPeople: number;
   minPeople: number;
-  hotelInfo: string;
-  ticketInfo: string;
-  busIncluded: boolean;
 }

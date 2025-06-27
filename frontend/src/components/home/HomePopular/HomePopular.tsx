@@ -68,7 +68,11 @@ const HomePopular = () => {
             <div
               className={styles.card}
               onClick={() =>
-                navigate(`/detail/${item.travelId}`, { state: item })
+                navigate(`/detail/${item.travelId}`, {
+                  state: {
+                    travel: item,
+                  },
+                })
               }
             >
               <img src={item.travelImg} alt={item.travelName} />

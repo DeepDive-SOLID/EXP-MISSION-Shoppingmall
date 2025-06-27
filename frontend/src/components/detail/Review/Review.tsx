@@ -2,21 +2,19 @@ import styles from "./Review.module.scss";
 import { profile_img } from "../../../assets";
 import { FaStar } from "react-icons/fa6";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { fetchReviews } from "../../../api/home/reviewApi";
 import { ReviewDto } from "../../../types/home/review";
 
-const Review = () => {
-  const location = useLocation();
-  const travelData = location.state;
+interface ReviewProps {
+  travelId: number;
+}
+
+const Review = ({ travelId }: ReviewProps) => {
   const [reviews, setReviews] = useState<ReviewDto[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const travelId = travelData?.travelId;
-        if (!travelId) return;
-
         const res = await fetchReviews(travelId);
         setReviews(res);
       } catch (err) {
@@ -24,7 +22,8 @@ const Review = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [travelId]);
+
   return (
     <div className={styles.reviewWrapper}>
       <p className={styles.title}>리뷰</p>
@@ -47,4 +46,5 @@ const Review = () => {
     </div>
   );
 };
+
 export default Review;

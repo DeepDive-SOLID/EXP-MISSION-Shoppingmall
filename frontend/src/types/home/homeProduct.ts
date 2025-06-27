@@ -6,6 +6,7 @@ export interface Product {
   product_sold: boolean;
   product_upload_dt: string;
   product_update_dt: string;
+  product_img?: string | null;
 }
 
 export interface ProductListDto {
@@ -18,6 +19,3 @@ export interface ProductListDto {
   productUpdateDt: string;
   productImg: string;
 }
-
-// 물품 관리 페이지 검색 타입
-export type ProductSearchType = "name" | "code" | "all";

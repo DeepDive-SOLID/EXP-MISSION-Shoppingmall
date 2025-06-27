@@ -7,17 +7,17 @@ import { useLocation } from "react-router-dom";
 
 const Detail = () => {
   const location = useLocation();
-  const travelData = location.state;
+  const { travel } = location.state;
 
   return (
     <div>
       <Header />
       <div className={styles.wrapper}>
-        <ProductImg travelImg={travelData.travelImg} />
-        <Info data={travelData} />
+        <ProductImg travelId={travel.travelId} travelImg={travel.travelImg} />
+        <Info travelId={travel.travelId} />
       </div>
       <div>
-        <Review />
+        <Review travelId={travel.travelId} />
       </div>
     </div>
   );

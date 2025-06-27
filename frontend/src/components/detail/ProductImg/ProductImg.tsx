@@ -6,39 +6,41 @@ import "swiper/css/navigation";
 import type { Swiper as SwiperType } from "swiper";
 import { useRef, useEffect, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { productApi } from "../../../api";
-import { Product } from "../../../types/admin/product";
-import { transformApiProduct } from "../../../utils/productUtils";
+import { ProductListDto } from "../../../types/home/homeProduct";
+import api from "../../../api/axios";
 
 interface ProductImgProps {
+  travelId: number;
   travelImg: string;
 }
 
-const ProductImg = ({ travelImg }: ProductImgProps) => {
+const ProductImg = ({ travelId, travelImg }: ProductImgProps) => {
   const [subItems, setSubItems] = useState<string[]>([]);
-
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const swiperRef = useRef<SwiperType | null>(null);
 
   useEffect(() => {
-    const fetchProductImgs = async () => {
+    const fetchProducts = async () => {
       try {
-        const res = await productApi.getProductList();
-        if (Array.isArray(res.data)) {
-          const transformed: Product[] = res.data.map(transformApiProduct);
-          const imgUrls = transformed
-            .filter(p => !!p.product_img && !p.product_sold)
-            .map(p => p.product_img as string);
-          setSubItems(imgUrls);
-        }
+        const res = await api.get("/home/detail-page", {
+          params: { travelId },
+        });
+
+        const products: ProductListDto[] = res.data.product;
+
+        const imgUrls = products
+          .filter(p => !!p.productImg && !p.productSold)
+          .map(p => p.productImg as string);
+
+        setSubItems(imgUrls);
       } catch (err) {
-        console.error("상품 이미지 로딩 실패:", err);
+        console.error("서브 이미지 불러오기 실패:", err);
       }
     };
 
-    fetchProductImgs();
-  }, []);
+    fetchProducts();
+  }, [travelId]);
 
   useEffect(() => {
     if (
@@ -58,6 +60,7 @@ const ProductImg = ({ travelImg }: ProductImgProps) => {
     <div>
       <div className={styles.leftSection}>
         <img src={travelImg} alt="Main Poster" className={styles.mainImg} />
+
         <div className={styles.sliderWrapper}>
           <Swiper
             modules={[Navigation]}
