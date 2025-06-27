@@ -6,10 +6,12 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { HomeTravelDto } from "../../../types/home/homeTravel";
 import { fetchRecommendedTravels } from "../../../api/home/homeApi";
+import { useNavigate } from "react-router-dom";
 
 const HomeRecommend = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [recommendations, setRecommendations] = useState<HomeTravelDto[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const load = async () => {
@@ -63,7 +65,16 @@ const HomeRecommend = () => {
       >
         {recommendations.map(item => (
           <SwiperSlide key={item.travelId}>
-            <div className={styles.card}>
+            <div
+              className={styles.card}
+              onClick={() =>
+                navigate(`/detail/${item.travelId}`, {
+                  state: {
+                    travel: item,
+                  },
+                })
+              }
+            >
               <img src={item.travelImg} alt={item.travelName} />
               <div className={styles.info}>
                 <p className={styles.name}>{item.travelName}</p>
