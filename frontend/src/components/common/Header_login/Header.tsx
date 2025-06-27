@@ -5,8 +5,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = () => {
     if (!searchTerm.trim()) return;
@@ -17,10 +17,6 @@ const Header = () => {
         sorted: 1,
       },
     });
-  };
-
-  const handleMyPageClick = () => {
-    navigate("/mypage/order-list");
   };
 
   return (
@@ -64,7 +60,10 @@ const Header = () => {
             <p className={styles.menuText}>장바구니</p>
           </div>
 
-          <div className={styles.menu} onClick={handleMyPageClick}>
+          <div
+            className={styles.menu}
+            onClick={() => navigate("/mypage/order-list")}
+          >
             <img src={menu_bar} alt="menu_bar" className={styles.menuIcon} />
             <p className={styles.menuText}>마이페이지</p>
           </div>
