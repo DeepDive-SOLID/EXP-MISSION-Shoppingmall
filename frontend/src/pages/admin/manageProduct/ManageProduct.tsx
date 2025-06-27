@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AxiosError } from 'axios';
+import { AxiosError } from "axios";
 import Header from "../../../components/common/Header_dash/Header";
 import Sidebar from "../../../components/common/Sidebar/Sidebar";
 import styles from "./ManageProduct.module.scss";
@@ -19,9 +19,7 @@ import {
   ProductListDto,
 } from "../../../types/admin/product";
 
-import { transformApiProduct } from "../../../utils/productUtils";
-import { productImages } from "../../../utils/productImg";
-
+import { getToday } from "../../../utils/formatDate";
 
 // API 응답 데이터를 Product 타입으로 변환하는 유틸리티 함수
 const transformApiProduct = (item: ProductListDto): Product => ({
@@ -33,7 +31,6 @@ const transformApiProduct = (item: ProductListDto): Product => ({
   product_upload_dt: getToday(), // 기본값으로 현재 날짜 사용
   product_update_dt: getToday(), // 기본값으로 현재 날짜 사용
 });
-
 
 const ManageProduct = () => {
   // 상태 관리
@@ -230,8 +227,14 @@ const ManageProduct = () => {
     try {
       const formData = new FormData();
       formData.append("productName", newProduct.product_name);
-      formData.append("productPrice", parseInt(newProduct.product_price).toString());
-      formData.append("productAmount", parseInt(newProduct.product_amount).toString());
+      formData.append(
+        "productPrice",
+        parseInt(newProduct.product_price).toString(),
+      );
+      formData.append(
+        "productAmount",
+        parseInt(newProduct.product_amount).toString(),
+      );
       formData.append("productSold", "false");
       formData.append("productUploadDt", newProduct.product_upload_dt);
       formData.append("productUpdateDt", newProduct.product_update_dt);
@@ -640,9 +643,15 @@ const ManageProduct = () => {
                   <div className={styles.formGroup}>
                     <label>이미지 선택</label>
                     <div className={styles.fileNotice}>
-                      <p><strong>최대 첨부 파일 크기:</strong> 1MB</p>
-                      <p><strong>허용 확장자:</strong> jpg, png</p>
-                      <p><strong>파일명 길이 제한:</strong> 300자 이하</p>
+                      <p>
+                        <strong>최대 첨부 파일 크기:</strong> 1MB
+                      </p>
+                      <p>
+                        <strong>허용 확장자:</strong> jpg, png
+                      </p>
+                      <p>
+                        <strong>파일명 길이 제한:</strong> 300자 이하
+                      </p>
                     </div>
                     <div className={styles.fileInput}>
                       <input
