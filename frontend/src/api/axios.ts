@@ -1,5 +1,6 @@
 import axios from "axios";
 import { authApi } from "./login/authApi";
+import { isLoggedIn } from "../utils/auth";
 
 // axios 기본 설정
 const api = axios.create({
@@ -31,14 +32,13 @@ api.interceptors.response.use(
     return response;
   },
   async error => {
-    // 401 에러이고 토큰 재발급을 시도하지 않은 요청인 경우
-    if (error.response?.status === 401 && !error.config._retry) {
+    // 토큰이 존재하는지 여부와 만료시간 체크하고 토큰 재발급을 시도하지 않은 요청인 경우
+    if (!isLoggedIn() && !error.config._retry) {
       error.config._retry = true;
 
       try {
         const newToken = await authApi.refreshToken();
         localStorage.setItem("token", newToken);
-
         error.config.headers["Authorization"] = `Bearer ${newToken}`;
         return api(error.config);
       } catch {
