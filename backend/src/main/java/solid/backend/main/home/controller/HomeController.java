@@ -38,7 +38,7 @@ public class HomeController {
     }
 
     /**
-     * 설명: 상세 페이지 해당하는 상품, 물품, 리뷰 데이터 리스트
+     * 설명: 상세 페이지 해당하는 리뷰 데이터 리스트
      * @param travelId
      * @return List<HomeReviewDto>
      */
@@ -48,7 +48,7 @@ public class HomeController {
         return homeService.getTravelDetailPageReviews(travelId);
     }
     /**
-     * 설명: 상세 페이지 해당하는 상품, 물품, 리뷰 데이터 리스트
+     * 설명: 상세 페이지 해당하는 물품 데이터 리스트
      * @return List<HomeProductDto>
      */
     @ResponseBody
