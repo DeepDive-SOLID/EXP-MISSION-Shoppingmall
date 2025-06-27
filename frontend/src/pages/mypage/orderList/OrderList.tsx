@@ -6,10 +6,10 @@ import Sidebar from "../../../components/common/Sidebar_mypage/Sidebar";
 import dayjs from "dayjs";
 import {
   getOrdersList,
-  MypageOrdersListDto,
   cancelOrder,
   addOrdersReview,
 } from "../../../api/mypage/orderApi";
+import { MypageOrdersListDto } from "../../../types/mypage/order";
 
 const getStatusText = (status: number) => {
   switch (status) {

@@ -1,10 +1,5 @@
 import axios from "../axios";
-
-export interface MypageMemberProfileDto {
-  memberId: string;
-  memberName: string;
-  memberImg: string;
-}
+import { MypageMemberProfileDto } from "../../types/mypage/member";
 
 export const getMemberProfile = async (
   memberId: string,
