@@ -1,0 +1,465 @@
+.orderListPage {
+  min-height: 100vh;
+}
+
+.mainContent {
+  display: flex;
+  align-items: flex-start;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.orderListContainer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  padding: 24px;
+}
+
+.orderListForm {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  padding: 48px 48px 32px 48px;
+  min-width: 380px;
+  max-width: 1082px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.orderList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+
+  .emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    .emptyIcon {
+      font-size: 48px;
+      color: #d1d5db;
+      margin-bottom: 16px;
+    }
+
+    p {
+      color: #6b7280;
+      font-size: 16px;
+      margin: 0;
+    }
+  }
+
+  .orderCard {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .orderHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid #f3f4f6;
+
+      .orderInfo {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .orderNumber {
+          font-weight: 600;
+          color: #1f2937;
+          font-size: 14px;
+        }
+
+        .orderDate {
+          color: #6b7280;
+          font-size: 12px;
+        }
+      }
+
+      .statusBadge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        color: white;
+        font-size: 12px;
+        font-weight: 500;
+
+        svg {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .orderContent {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+
+      .travelInfo {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex: 1;
+
+        .travelImage {
+          width: 80px;
+          height: 80px;
+          object-fit: cover;
+          border-radius: 8px;
+          border: 1px solid #f3f4f6;
+        }
+
+        .travelDetails {
+          .travelName {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0 0 4px 0;
+          }
+
+          .travelMeta {
+            color: #6b7280;
+            font-size: 14px;
+            margin: 0 0 0px 0;
+          }
+
+          .travelMeta:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+
+      .priceInfo {
+        .price {
+          font-size: 18px;
+          font-weight: 700;
+          color: #1f2937;
+        }
+      }
+    }
+
+    .orderActions {
+      display: flex;
+      gap: 12px;
+      padding: 20px 24px;
+      border-top: 1px solid #f3f4f6;
+      background-color: #f9fafb;
+
+      .actionButton {
+        padding: 8px 16px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background-color: white;
+        color: #374151;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background-color: #f3f4f6;
+          border-color: #9ca3af;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    flex-direction: column;
+  }
+
+  .orderListContainer {
+    margin-left: 0;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  .orderListForm {
+    padding: 24px;
+    min-width: auto;
+  }
+
+  .orderCard {
+    .orderHeader {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .orderContent {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+
+      .travelInfo {
+        width: 100%;
+      }
+
+      .priceInfo {
+        align-self: flex-end;
+      }
+    }
+
+    .orderActions {
+      flex-direction: column;
+
+      .actionButton {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  }
+}
+
+.noticeBox {
+  background: #4a6cf7;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 400;
+  border-radius: 12px;
+  padding: 32px 0;
+  text-align: center;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+  letter-spacing: 0.01em;
+  width: 100%;
+}
+.noticeBox b {
+  font-weight: 700;
+}
+
+.cancelModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  .modalContent {
+    background: white;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+
+    h2 {
+      margin: 0 0 16px 0;
+      color: #1f2937;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0 0 24px 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .modalActions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+
+      button {
+        padding: 10px 24px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:first-child {
+          background-color: #ef4444;
+          color: white;
+
+          &:hover {
+            background-color: #dc2626;
+          }
+        }
+
+        &:last-child {
+          background-color: #f3f4f6;
+          color: #374151;
+
+          &:hover {
+            background-color: #e5e7eb;
+          }
+        }
+      }
+    }
+  }
+}
+
+.reviewModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+
+  .modalContent {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
+    padding: 32px 24px 24px 24px;
+    min-width: 340px;
+    max-width: 480px;
+    width: 90vw;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .closeButton {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #888;
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.2s;
+    &:hover {
+      color: #222;
+    }
+  }
+
+  .travelInfoBox {
+    display: flex;
+    align-items: center;
+    background: #f5f5f5;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 22px 0 28px 0;
+    gap: 16px;
+  }
+  .travelThumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+  }
+  .travelName {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .travelPeriod {
+    font-size: 13px;
+    color: #666;
+  }
+
+  .satisfactionQ,
+  .reviewQ {
+    font-size: 17px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 12px;
+    margin-top: 0;
+  }
+  .satisfactionQ {
+    margin-top: 0;
+  }
+  .reviewQ {
+    margin-top: 24px;
+  }
+
+  .stars {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 36px;
+    user-select: none;
+  }
+  .star,
+  .starFilled {
+    cursor: pointer;
+    font-size: 36px;
+    font-weight: 900;
+    color: #bbb;
+    transition: color 0.2s;
+  }
+  .starFilled {
+    color: #ffd600;
+    text-shadow: 0 2px 8px #fffbe3;
+  }
+
+  .reviewTextarea {
+    width: 100%;
+    min-height: 110px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 15px;
+    margin-bottom: 18px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+    &:focus {
+      border-color: #2196f3;
+      box-shadow: 0 0 0 2px #e3f0fc;
+    }
+  }
+
+  .submitButton {
+    width: 100%;
+    background: #2196f3;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 0;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    &:hover:enabled {
+      background: #1976d2;
+    }
+    &:disabled {
+      background: #bcdffb;
+      color: #fff;
+      cursor: default;
+    }
+  }
+}
