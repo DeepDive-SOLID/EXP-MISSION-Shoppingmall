@@ -8,7 +8,6 @@ import addCompleteImage from "../../../../assets/images/addComplete.jpg";
 
 const AddComplete = () => {
   const navigate = useNavigate();
-  const userName = "사용자";
 
   const handleGoToPayment = () => {
     // 결제 페이지로 이동하는 로직 (현재는 홈으로 이동)
@@ -23,7 +22,7 @@ const AddComplete = () => {
     <div className={styles.addCompletePage}>
       <Header />
       <div className={styles.mainContent}>
-        <Sidebar userName={userName} />
+        <Sidebar />
         <div className={styles.addCompleteContainer}>
           <div className={styles.addCompleteBox}>
             <FiCheckCircle className={styles.icon} />

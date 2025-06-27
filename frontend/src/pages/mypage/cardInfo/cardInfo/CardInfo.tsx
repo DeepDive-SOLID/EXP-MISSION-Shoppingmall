@@ -50,7 +50,6 @@ const initialCards: CardItem[] = [
 
 const CardInfo = () => {
   const navigate = useNavigate();
-  const userName = "사용자";
   const [cards, setCards] = useState(initialCards);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState<CardItem | null>(null);
@@ -95,7 +94,7 @@ const CardInfo = () => {
     <div className={styles.cardInfoPage}>
       <Header />
       <div className={styles.mainContent}>
-        <Sidebar userName={userName} />
+        <Sidebar />
         <div className={styles.cardInfoContainer}>
           <div className={styles.cardInfoForm}>
             <div className={styles.pageHeader}>

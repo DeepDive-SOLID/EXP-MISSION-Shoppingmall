@@ -213,7 +213,7 @@ const OrderList = () => {
     <div className={styles.orderListPage}>
       <Header />
       <div className={styles.mainContent}>
-        <Sidebar userName={userName} />
+        <Sidebar />
         <div className={styles.orderListContainer}>
           <div className={styles.orderListForm}>
             <div

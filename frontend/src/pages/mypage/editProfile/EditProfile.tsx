@@ -37,7 +37,6 @@ const EyeIcon = ({ visible }: { visible: boolean }) =>
   );
 
 const EditProfile = () => {
-  const userName = "사용자";
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -190,7 +189,7 @@ const EditProfile = () => {
     <div className={styles.editProfilePage}>
       <Header />
       <div className={styles.mainContent}>
-        <Sidebar userName={userName} />
+        <Sidebar />
         <div className={styles.profileFormContainer}>
           <form className={styles.profileForm} onSubmit={handleSave}>
             <div className={styles.profileSection}>

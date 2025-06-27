@@ -8,7 +8,6 @@ import addFailImage from "../../../../assets/images/addFail.jpg";
 
 const AddFail = () => {
   const navigate = useNavigate();
-  const userName = "사용자";
 
   const handleRetry = () => {
     navigate("/mypage/card-add");
@@ -18,7 +17,7 @@ const AddFail = () => {
     <div className={styles.addFailPage}>
       <Header />
       <div className={styles.mainContent}>
-        <Sidebar userName={userName} />
+        <Sidebar />
         <div className={styles.addFailContainer}>
           <div className={styles.addFailBox}>
             <FiXCircle className={styles.icon} />

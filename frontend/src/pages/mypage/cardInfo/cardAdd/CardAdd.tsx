@@ -40,7 +40,6 @@ const EyeIcon = ({ visible }: { visible: boolean }) =>
 
 const CardAdd = () => {
   const navigate = useNavigate();
-  const userName = "사용자";
   const cardNumberInputs = useRef<(HTMLInputElement | null)[]>([]);
   const expiryDateInputs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -232,7 +231,7 @@ const CardAdd = () => {
     <div className={styles.cardAddPage}>
       <Header />
       <div className={styles.mainContent}>
-        <Sidebar userName={userName} />
+        <Sidebar />
         <div className={styles.cardAddContainer}>
           <div className={styles.cardAddForm}>
             <div className={styles.pageHeader}>
