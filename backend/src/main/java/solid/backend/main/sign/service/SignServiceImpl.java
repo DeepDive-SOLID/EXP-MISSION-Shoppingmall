@@ -49,7 +49,7 @@ public class SignServiceImpl implements SignService {
     /**
      * 설명: 회원가입 아이디 중복 확인
      * @param memberId
-     * @return
+     * @return Boolean (중복이면 true, 아니면 false)
      */
     @Override
     public Boolean isDuplicatedId(String memberId) {
@@ -94,7 +94,7 @@ public class SignServiceImpl implements SignService {
 
     /**
      * 설명: 아이디 찾기
-     * @param
+     * @param signFindIdDto
      * @return memberId
      */
     @Override
