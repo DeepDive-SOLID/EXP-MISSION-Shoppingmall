@@ -19,9 +19,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()  // 테스트를 위해 admin, main 인증 없이 허용 (테스트 완료 후 제거)
-                        // 로그인, 회원가입, ID&PW 찾기 인증 없이 허용 (추가적으로 로그인 없이 메인페이지를 사용할 수 있기 떄문에 메인 URL 추가 예정)
-                        //.requestMatchers("/main/sign/**").permitAll() // admin 페이지 관리는 넣을지 말지 생각해봐야됨
+                        //.requestMatchers("/**").permitAll()  // 테스트를 위해 admin, main 인증 없이 허용 (테스트 완료 후 제거)
+                        .requestMatchers("/main/sign/**", "/main/home/**").permitAll() //메인 홈, 로그인 관련 페이지는 모두 접근 허용
+                        .requestMatchers("/admin/member/**").hasAuthority("ADMIN") //관리자 권한인 경우 admin api 호출가능
+                        .requestMatchers("/admin/member/travel/**", "/admin/member/product/**").hasAuthority("MANAGER")
+                        //.requestMatchers("/main/mypage/member").hasAuthority("USER") // 사용자 권한 예시
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFiler, UsernamePasswordAuthenticationFilter.class)

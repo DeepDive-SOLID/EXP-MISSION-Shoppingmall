@@ -10,17 +10,17 @@ import solid.backend.Jwt.JwtUtil;
 import solid.backend.Jwt.AccessToken;
 import solid.backend.entity.Auth;
 import solid.backend.entity.Member;
+import solid.backend.jpaRepository.MemberRepository;
 import solid.backend.main.sign.dto.*;
-import solid.backend.main.sign.repository.SignRepository;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class SignServiceImpl implements SignService{
+public class SignServiceImpl implements SignService {
 
-    private final SignRepository signRepository;
+    private final MemberRepository signRepository;
     private final EntityManager em;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -49,7 +49,7 @@ public class SignServiceImpl implements SignService{
     /**
      * 설명: 회원가입 아이디 중복 확인
      * @param memberId
-     * @return
+     * @return Boolean (중복이면 true, 아니면 false)
      */
     @Override
     public Boolean isDuplicatedId(String memberId) {
@@ -94,7 +94,7 @@ public class SignServiceImpl implements SignService{
 
     /**
      * 설명: 아이디 찾기
-     * @param
+     * @param signFindIdDto
      * @return memberId
      */
     @Override

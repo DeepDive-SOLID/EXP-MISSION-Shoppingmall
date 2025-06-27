@@ -34,7 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
             String memberId = jwtUtil.getMemberId(token);
             String authId = jwtUtil.getAuthId(token);
 
-            String role = "ROLE_" + authId.toUpperCase(); // 스프링 스큐리티 규칙
+            String role = authId.toUpperCase(); // 스프링 스큐리티 규칙
             List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
             Authentication auth = new UsernamePasswordAuthenticationToken(memberId, null, authorities);
@@ -53,4 +53,3 @@ public class JwtFilter extends OncePerRequestFilter {
         return null;
     }
 }
-
