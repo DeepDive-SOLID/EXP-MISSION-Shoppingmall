@@ -1,8 +1,8 @@
 import styles from "./Info.module.scss";
 import { people } from "../../../assets";
 import { FaStar, FaComments, FaRegCalendarCheck } from "react-icons/fa6";
-import { LuHotel, LuTicket } from "react-icons/lu";
-import { IoMdBus } from "react-icons/io";
+// import { LuHotel, LuTicket } from "react-icons/lu";
+// import { IoMdBus } from "react-icons/io";
 import CounterBox from "../../common/CounterBox/CounterBox";
 import { useState, useEffect } from "react";
 import { HomeTravelDto } from "../../../types/home/homeTravel";
@@ -116,7 +116,7 @@ const Info = ({ data }: InfoProps) => {
           </div>
         </div>
 
-        <div className={styles.hotelInfo}>
+        {/* <div className={styles.hotelInfo}>
           <LuHotel className={styles.hotelIcon} />
           <span className={styles.hotelDetails}>{data.hotelInfo}</span>
         </div>
@@ -131,7 +131,7 @@ const Info = ({ data }: InfoProps) => {
           <span className={styles.trafficDetails}>
             버스 대여 {data.busIncluded ? "O" : "X"}
           </span>
-        </div>
+        </div> */}
       </div>
 
       <div className={styles.subProductInfo}>

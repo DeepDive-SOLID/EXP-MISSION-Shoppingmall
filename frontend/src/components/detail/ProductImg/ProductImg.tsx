@@ -4,20 +4,41 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import type { Swiper as SwiperType } from "swiper";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { carrier, pilow, travelkit, snorkel, umbrella } from "../../../assets";
-
-const subItems = [carrier, pilow, travelkit, snorkel, umbrella];
+import { productApi } from "../../../api";
+import { Product } from "../../../types/admin/product";
+import { transformApiProduct } from "../../../utils/productUtils";
 
 interface ProductImgProps {
   travelImg: string;
 }
 
 const ProductImg = ({ travelImg }: ProductImgProps) => {
+  const [subItems, setSubItems] = useState<string[]>([]);
+
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const swiperRef = useRef<SwiperType | null>(null);
+
+  useEffect(() => {
+    const fetchProductImgs = async () => {
+      try {
+        const res = await productApi.getProductList();
+        if (Array.isArray(res.data)) {
+          const transformed: Product[] = res.data.map(transformApiProduct);
+          const imgUrls = transformed
+            .filter(p => !!p.product_img && !p.product_sold)
+            .map(p => p.product_img as string);
+          setSubItems(imgUrls);
+        }
+      } catch (err) {
+        console.error("상품 이미지 로딩 실패:", err);
+      }
+    };
+
+    fetchProductImgs();
+  }, []);
 
   useEffect(() => {
     if (
@@ -74,4 +95,5 @@ const ProductImg = ({ travelImg }: ProductImgProps) => {
     </div>
   );
 };
+
 export default ProductImg;
