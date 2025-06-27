@@ -6,9 +6,10 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import solid.backend.entity.QProduct;
 import solid.backend.entity.QReview;
 import solid.backend.entity.QTravel;
-import solid.backend.entity.Review;
+import solid.backend.main.home.dto.HomeProductDto;
 import solid.backend.main.home.dto.HomeReviewDto;
 import solid.backend.main.home.dto.HomeSearchDto;
 import solid.backend.main.home.dto.HomeTravelDto;
@@ -24,6 +25,7 @@ public class HomeQueryRepository {
 
     QTravel travel = QTravel.travel;
     QReview review = QReview.review;
+    QProduct product = QProduct.product;
 
     /**
      * @param homeSearchDto
@@ -56,6 +58,7 @@ public class HomeQueryRepository {
 
     /**
      * 설명: 해당하는 상품에 대한 리뷰 리스트
+     *
      * @param travelId
      * @return List<HomeReviewDto>
      */
@@ -67,6 +70,18 @@ public class HomeQueryRepository {
                 ))
                 .from(review)
                 .where(review.travel.travelId.eq(travelId))
+                .fetch();
+    }
+
+    public List<HomeProductDto> getTravelProductList() {
+        return queryFactory.select(Projections.constructor(HomeProductDto.class,
+                product.productId,
+                product.productName,
+                product.productPrice,
+                product.productImg,
+                product.productSold
+        ))
+                .from(product)
                 .fetch();
     }
 

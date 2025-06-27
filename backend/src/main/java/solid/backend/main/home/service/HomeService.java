@@ -1,9 +1,7 @@
 package solid.backend.main.home.service;
 
 import solid.backend.entity.Travel;
-import solid.backend.main.home.dto.HomeDetailDto;
-import solid.backend.main.home.dto.HomeSearchDto;
-import solid.backend.main.home.dto.HomeTravelDto;
+import solid.backend.main.home.dto.*;
 
 import java.util.List;
 
@@ -23,9 +21,15 @@ public interface HomeService {
     List<HomeTravelDto> searchTravel(HomeSearchDto homeSearchDto);
 
     /**
-     * 설명: 상세 페이지 상품, 물품, 리뷰 데이터
+     * 설명: 상세 페이지 리뷰 데이터
      * @param travelId
-     * @return HomeDetailDto
+     * @return List<HomeReviewDto>
      */
-    HomeDetailDto getTravelDetailPage(Integer travelId);
+    List<HomeReviewDto> getTravelDetailPageReviews(Integer travelId);
+
+    /**
+     * 설명: 상세 페이지 물품 데이터
+     * @return List<HomeProductDto>
+     */
+    List<HomeProductDto> getTravelDetailPageProduct();
 }

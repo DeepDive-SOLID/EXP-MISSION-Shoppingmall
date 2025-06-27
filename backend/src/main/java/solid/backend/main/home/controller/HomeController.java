@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import solid.backend.entity.Travel;
-import solid.backend.main.home.dto.HomeDetailDto;
-import solid.backend.main.home.dto.HomeSearchDto;
-import solid.backend.main.home.dto.HomeTravelDto;
+import solid.backend.main.home.dto.*;
 import solid.backend.main.home.service.HomeService;
 
 import java.util.List;
@@ -42,13 +40,23 @@ public class HomeController {
     /**
      * 설명: 상세 페이지 해당하는 상품, 물품, 리뷰 데이터 리스트
      * @param travelId
-     * @return HomeDetailDto
+     * @return List<HomeReviewDto>
      */
     @ResponseBody
-    @GetMapping("/detail-page")
-    public HomeDetailDto getTravelDetailPage(@RequestParam Integer travelId) {
-        return homeService.getTravelDetailPage(travelId);
+    @GetMapping("/detail-page-reviews")
+    public List<HomeReviewDto> getTravelDetailPageReviews(@RequestParam Integer travelId) {
+        return homeService.getTravelDetailPageReviews(travelId);
     }
+    /**
+     * 설명: 상세 페이지 해당하는 상품, 물품, 리뷰 데이터 리스트
+     * @return List<HomeProductDto>
+     */
+    @ResponseBody
+    @GetMapping("/detail-page-products")
+    public List<HomeProductDto> getTravelDetailPageProduct() {
+        return homeService.getTravelDetailPageProduct();
+    }
+
 
 
 }
