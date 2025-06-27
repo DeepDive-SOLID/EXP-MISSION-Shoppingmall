@@ -39,6 +39,7 @@ const router = createBrowserRouter([
         path: "detail/:travelId",
         element: <Detail />,
       },
+      {
         path: "signup",
         element: <SignUp />,
       },

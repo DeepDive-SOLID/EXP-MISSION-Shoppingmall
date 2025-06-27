@@ -17,6 +17,7 @@ const Header = () => {
         sorted: 1,
       },
     });
+  };
 
   const handleMyPageClick = () => {
     navigate("/mypage/order-list");
