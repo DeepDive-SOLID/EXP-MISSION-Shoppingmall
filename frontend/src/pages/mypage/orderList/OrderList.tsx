@@ -1,109 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./OrderList.module.scss";
 import { FiPackage, FiTruck, FiCheckCircle, FiXCircle } from "react-icons/fi";
 import Header from "../../../components/common/Header_login/Header";
 import Sidebar from "../../../components/common/Sidebar_mypage/Sidebar";
 import dayjs from "dayjs";
+import {
+  getOrdersList,
+  MypageOrdersListDto,
+  cancelOrder,
+  addOrdersReview,
+} from "../../../api/mypage/orderApi";
 
-interface OrderItem {
-  orderDate: string;
-  travelName: string;
-  travelImage: string;
-  price: number;
-  quantity: number;
-  status: "0" | "1" | "2" | "3"; // 0: 주문완료, 1: 주문취소, 2: 배송중, 3: 배송완료
-  orderNumber: string;
-  travel_start_dt: string;
-  travel_end_dt: string;
-}
-
-const initialOrders: OrderItem[] = [
-  {
-    orderNumber: "1",
-    orderDate: "2025-06-15",
-    travelName: "부산여행",
-    travelImage: "/src/assets/images/carrier.jpg",
-    price: 450000,
-    quantity: 1,
-    status: "0",
-    travel_start_dt: "2025.06.17",
-    travel_end_dt: "2025.06.19",
-  },
-  {
-    orderNumber: "2",
-    orderDate: "2025-06-10",
-    travelName: "강릉여행",
-    travelImage: "/src/assets/images/pilow.jpg",
-    price: 330000,
-    quantity: 2,
-    status: "1",
-    travel_start_dt: "2025.06.10",
-    travel_end_dt: "2025.06.12",
-  },
-  {
-    orderNumber: "3",
-    orderDate: "2025-06-05",
-    travelName: "스키여행",
-    travelImage: "/src/assets/images/snorkel.jpg",
-    price: 250000,
-    quantity: 5,
-    status: "2",
-    travel_start_dt: "2025.06.29",
-    travel_end_dt: "2025.06.30",
-  },
-  {
-    orderNumber: "4",
-    orderDate: "2025-05-05",
-    travelName: "여수여행",
-    travelImage: "/src/assets/images/snorkel.jpg",
-    price: 380000,
-    quantity: 2,
-    status: "3",
-    travel_start_dt: "2025.05.15",
-    travel_end_dt: "2025.05.16",
-  },
-];
-
-const getStatusText = (status: string) => {
+const getStatusText = (status: number) => {
   switch (status) {
-    case "0":
+    case 0:
       return "주문완료";
-    case "1":
+    case 1:
       return "주문취소";
-    case "2":
+    case 2:
       return "배송중";
-    case "3":
+    case 3:
       return "배송완료";
     default:
-      return status;
+      return String(status);
   }
 };
 
-const getStatusIcon = (status: string) => {
+const getStatusIcon = (status: number) => {
   switch (status) {
-    case "0":
+    case 0:
       return <FiPackage />;
-    case "1":
+    case 1:
       return <FiXCircle />;
-    case "2":
+    case 2:
       return <FiTruck />;
-    case "3":
+    case 3:
       return <FiCheckCircle />;
     default:
       return <FiPackage />;
   }
 };
 
-const getStatusColor = (status: string) => {
+const getStatusColor = (status: number) => {
   switch (status) {
-    case "0":
-      return "#3b82f6"; // 파랑(주문완료)
-    case "1":
-      return "#ef4444"; // 빨강(주문취소)
-    case "2":
-      return "#f59e0b"; // 주황(배송중)
-    case "3":
-      return "#10b981"; // 초록(배송완료)
+    case 0:
+      return "#3b82f6";
+    case 1:
+      return "#ef4444";
+    case 2:
+      return "#f59e0b";
+    case 3:
+      return "#10b981";
     default:
       return "#6b7280";
   }
@@ -111,9 +58,11 @@ const getStatusColor = (status: string) => {
 
 const OrderList = () => {
   const userName = "사용자";
-  const [orders, setOrders] = useState(initialOrders);
+  const memberId = "boon";
+  const [orders, setOrders] = useState<MypageOrdersListDto[]>([]);
   const [showCancelModal, setShowCancelModal] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
+  const [selectedOrder, setSelectedOrder] =
+    useState<MypageOrdersListDto | null>(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewData, setReviewData] = useState({
     rating: 5,
@@ -122,21 +71,30 @@ const OrderList = () => {
     images: [] as string[],
   });
 
+  useEffect(() => {
+    getOrdersList(memberId)
+      .then(setOrders)
+      .catch(e => {
+        console.error("주문 내역을 불러오지 못했습니다.", e);
+      });
+  }, [memberId]);
+
   const today = dayjs().startOf("day");
   const upcoming = orders
     .filter(
       order =>
-        dayjs(order.travel_start_dt, "YYYY.MM.DD")
+        order.orderStatus !== 1 &&
+        dayjs(order.travelStartDt, "YYYY-MM-DD")
           .startOf("day")
           .diff(today, "day") >= 0,
     )
     .sort((a, b) =>
-      dayjs(a.travel_start_dt, "YYYY.MM.DD")
+      dayjs(a.travelStartDt, "YYYY-MM-DD")
         .startOf("day")
-        .diff(dayjs(b.travel_start_dt, "YYYY.MM.DD").startOf("day")),
+        .diff(dayjs(b.travelStartDt, "YYYY-MM-DD").startOf("day")),
     )[0];
   const daysLeft = upcoming
-    ? dayjs(upcoming.travel_start_dt, "YYYY.MM.DD")
+    ? dayjs(upcoming.travelStartDt, "YYYY-MM-DD")
         .startOf("day")
         .diff(today, "day")
     : null;
@@ -152,29 +110,37 @@ const OrderList = () => {
     noticeMessage = "예정된 여행이 없습니다!";
   }
 
-  const handleCancelOrder = (order: OrderItem) => {
+  const handleCancelOrder = (order: MypageOrdersListDto) => {
     setSelectedOrder(order);
     setShowCancelModal(true);
   };
 
-  const handleReviewOrder = (order: OrderItem) => {
+  const handleReviewOrder = (order: MypageOrdersListDto) => {
     setSelectedOrder(order);
     setShowReviewModal(true);
   };
 
-  const confirmCancelOrder = () => {
+  const confirmCancelOrder = async () => {
     if (selectedOrder) {
-      setOrders(prevOrders =>
-        prevOrders.map(order =>
-          order.orderNumber === selectedOrder.orderNumber
-            ? { ...order, status: "1" as const }
-            : order,
-        ),
-      );
+      try {
+        const result = await cancelOrder(selectedOrder.orderId);
+        if (result === "SUCCESS") {
+          setOrders(prevOrders =>
+            prevOrders.map(order =>
+              order.orderId === selectedOrder.orderId
+                ? { ...order, orderStatus: 1 }
+                : order,
+            ),
+          );
+          alert("예약이 취소되었습니다.");
+        } else {
+          alert("예약 취소에 실패했습니다.");
+        }
+      } catch {
+        alert("예약 취소 중 오류가 발생했습니다.");
+      }
       setShowCancelModal(false);
       setSelectedOrder(null);
-      // 여기에 실제 API 호출 로직을 추가
-      alert("예약이 취소되었습니다.");
     }
   };
 
@@ -190,15 +156,29 @@ const OrderList = () => {
     });
   };
 
-  const handleReviewSubmit = () => {
+  const handleReviewSubmit = async () => {
     if (reviewData.content.trim().length < 10) {
       alert("내용을 최소 10자 이상 입력해주세요.");
       return;
     }
-    // 여기에 실제 리뷰 제출 API 호출 로직을 추가
-    console.log("리뷰 제출:", reviewData);
-    alert("리뷰가 성공적으로 등록되었습니다!");
-    closeModal();
+    if (!selectedOrder) return;
+
+    try {
+      const result = await addOrdersReview({
+        travelId: selectedOrder.orderTravelId,
+        memberId: memberId,
+        reviewRate: reviewData.rating,
+        reviewComment: reviewData.content,
+      });
+      if (result === "SUCCESS") {
+        alert("리뷰가 성공적으로 등록되었습니다!");
+        closeModal();
+      } else {
+        alert("리뷰 등록에 실패했습니다.");
+      }
+    } catch {
+      alert("리뷰 등록 중 오류가 발생했습니다.");
+    }
   };
 
   const handleRatingChange = (rating: number) => {
@@ -228,57 +208,57 @@ const OrderList = () => {
                 </div>
               ) : (
                 orders.map(order => (
-                  <div key={order.orderNumber} className={styles.orderCard}>
+                  <div key={order.orderId} className={styles.orderCard}>
                     <div className={styles.orderHeader}>
                       <div className={styles.orderInfo}>
                         <span className={styles.orderNumber}>
-                          {order.orderNumber}
+                          {order.orderId}
                         </span>
                         <span className={styles.orderDate}>
-                          {order.orderDate}
+                          {order.orderDt}
                         </span>
                       </div>
                       <div
                         className={styles.statusBadge}
                         style={{
-                          backgroundColor: getStatusColor(order.status),
+                          backgroundColor: getStatusColor(order.orderStatus),
                         }}
                       >
-                        {getStatusIcon(order.status)}
-                        <span>{getStatusText(order.status)}</span>
+                        {getStatusIcon(order.orderStatus)}
+                        <span>{getStatusText(order.orderStatus)}</span>
                       </div>
                     </div>
 
                     <div className={styles.orderContent}>
                       <div className={styles.travelInfo}>
                         <img
-                          src={order.travelImage}
-                          alt={order.travelName}
+                          src={order.travelImg}
+                          alt={order.orderTravelName}
                           className={styles.travelImage}
                         />
                         <div className={styles.travelDetails}>
                           <h3 className={styles.travelName}>
-                            {order.travelName}
+                            {order.orderTravelName}
                           </h3>
                           <p className={styles.travelMeta}>
-                            인원: {order.quantity}명
+                            인원: {order.orderTravelAmount}명
                           </p>
                           <p className={styles.travelMeta}>
-                            여행기간: {order.travel_start_dt} ~{" "}
-                            {order.travel_end_dt}
+                            여행기간: {order.travelStartDt} ~{" "}
+                            {order.travelEndDt}
                           </p>
                         </div>
                       </div>
                       <div className={styles.priceInfo}>
                         <span className={styles.price}>
-                          {order.price.toLocaleString()}원
+                          {order.totalPrice.toLocaleString()}원
                         </span>
                       </div>
                     </div>
 
-                    {(order.status === "3" || order.status === "0") && (
+                    {(order.orderStatus === 3 || order.orderStatus === 0) && (
                       <div className={styles.orderActions}>
-                        {order.status === "3" && (
+                        {order.orderStatus === 3 && (
                           <button
                             className={styles.actionButton}
                             onClick={() => handleReviewOrder(order)}
@@ -286,7 +266,7 @@ const OrderList = () => {
                             리뷰 작성
                           </button>
                         )}
-                        {order.status === "0" && (
+                        {order.orderStatus === 0 && (
                           <button
                             className={styles.actionButton}
                             onClick={() => handleCancelOrder(order)}
@@ -323,17 +303,16 @@ const OrderList = () => {
             </button>
             <div className={styles.travelInfoBox}>
               <img
-                src={selectedOrder.travelImage}
-                alt={selectedOrder.travelName}
+                src={selectedOrder.travelImg}
+                alt={selectedOrder.orderTravelName}
                 className={styles.travelThumb}
               />
               <div>
                 <div className={styles.travelName}>
-                  <b>{selectedOrder.travelName}</b>
+                  <b>{selectedOrder.orderTravelName}</b>
                 </div>
                 <div className={styles.travelPeriod}>
-                  ({selectedOrder.travel_start_dt}-{selectedOrder.travel_end_dt}
-                  )
+                  ({selectedOrder.travelStartDt}-{selectedOrder.travelEndDt})
                 </div>
               </div>
             </div>
