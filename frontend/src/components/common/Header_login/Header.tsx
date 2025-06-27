@@ -17,6 +17,9 @@ const Header = () => {
         sorted: 1,
       },
     });
+
+  const handleMyPageClick = () => {
+    navigate("/mypage/order-list");
   };
 
   return (
@@ -60,7 +63,7 @@ const Header = () => {
             <p className={styles.menuText}>장바구니</p>
           </div>
 
-          <div className={styles.menu}>
+          <div className={styles.menu} onClick={handleMyPageClick}>
             <img src={menu_bar} alt="menu_bar" className={styles.menuIcon} />
             <p className={styles.menuText}>마이페이지</p>
           </div>

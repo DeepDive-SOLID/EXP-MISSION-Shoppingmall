@@ -70,6 +70,33 @@
   }
 }
 
+.inputError {
+  border-color: #ef4444 !important;
+
+  &:focus {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+}
+
+.fieldError {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-left: 2px;
+  margin-top: 0.25rem;
+}
+
+.submitError {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-left: 2px;
+  text-align: center;
+  padding: 0.5rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+}
+
 .passwordInputWrapper {
   position: relative;
   width: 100%;
@@ -126,13 +153,6 @@
   &:hover {
     text-decoration: underline;
   }
-}
-
-.inputError {
-  color: #ef4444;
-  font-size: 0.85rem;
-  margin-top: 0.3rem;
-  margin-left: 2px;
 }
 
 .forgotPwLink {

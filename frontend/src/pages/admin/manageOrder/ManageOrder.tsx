@@ -236,8 +236,8 @@ const ManageOrder = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {currentItems.map(order => (
-                      <tr key={order.orderId}>
+                    {currentItems.map((order, index) => (
+                      <tr key={`${order.orderId}-${index}`}>
                         <td>{order.orderId}</td>
                         <td>{order.travelName || "-"}</td>
                         <td>{order.productName || "-"}</td>
@@ -285,9 +285,9 @@ const ManageOrder = () => {
                 이전
               </button>
 
-              {getPageNumbers().map(number => (
+              {getPageNumbers().map((number, index) => (
                 <button
-                  key={number}
+                  key={`page-${number}-${index}`}
                   className={`${styles.pageButton} ${
                     currentPage === number ? styles.active : ""
                   }`}
