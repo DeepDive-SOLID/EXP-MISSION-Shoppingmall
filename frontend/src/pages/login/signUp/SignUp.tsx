@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./SignUp.module.scss";
 import { logo } from "../../../assets/index";
 import { authApi } from "../../../api/login/authApi";
+import { useNavigate } from "react-router-dom";
 
 const EyeIcon = ({ visible }: { visible: boolean }) =>
   visible ? (
@@ -237,10 +238,17 @@ const SignUp: React.FC = () => {
     }
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.signUpContainer}>
-        <img src={logo} alt="로고" className={styles.logo} />
+        <img
+          src={logo}
+          alt="로고"
+          className={styles.logo}
+          onClick={() => navigate("/")}
+        />
         <h1 className={styles.title}>계정을 만들어 시작하세요</h1>
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>
