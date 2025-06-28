@@ -8,11 +8,14 @@ import React, {
 import {
   isLoggedIn as checkIsLoggedIn,
   logout as logoutUser,
+  getCurrentUserInfo,
 } from "../utils/auth";
 
 // AuthContext에서 제공할 데이터의 타입 정의
 interface AuthContextType {
   isLoggedIn: boolean; // 현재 로그인 상태 (true: 로그인됨, false: 로그인 안됨)
+  userInfo: { memberId: string; authId: string } | null; // 사용자 정보 (ID, 권한)
+  isAdmin: boolean; // 관리자 권한 여부
   login: () => void; // 로그인 함수 (Context 상태를 true로 변경)
   logout: () => void; // 로그아웃 함수 (토큰 제거 + Context 상태를 false로 변경)
 }
@@ -41,27 +44,48 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // 로그인 상태를 관리하는 state (false: 로그인 안됨, true: 로그인됨)
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // 사용자 정보를 관리하는 state
+  const [userInfo, setUserInfo] = useState<{
+    memberId: string;
+    authId: string;
+  } | null>(null);
 
   // 컴포넌트가 처음 마운트될 때 실행되는 useEffect
   useEffect(() => {
     // localStorage에 저장된 토큰을 확인하여 로그인 상태 초기화
-    setIsLoggedIn(checkIsLoggedIn());
+    const loggedIn = checkIsLoggedIn();
+    setIsLoggedIn(loggedIn);
+
+    // 로그인된 상태라면 사용자 정보도 가져오기
+    if (loggedIn) {
+      const currentUserInfo = getCurrentUserInfo();
+      setUserInfo(currentUserInfo);
+    }
   }, []); // 빈 배열이므로 컴포넌트 마운트 시에만 실행
 
   // 로그인 함수: Context의 로그인 상태를 true로 변경
   const login = () => {
     setIsLoggedIn(true);
+    // 로그인 시 사용자 정보도 업데이트
+    const currentUserInfo = getCurrentUserInfo();
+    setUserInfo(currentUserInfo);
   };
 
   // 로그아웃 함수: 토큰 제거 + Context의 로그인 상태를 false로 변경
   const logout = () => {
     logoutUser(); // localStorage에서 토큰 제거 및 홈페이지로 이동
     setIsLoggedIn(false); // Context 상태를 false로 변경
+    setUserInfo(null); // 사용자 정보도 초기화
   };
+
+  // 관리자 권한 여부 계산
+  const isAdmin = userInfo?.authId === "ADMIN";
 
   // Context에 제공할 값들을 객체로 묶기
   const value = {
     isLoggedIn, // 현재 로그인 상태
+    userInfo, // 사용자 정보 (ID, 권한)
+    isAdmin, // 관리자 권한 여부
     login, // 로그인 함수
     logout, // 로그아웃 함수
   };

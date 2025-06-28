@@ -8,7 +8,7 @@ import styles from "./Header.module.scss";
 const Header = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const { isLoggedIn, logout: logoutUser } = useAuth();
+  const { isLoggedIn, isAdmin, logout: logoutUser } = useAuth();
 
   const handleSearch = () => {
     if (!searchTerm.trim()) return;
@@ -23,6 +23,15 @@ const Header = () => {
 
   const handleLogout = () => {
     logoutUser();
+  };
+
+  const handleMyPageClick = () => {
+    // 관리자인 경우 대시보드로, 일반 사용자인 경우 마이페이지로 이동
+    if (isAdmin) {
+      navigate("/dashboard");
+    } else {
+      navigate("/mypage/order-list");
+    }
   };
 
   return (
@@ -60,25 +69,27 @@ const Header = () => {
                 <p className={styles.menuText}>로그아웃</p>
               </div>
 
-              <div className={styles.menu}>
-                <img
-                  src={shopping_cart}
-                  alt="shopping_cart"
-                  className={styles.menuIcon}
-                />
-                <p className={styles.menuText}>장바구니</p>
-              </div>
+              {!isAdmin && (
+                // 일반 사용자만 장바구니 표시
+                <div className={styles.menu}>
+                  <img
+                    src={shopping_cart}
+                    alt="shopping_cart"
+                    className={styles.menuIcon}
+                  />
+                  <p className={styles.menuText}>장바구니</p>
+                </div>
+              )}
 
-              <div
-                className={styles.menu}
-                onClick={() => navigate("/mypage/order-list")}
-              >
+              <div className={styles.menu} onClick={handleMyPageClick}>
                 <img
                   src={menu_bar}
                   alt="menu_bar"
                   className={styles.menuIcon}
                 />
-                <p className={styles.menuText}>마이페이지</p>
+                <p className={styles.menuText}>
+                  {isAdmin ? "관리자 대시보드" : "마이페이지"}
+                </p>
               </div>
             </>
           ) : (
