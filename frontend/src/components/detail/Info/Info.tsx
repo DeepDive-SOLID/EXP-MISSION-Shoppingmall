@@ -7,6 +7,8 @@ import { HomeTravelDto } from "../../../types/home/homeTravel";
 import { ProductDto } from "../../../types/home/homeProduct";
 import { ReviewDto } from "../../../types/home/review";
 import { fetchProducts, fetchReviews } from "../../../api/home/homeApi";
+import { useNavigate } from "react-router-dom";
+import { isLoggedIn } from "../../../utils/auth";
 
 interface InfoProps {
   travelId: number;
@@ -79,6 +81,28 @@ const Info = ({ travelId, travel }: InfoProps) => {
   const totalPrice =
     peopleCount * travel.travelPrice +
     selectedProducts.reduce((sum, item) => sum + item.count * item.price, 0);
+
+  const navigate = useNavigate();
+
+  const handleCartClick = () => {
+    if (!isLoggedIn()) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    alert("장바구니에 담았습니다!");
+  };
+
+  const handleReserveClick = () => {
+    if (!isLoggedIn()) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    navigate("/order");
+  };
 
   return (
     <div className={styles.rightSection}>
@@ -194,8 +218,12 @@ const Info = ({ travelId, travel }: InfoProps) => {
       </div>
 
       <div className={styles.buttonSection}>
-        <button className={styles.cartButton}>장바구니</button>
-        <button className={styles.reserveButton}>예약하기</button>
+        <button className={styles.cartButton} onClick={handleCartClick}>
+          장바구니
+        </button>
+        <button className={styles.reserveButton} onClick={handleReserveClick}>
+          예약하기
+        </button>
       </div>
     </div>
   );
