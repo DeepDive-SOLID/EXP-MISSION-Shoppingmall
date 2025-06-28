@@ -8,4 +8,7 @@ export interface HomeTravelDto {
   travelImg: string;
   rate: number;
   reviewCount: number;
+  reservedCount: number;
+  maxPeople: number;
+  minPeople: number;
 }

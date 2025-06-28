@@ -1,5 +1,5 @@
 import styles from "./Info.module.scss";
-// import { people } from "../../../assets";
+import { people } from "../../../assets";
 import { FaStar, FaComments, FaRegCalendarCheck } from "react-icons/fa6";
 import CounterBox from "../../common/CounterBox/CounterBox";
 import { useState, useEffect } from "react";
@@ -107,12 +107,12 @@ const Info = ({ travelId, travel }: InfoProps) => {
           </span>
         </div>
 
-        {/* <div className={styles.personInfo}>
+        <div className={styles.personInfo}>
           <img src={people} alt="People Icon" className={styles.peopleIcon} />
           <div className={styles.personText}>
             <div className={styles.personTop}>
               <span className={styles.personCount}>
-                예약 인원 {travel.reservedCount}명
+                예약 인원 {travel.reservedCount ?? 0}명
               </span>
               <span className={styles.personCount}>
                 (잔여 개수{" "}
@@ -120,10 +120,10 @@ const Info = ({ travelId, travel }: InfoProps) => {
               </span>
             </div>
             <p className={styles.minPeopleCount}>
-              최소 출발 인원 : {travel.minPeople}명
+              최소 출발 인원 : {travel.minPeople ?? 0}명
             </p>
           </div>
-        </div> */}
+        </div>
       </div>
 
       <div className={styles.subProductInfo}>
