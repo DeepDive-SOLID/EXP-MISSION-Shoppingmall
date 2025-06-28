@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CardAdd.module.scss";
-import Header from "../../../../components/common/Header_login/Header";
+import Header from "../../../../components/common/Header/Header";
 import Sidebar from "../../../../components/common/Sidebar_mypage/Sidebar";
 import kbCard from "../../../../assets/images/kb.jpg";
 import api from "../../../../api/axios";

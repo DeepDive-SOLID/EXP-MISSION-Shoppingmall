@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./EditProfile.module.scss";
-import Header from "../../../components/common/Header_login/Header";
+import Header from "../../../components/common/Header/Header";
 import Sidebar from "../../../components/common/Sidebar_mypage/Sidebar";
 import profileImg from "../../../assets/images/profile1.jpg";
 import {
