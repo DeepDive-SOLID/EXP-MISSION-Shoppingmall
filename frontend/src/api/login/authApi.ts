@@ -6,12 +6,14 @@ import {
   SignCheckIdEmailDto,
   SignUpdPwDto,
   SignInCheckIdDto,
+  SignUpCheckEmailDto,
   SignUpResponse,
   SignInResponse,
   FindIdResponse,
   CheckIdEmailResponse,
   UpdPwResponse,
   CheckIdResponse,
+  CheckEmailResponse,
 } from "../../types/login/auth";
 
 export const authApi = {
@@ -71,6 +73,17 @@ export const authApi = {
     const response = await api.post<CheckIdResponse>(
       "/main/sign/checkId",
       signInCheckIdDto,
+    );
+    return response.data;
+  },
+
+  // 이메일 중복 확인
+  checkEmail: async (
+    signUpCheckEmailDto: SignUpCheckEmailDto,
+  ): Promise<CheckEmailResponse> => {
+    const response = await api.post<CheckEmailResponse>(
+      "/main/sign/checkEmail",
+      signUpCheckEmailDto,
     );
     return response.data;
   },
