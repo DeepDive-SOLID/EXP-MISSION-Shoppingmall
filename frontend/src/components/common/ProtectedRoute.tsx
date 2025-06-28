@@ -5,15 +5,15 @@ import { useAuth } from "../../contexts/AuthContext";
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAuth?: boolean; // 인증이 필요한지 여부 (기본값: true)
-  requireAdmin?: boolean; // 관리자 권한이 필요한지 여부 (기본값: false)
+  requireManager?: boolean; // 관리자 권한이 필요한지 여부 (기본값: false)
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireAuth = true,
-  requireAdmin = false,
+  requireManager = false,
 }) => {
-  const { isLoggedIn, isAdmin } = useAuth();
+  const { isLoggedIn, isManager } = useAuth();
 
   // 로그인이 필요한데 로그인하지 않은 경우
   if (requireAuth && !isLoggedIn) {
@@ -21,7 +21,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // 관리자 권한이 필요한데 관리자가 아닌 경우
-  if (requireAdmin && !isAdmin) {
+  if (requireManager && !isManager) {
     return <Navigate to="/" replace />;
   }
 

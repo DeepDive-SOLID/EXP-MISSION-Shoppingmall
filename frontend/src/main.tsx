@@ -63,7 +63,7 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: (
-          <ProtectedRoute requireAuth={true} requireAdmin={true}>
+          <ProtectedRoute requireAuth={true} requireManager={true}>
             <Dashboard />
           </ProtectedRoute>
         ),
@@ -71,7 +71,7 @@ const router = createBrowserRouter([
       {
         path: "manage-product",
         element: (
-          <ProtectedRoute requireAuth={true} requireAdmin={true}>
+          <ProtectedRoute requireAuth={true} requireManager={true}>
             <ManageProduct />
           </ProtectedRoute>
         ),
@@ -79,7 +79,7 @@ const router = createBrowserRouter([
       {
         path: "manage-travel",
         element: (
-          <ProtectedRoute requireAuth={true} requireAdmin={true}>
+          <ProtectedRoute requireAuth={true} requireManager={true}>
             <ManageTravel />
           </ProtectedRoute>
         ),
@@ -87,7 +87,7 @@ const router = createBrowserRouter([
       {
         path: "manage-user",
         element: (
-          <ProtectedRoute requireAuth={true} requireAdmin={true}>
+          <ProtectedRoute requireAuth={true} requireManager={true}>
             <ManageUser />
           </ProtectedRoute>
         ),
@@ -95,7 +95,7 @@ const router = createBrowserRouter([
       {
         path: "manage-order",
         element: (
-          <ProtectedRoute requireAuth={true} requireAdmin={true}>
+          <ProtectedRoute requireAuth={true} requireManager={true}>
             <ManageOrder />
           </ProtectedRoute>
         ),
@@ -103,7 +103,7 @@ const router = createBrowserRouter([
       {
         path: "mypage/order-list",
         element: (
-          <ProtectedRoute requireAuth={true} requireAdmin={false}>
+          <ProtectedRoute requireAuth={true} requireManager={false}>
             <OrderList />
           </ProtectedRoute>
         ),
@@ -111,7 +111,7 @@ const router = createBrowserRouter([
       {
         path: "mypage/edit-profile",
         element: (
-          <ProtectedRoute requireAuth={true} requireAdmin={false}>
+          <ProtectedRoute requireAuth={true} requireManager={false}>
             <EditProfile />
           </ProtectedRoute>
         ),
@@ -119,7 +119,7 @@ const router = createBrowserRouter([
       {
         path: "mypage/card-info",
         element: (
-          <ProtectedRoute requireAuth={true} requireAdmin={false}>
+          <ProtectedRoute requireAuth={true} requireManager={false}>
             <CardInfo />
           </ProtectedRoute>
         ),
@@ -127,7 +127,7 @@ const router = createBrowserRouter([
       {
         path: "mypage/card-add",
         element: (
-          <ProtectedRoute requireAuth={true} requireAdmin={false}>
+          <ProtectedRoute requireAuth={true} requireManager={false}>
             <CardAdd />
           </ProtectedRoute>
         ),
@@ -135,7 +135,7 @@ const router = createBrowserRouter([
       {
         path: "mypage/card-add/complete",
         element: (
-          <ProtectedRoute requireAuth={true} requireAdmin={false}>
+          <ProtectedRoute requireAuth={true} requireManager={false}>
             <AddComplete />
           </ProtectedRoute>
         ),
@@ -143,7 +143,7 @@ const router = createBrowserRouter([
       {
         path: "mypage/card-add/fail",
         element: (
-          <ProtectedRoute requireAuth={true} requireAdmin={false}>
+          <ProtectedRoute requireAuth={true} requireManager={false}>
             <AddFail />
           </ProtectedRoute>
         ),

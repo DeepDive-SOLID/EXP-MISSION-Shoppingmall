@@ -8,7 +8,7 @@ import styles from "./Header.module.scss";
 const Header = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const { isLoggedIn, isAdmin, logout: logoutUser } = useAuth();
+  const { isLoggedIn, isManager, logout: logoutUser } = useAuth();
 
   const handleSearch = () => {
     if (!searchTerm.trim()) return;
@@ -27,7 +27,7 @@ const Header = () => {
 
   const handleMyPageClick = () => {
     // 관리자인 경우 대시보드로, 일반 사용자인 경우 마이페이지로 이동
-    if (isAdmin) {
+    if (isManager) {
       navigate("/dashboard");
     } else {
       navigate("/mypage/order-list");
@@ -69,7 +69,7 @@ const Header = () => {
                 <p className={styles.menuText}>로그아웃</p>
               </div>
 
-              {!isAdmin && (
+              {!isManager && (
                 // 일반 사용자만 장바구니 표시
                 <div className={styles.menu}>
                   <img
@@ -88,7 +88,7 @@ const Header = () => {
                   className={styles.menuIcon}
                 />
                 <p className={styles.menuText}>
-                  {isAdmin ? "관리자 대시보드" : "마이페이지"}
+                  {isManager ? "관리자 대시보드" : "마이페이지"}
                 </p>
               </div>
             </>
