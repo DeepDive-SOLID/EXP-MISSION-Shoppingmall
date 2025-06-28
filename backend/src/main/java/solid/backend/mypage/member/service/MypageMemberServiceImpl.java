@@ -84,6 +84,16 @@ public class MypageMemberServiceImpl implements MypageMemberService {
     }
 
     /**
+     * 설명 : 이메일 중복 체크
+     * @param memberEmail
+     * @return Boolean
+     */
+    @Override
+    public Boolean checkEmail(String memberEmail) {
+        return memberRepository.findByMemberEmail(memberEmail).isPresent();
+    }
+
+    /**
      * 설명 : 회원 정보 삭제
      * @param memberId
      */

@@ -63,6 +63,17 @@ public class MypageMemberController {
     }
 
     /**
+     * 설명 : 이메일 중복 체크
+     * @param memberEmail
+     * @return ResponseEntity<String>
+     */
+    @ResponseBody
+    @PostMapping("/checkEmail")
+    public ResponseEntity<Boolean> checkEmail(@RequestBody String memberEmail) {
+        return ResponseEntity.ok(mypageMemberService.checkEmail(memberEmail));
+    }
+
+    /**
      * 설명 : 회원 정보 삭제
      * @param memberId
      * @return ResponseEntity<String>
