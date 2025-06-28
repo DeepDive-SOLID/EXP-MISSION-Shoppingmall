@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./OrderList.module.scss";
 import { FiPackage, FiTruck, FiCheckCircle, FiXCircle } from "react-icons/fi";
-import Header from "../../../components/common/Header_login/Header";
+import Header from "../../../components/common/Header/Header";
 import Sidebar from "../../../components/common/Sidebar_mypage/Sidebar";
 import dayjs from "dayjs";
 import {

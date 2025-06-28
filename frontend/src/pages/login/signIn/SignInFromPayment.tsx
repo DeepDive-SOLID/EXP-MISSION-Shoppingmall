@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./SignInFromPayment.module.scss";
 import { logo } from "../../../assets/index";
 import { authApi } from "../../../api/login/authApi";
+import { setToken } from "../../../utils/auth";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const EyeIcon = ({ visible }: { visible: boolean }) =>
   visible ? (
@@ -38,6 +40,7 @@ const EyeIcon = ({ visible }: { visible: boolean }) =>
 
 const SignInFromPayment: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     memberId: "",
     memberPw: "",
@@ -85,7 +88,8 @@ const SignInFromPayment: React.FC = () => {
     setSubmitError("");
     try {
       const token = await authApi.signIn(formData);
-      localStorage.setItem("token", token);
+      setToken(token);
+      login();
       alert("로그인에 성공했습니다!");
       navigate("/");
     } catch (error: unknown) {
