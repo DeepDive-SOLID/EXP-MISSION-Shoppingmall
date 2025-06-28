@@ -17,6 +17,12 @@ public interface SignService {
     Boolean isDuplicatedId(String memberId);
 
     /**
+     * 설명: 회원가입 이메일 중복 확인
+     * @param memberEmail
+     */
+    Boolean isDuplicatedEmail(String memberEmail);
+
+    /**
      * 설명: 로그인
      * @param signInDto
      */
