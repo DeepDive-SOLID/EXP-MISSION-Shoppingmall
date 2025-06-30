@@ -8,6 +8,11 @@ import java.util.List;
 
 public interface BasketService {
 
+    /**
+     * 설명: 장바구니에서 결제하기 화면으로 바로 넘어갈때 넘겨줄 데이터
+     * @param basketId
+     * @return BasketListDto
+     */
     BasketListDto getBasketOne(Integer basketId);
 
     /**

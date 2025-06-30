@@ -20,6 +20,11 @@ public class BasketQueryRepository {
     QBasket basket = QBasket.basket;
     QMember member = QMember.member;
 
+    /**
+     * 설명: 장바구니에서 바로 결제하기로 넘어갔을 때 넘겨줄 데이터
+     * @param basketId
+     * @return
+     */
     public BasketListDto getBasketOne(Integer basketId) {
         return jpaQueryFactory
                 .select(Projections.constructor(BasketListDto.class,
@@ -37,6 +42,8 @@ public class BasketQueryRepository {
                         basket.basketProductAmount
                 ))
                 .from(basket)
+                .leftJoin(basket.product)
+                .leftJoin(basket.travel)
                 .where(basket.basketId.eq(basketId))
                 .fetchOne();
     }
@@ -63,8 +70,9 @@ public class BasketQueryRepository {
                         basket.basketProductAmount
                 ))
                 .from(basket)
-                .leftJoin(basket.member, member)
-                .where(member.memberId.eq(memberId))
+                .leftJoin(basket.member, member).on(member.memberId.eq(memberId))
+                .leftJoin(basket.product)
+                .leftJoin(basket.travel)
                 .fetch();
     }
 }

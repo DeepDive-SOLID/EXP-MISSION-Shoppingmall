@@ -28,6 +28,11 @@ public class BasketServiceImpl implements BasketService {
     private final BasketQueryRepository basketQueryRepository;
     private final FileManager fileManager;
 
+    /**
+     * 설명: 장바구니에서 결제하기 화면으로 바로 넘어갈때 넘겨줄 데이터
+     * @param basketId
+     * @return BasketListDto
+     */
     @Override
     public BasketListDto getBasketOne(Integer basketId) {
         BasketListDto basketListDto = basketQueryRepository.getBasketOne(basketId);

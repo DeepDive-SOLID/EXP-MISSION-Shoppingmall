@@ -20,6 +20,11 @@ import java.util.List;
 public class BasketController {
     private final BasketService basketService;
 
+    /**
+     * 설명: 장바구니에서 바로 결제하기 화면으로 넘어갔을 때 데이터
+     * @param basketId
+     * @return BasketListDto
+     */
     @ResponseBody
     @GetMapping("/order")
     public BasketListDto getBasketOne(@RequestParam("basketId") Integer basketId) {
