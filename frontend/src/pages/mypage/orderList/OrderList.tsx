@@ -10,6 +10,9 @@ import {
   addOrdersReview,
 } from "../../../api/mypage/orderApi";
 import { MypageOrdersListDto } from "../../../types/mypage/order";
+import { useAuth } from "../../../contexts/AuthContext";
+import { getMemberProfile } from "../../../api/mypage/memberApi";
+import { MypageMemberProfileDto } from "../../../types/mypage/member";
 
 const getStatusText = (status: number) => {
   switch (status) {
@@ -57,8 +60,7 @@ const getStatusColor = (status: number) => {
 };
 
 const OrderList = () => {
-  const userName = "사용자";
-  const memberId = "boon";
+  const { userInfo } = useAuth();
   const [orders, setOrders] = useState<MypageOrdersListDto[]>([]);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedOrder, setSelectedOrder] =
@@ -70,13 +72,34 @@ const OrderList = () => {
     content: "",
     images: [] as string[],
   });
+  const [memberProfile, setMemberProfile] =
+    useState<MypageMemberProfileDto | null>(null);
+
+  const memberId = userInfo?.memberId;
 
   useEffect(() => {
-    getOrdersList(memberId)
-      .then(setOrders)
-      .catch(e => {
-        console.error("주문 내역을 불러오지 못했습니다.", e);
-      });
+    const fetchMemberProfile = async () => {
+      if (!memberId) return;
+
+      try {
+        const profile = await getMemberProfile(memberId);
+        setMemberProfile(profile);
+      } catch (error) {
+        console.error("사용자 프로필 정보를 가져오는데 실패했습니다:", error);
+      }
+    };
+
+    fetchMemberProfile();
+  }, [memberId]);
+
+  useEffect(() => {
+    if (memberId) {
+      getOrdersList(memberId)
+        .then(setOrders)
+        .catch(e => {
+          console.error("주문 내역을 불러오지 못했습니다.", e);
+        });
+    }
   }, [memberId]);
 
   const today = dayjs().startOf("day");
@@ -102,9 +125,9 @@ const OrderList = () => {
   let noticeMessage;
   if (upcoming) {
     if (daysLeft === 0) {
-      noticeMessage = `${userName}님 <b>오늘</b> 여행이 예정되어 있습니다!`;
+      noticeMessage = `${memberProfile?.memberName || "사용자"} 님 <b>오늘</b> 여행이 예정되어 있습니다!`;
     } else {
-      noticeMessage = `${userName}님 <b>${daysLeft}일 뒤</b> 여행이 예정되어 있습니다!`;
+      noticeMessage = `${memberProfile?.memberName || "사용자"} 님 <b>${daysLeft}일 뒤</b> 여행이 예정되어 있습니다!`;
     }
   } else {
     noticeMessage = "예정된 여행이 없습니다!";
@@ -161,7 +184,7 @@ const OrderList = () => {
       alert("내용을 최소 10자 이상 입력해주세요.");
       return;
     }
-    if (!selectedOrder) return;
+    if (!selectedOrder || !memberId) return;
 
     try {
       const result = await addOrdersReview({

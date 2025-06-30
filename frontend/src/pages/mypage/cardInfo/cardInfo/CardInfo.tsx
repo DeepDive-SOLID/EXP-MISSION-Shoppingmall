@@ -5,27 +5,29 @@ import { FiCreditCard, FiPlus } from "react-icons/fi";
 import Header from "../../../../components/common/Header/Header";
 import Sidebar from "../../../../components/common/Sidebar_mypage/Sidebar";
 import { getPaymentList, deleteCard } from "../../../../api/mypage/cardApi";
-
-interface PaymentListDto {
-  paymentId: number;
-  paymentName: string;
-  paymentNum: number;
-  paymentEndDt: string;
-  paymentImg: string;
-}
+import { CardInfo } from "../../../../types/mypage/card";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 const CardInfo = () => {
   const navigate = useNavigate();
-  const [cards, setCards] = useState<PaymentListDto[]>([]);
+  const { userInfo } = useAuth(); // 현재 로그인한 사용자 정보 가져오기
+  const [cards, setCards] = useState<CardInfo[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedCard, setSelectedCard] = useState<PaymentListDto | null>(null);
+  const [selectedCard, setSelectedCard] = useState<CardInfo | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // 현재 로그인한 사용자의 memberId 사용
+  const memberId = userInfo?.memberId;
 
   // 카드 리스트 조회
   useEffect(() => {
     const fetchCards = async () => {
+      if (!memberId) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const memberId = "boon"; // TODO: 실제 로그인 사용자 정보로 대체
         const paymentList = await getPaymentList(memberId);
         setCards(paymentList);
       } catch (error) {
@@ -37,13 +39,13 @@ const CardInfo = () => {
     };
 
     fetchCards();
-  }, []);
+  }, [memberId]);
 
   const handleAddCard = () => {
     navigate("/mypage/card-add");
   };
 
-  const handleDeleteCard = (card: PaymentListDto) => {
+  const handleDeleteCard = (card: CardInfo) => {
     setSelectedCard(card);
     setShowDeleteModal(true);
   };

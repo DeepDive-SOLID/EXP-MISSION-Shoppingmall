@@ -327,3 +327,71 @@
   border-color: #4a6cf7;
   color: #4a6cf7;
 }
+
+.emailInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.emailCheckBtn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  height: 27px;
+  min-width: 60px;
+  background: #0085ff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.2s;
+  z-index: 2;
+
+  &:hover {
+    background: #0074d9;
+  }
+
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.emailError {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.emailSuccess {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.input {
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+
+  &::placeholder {
+    color: #999;
+  }
+}
+
+.inputWithButton {
+  padding-right: 110px;
+}

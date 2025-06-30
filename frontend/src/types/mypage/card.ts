@@ -34,6 +34,7 @@ export interface CardInfo {
   paymentOwner: string;
   paymentSecurity: number;
   paymentPw: number;
+  paymentImg: string; // 카드 이미지 URL
 }
 
 // API 응답 타입들
