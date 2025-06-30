@@ -1,15 +1,19 @@
 import { useForm } from "react-hook-form";
 import styles from "./OrderPayment.module.scss";
 import { FaCheckCircle } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddCard from "../AddCard/AddCard";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { getCurrentMemberId } from "../../../utils/auth";
+import { fetchCardList, addOrder } from "../../../api/order/orderApi";
+import { PaymentCardDto, OrderAddDto } from "../../../types/order/order";
+import { BasketListDto } from "../../../types/basket/basket";
 
 interface FormData {
   name: string;
   birthYear: string;
   birthMonth: string;
+  birthDate: string;
   phone: string;
   emailId: string;
   emailDomain: string;
@@ -17,33 +21,73 @@ interface FormData {
   detailAddress: string;
 }
 
-const OrderPayment = () => {
+interface OrderPaymentProps {
+  selectedItems: (BasketListDto & {
+    personCount: number;
+    extraCount: number;
+  })[];
+  isAgreed: boolean;
+}
+
+const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
 
-  const [selectedCard, setSelectedCard] = useState<number | null>(0);
+  const [cardList, setCardList] = useState<PaymentCardDto[]>([]);
+  const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
+  const [showAddCard, setShowAddCard] = useState(false);
+  const navigate = useNavigate();
+  const memberId = getCurrentMemberId();
 
-  const handleCardSelect = (index: number) => {
-    setSelectedCard(index);
+  const fetchCardListData = async () => {
+    if (!memberId) return;
+    const cards = await fetchCardList(memberId);
+    console.log("불러온 카드 목록:", cards);
+    setCardList(cards);
   };
 
-  const [showAddCard, setShowAddCard] = useState(false);
+  useEffect(() => {
+    fetchCardListData();
+  }, [memberId]);
+
   const openAddCardModal = () => setShowAddCard(true);
   const closeAddCardModal = () => setShowAddCard(false);
 
-  const navigate = useNavigate();
+  const handleCardSelect = (paymentId: number) => {
+    if (selectedCardId === paymentId) {
+      setSelectedCardId(null);
+    } else {
+      setSelectedCardId(paymentId);
+    }
+  };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (form: FormData) => {
+    if (!memberId) return alert("로그인 정보가 없습니다.");
+    if (!selectedCardId) return alert("카드를 선택해주세요.");
+    if (!isAgreed) return alert("약관에 동의해야 합니다.");
+
     try {
-      const res = await axios.post("/api/payment", data);
-      if (res.data.status === "success") {
-        navigate("/order/payresult/success");
-      } else {
-        navigate("/order/payresult/fail");
+      for (const item of selectedItems) {
+        const order: OrderAddDto = {
+          orderAddr: form.address,
+          orderAddrDetail: form.detailAddress,
+          orderTravelAmount: item.personCount,
+          orderProductAmount: item.extraCount,
+          travelId: item.travelId,
+          productId: item.productName ? (item.productId ?? 0) : 0,
+          paymentId: selectedCardId,
+          memberId,
+          ...(item.productId && { productId: item.productId }),
+        };
+
+        const result = await addOrder(order);
+        if (result !== "SUCCESS") throw new Error("결제 실패");
       }
+
+      navigate("/order/payresult/success");
     } catch (error) {
       console.error("결제 오류:", error);
       navigate("/order/payresult/fail");
@@ -67,15 +111,39 @@ const OrderPayment = () => {
         <div className={styles.formRow}>
           <label>생년 월일</label>
           <div className={styles.birthGroup}>
-            <input {...register("birthYear")} placeholder="YYYY" />
-            <span>-</span>
-            <input {...register("birthMonth")} placeholder="MM" />
+            <input
+              {...register("birthYear")}
+              placeholder="YYYY"
+              maxLength={4}
+            />
+            <span>/</span>
+            <input {...register("birthMonth")} placeholder="MM" maxLength={2} />
+            <span>/</span>
+            <input {...register("birthDate")} placeholder="DD" maxLength={2} />
           </div>
         </div>
 
         <div className={styles.formRow}>
           <label>연락처</label>
-          <input {...register("phone")} placeholder="연락처를 입력하세요" />
+          <input
+            {...register("phone")}
+            placeholder="연락처를 입력하세요"
+            onChange={e => {
+              const rawValue = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 남김
+              let formatted = rawValue;
+
+              if (rawValue.length <= 3) {
+                formatted = rawValue;
+              } else if (rawValue.length <= 7) {
+                formatted = `${rawValue.slice(0, 3)}-${rawValue.slice(3)}`;
+              } else if (rawValue.length <= 11) {
+                formatted = `${rawValue.slice(0, 3)}-${rawValue.slice(3, 7)}-${rawValue.slice(7)}`;
+              }
+
+              e.target.value = formatted;
+            }}
+            maxLength={13} // 예: 010-1234-5678
+          />
         </div>
 
         <div className={styles.formRow}>
@@ -92,7 +160,6 @@ const OrderPayment = () => {
           <div className={styles.addressGroup}>
             <input {...register("address")} placeholder="주소를 입력하세요" />
             <button type="button">주소확인</button>
-
             <input
               {...register("detailAddress")}
               placeholder="상세 주소를 입력하세요"
@@ -103,51 +170,56 @@ const OrderPayment = () => {
 
       <div className={styles.cardSection}>
         <h3 className={styles.sectionTitle}>결제 수단</h3>
-        <div className={styles.cardTop}>
-          <span className={styles.cardLabel}>카드 관리</span>
-        </div>
 
-        <div className={styles.cardBox}>
-          <div className={styles.savedCard} onClick={() => handleCardSelect(0)}>
+        {cardList.length === 0 && <p>등록된 카드가 없습니다.</p>}
+        {cardList.map(card => (
+          <div
+            key={card.paymentId}
+            className={`${styles.savedCard} ${
+              selectedCardId === Number(card.paymentId) ? styles.active : ""
+            }`}
+            onClick={() => {
+              console.log("clicked:", card.paymentId);
+              handleCardSelect(Number(card.paymentId));
+            }}
+          >
             <p>
-              <strong>Samsung Card</strong> <span>3434-33**</span>
+              <strong>{card.paymentName}</strong>{" "}
+              <span>{card.paymentNum.slice(0, 4)}-****</span>
             </p>
-            <div className={styles.allCheck}>
-              <FaCheckCircle
-                className={
-                  selectedCard === 0 ? styles.checked : styles.unchecked
-                }
-              />
-            </div>
-          </div>
-
-          <div className={styles.cardImage}></div>
-          <p className={styles.cardNumber}>9999-9999-9999-9999</p>
-          <p className={styles.cardExpiry}>02/22</p>
-          <p className={styles.cardName}>삼성카드</p>
-        </div>
-
-        <div className={styles.savedCard} onClick={() => handleCardSelect(1)}>
-          <p>
-            <strong>Hyundai Card</strong> <span>5433-33**</span>
-          </p>
-          <div className={styles.allCheck}>
             <FaCheckCircle
-              className={selectedCard === 1 ? styles.checked : styles.unchecked}
+              className={
+                selectedCardId === Number(card.paymentId)
+                  ? styles.checked
+                  : styles.unchecked
+              }
             />
           </div>
-        </div>
+        ))}
 
         <div className={styles.newCardBox} onClick={openAddCardModal}>
           <div className={styles.plus}>+</div>
           <p>카드등록하고 1초만에 결제하세요</p>
         </div>
 
-        <button className={styles.payBtn} onClick={handleSubmit(onSubmit)}>
-          결제하기
+        <button
+          type="button"
+          className={styles.payBtn}
+          disabled={!isAgreed}
+          onClick={handleSubmit(onSubmit)}
+        >
+          {isAgreed ? "결제하기" : "약관 동의 필요"}
         </button>
       </div>
-      {showAddCard && <AddCard onClose={closeAddCardModal} />}
+
+      {showAddCard && (
+        <AddCard
+          onClose={() => {
+            closeAddCardModal();
+            fetchCardListData();
+          }}
+        />
+      )}
     </div>
   );
 };

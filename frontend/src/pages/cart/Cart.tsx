@@ -196,7 +196,16 @@ const Cart = () => {
               </span>
             </div>
 
-            <button className={styles.payButton}>결제하기</button>
+            <button
+              className={styles.payButton}
+              onClick={() =>
+                navigate("/order", {
+                  state: { selectedItems },
+                })
+              }
+            >
+              결제하기
+            </button>
           </div>
         </div>
       </div>

@@ -110,47 +110,6 @@
   padding: 12px 0;
   position: relative;
 
-  .savedCard {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #e5f0ff;
-
-    border-radius: 8px;
-    height: 60px;
-    padding: 12px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #202020;
-    border: 1px solid #d0e5ff;
-    cursor: pointer;
-
-    strong {
-      color: #0070f3;
-    }
-
-    span {
-      color: #777;
-      font-size: 13px;
-      margin-left: 10px;
-    }
-
-    .allCheck {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: 8px;
-    }
-  }
-
-  .cardImage {
-    background: #ccc;
-    height: 180px;
-    border-radius: 8px;
-
-    margin: 16px 12px 5px 12px;
-  }
-
   .cardNumber {
     text-align: center;
     font-size: 18px;
@@ -178,7 +137,6 @@
   justify-content: space-between;
   align-items: center;
   background: #e5f0ff;
-
   border-radius: 8px;
   height: 60px;
   padding: 12px;
@@ -197,23 +155,24 @@
     font-size: 13px;
     margin-left: 10px;
   }
-
-  .allCheck {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 8px;
-  }
 }
 
 .checked {
   color: #0085ff;
-  font-size: 18px;
+  font-size: 20px;
+  background-color: white;
+  border-radius: 50%;
+  transition: all 0.2s;
+  pointer-events: none;
 }
 
 .unchecked {
   color: #ccc;
-  font-size: 18px;
+  font-size: 20px;
+  background-color: white;
+  border-radius: 50%;
+  transition: all 0.2s;
+  pointer-events: none;
 }
 
 .newCardBox {

@@ -25,20 +25,25 @@ const terms = [
   },
 ];
 
-const OrderAgreement = () => {
+interface OrderAgreementProps {
+  onAgreementChange: (agreed: boolean) => void;
+}
+
+const OrderAgreement = ({ onAgreementChange }: OrderAgreementProps) => {
   const [agreements, setAgreements] = useState([false, false]);
   const allChecked = agreements.every(Boolean);
 
   const handleAllToggle = () => {
-    setAgreements([!allChecked, !allChecked]);
+    const updated = !allChecked ? [true, true] : [false, false];
+    setAgreements(updated);
+    onAgreementChange(updated.every(Boolean));
   };
 
   const handleIndividualToggle = (index: number) => {
-    setAgreements(prev => {
-      const newArr = [...prev];
-      newArr[index] = !newArr[index];
-      return newArr;
-    });
+    const updated = [...agreements];
+    updated[index] = !updated[index];
+    setAgreements(updated);
+    onAgreementChange(updated.every(Boolean));
   };
 
   return (
