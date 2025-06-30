@@ -2,7 +2,7 @@ import api from "../axios";
 import { Order } from "../../types/admin/order";
 
 // 주문 관리 API
-export const orderApi = {
+const orderApi = {
   // 전체 주문 목록 조회
   getOrderList: async (): Promise<Order[]> => {
     const response = await api.get<Order[]>("/admin/orders/list");
@@ -39,3 +39,4 @@ export const orderApi = {
     return response.data;
   },
 };
+export default orderApi;

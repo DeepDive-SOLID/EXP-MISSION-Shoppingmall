@@ -1,5 +1,5 @@
 import styles from "./MonthlyTx.module.scss";
-import { dashboardApi } from "../../../api/admin/dashboardApi";
+import { dashboardApi } from "../../../api";
 import { useEffect, useState } from "react";
 import { DashboardMonthlyTxDto } from "../../../types/admin/dashboard";
 

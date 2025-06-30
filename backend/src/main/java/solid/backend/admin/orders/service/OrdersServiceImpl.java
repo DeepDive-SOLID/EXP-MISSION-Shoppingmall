@@ -6,12 +6,10 @@ import solid.backend.admin.orders.dto.OrdersManagementDto;
 import solid.backend.admin.orders.dto.OrdersSearchDto;
 import solid.backend.admin.orders.dto.OrdersUpdateDto;
 import solid.backend.admin.orders.repository.OrdersQueryRepository;
-import solid.backend.admin.orders.repository.OrdersRepository;
+import solid.backend.jpaRepository.OrdersRepository;
 import solid.backend.entity.Orders;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
