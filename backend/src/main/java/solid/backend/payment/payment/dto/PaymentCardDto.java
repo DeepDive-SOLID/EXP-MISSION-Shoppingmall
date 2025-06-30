@@ -8,12 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentCardDto {
+    private Integer paymentId;
     private String paymentName;
     private String paymentNum;
     private String paymentEndDt;
     private String paymentOwner;
     private String paymentCardImg;
-
-
 }
 

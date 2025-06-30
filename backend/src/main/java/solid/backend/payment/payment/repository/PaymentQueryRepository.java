@@ -28,6 +28,7 @@ public class PaymentQueryRepository {
      */
     public List<PaymentCardDto> PaymentCardInfo(String memberId) {
         return queryFactory.select(Projections.fields(PaymentCardDto.class,
+                        payment.paymentId,
                         payment.paymentName,
                         payment.paymentNum,
                         payment.paymentEndDt,
