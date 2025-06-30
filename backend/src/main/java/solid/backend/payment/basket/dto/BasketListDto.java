@@ -11,6 +11,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class BasketListDto {
     private Integer basketId;
+    private Integer travelId;
+    private Integer productId;
     private String travelName;
     private Integer travelPrice;
     private LocalDate travelStartDt;

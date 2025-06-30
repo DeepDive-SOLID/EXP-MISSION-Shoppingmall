@@ -3,6 +3,7 @@ package solid.backend.payment.basket.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+import solid.backend.common.FileManager;
 import solid.backend.entity.Basket;
 import solid.backend.entity.Product;
 import solid.backend.jpaRepository.BasketRepository;
@@ -25,6 +26,14 @@ public class BasketServiceImpl implements BasketService {
     private final TravelRepository travelRepository;
     private final ProductRepository productRepository;
     private final BasketQueryRepository basketQueryRepository;
+    private final FileManager fileManager;
+
+    @Override
+    public BasketListDto getBasketOne(Integer basketId) {
+        BasketListDto basketListDto = basketQueryRepository.getBasketOne(basketId);
+        basketListDto.setTravelImg(fileManager.getFileUrl(basketListDto.getTravelImg()));
+        return basketListDto;
+    }
 
     /**
      * 설명: 장바구니 저장
@@ -67,6 +76,9 @@ public class BasketServiceImpl implements BasketService {
      */
     @Override
     public List<BasketListDto> getListBasket(BasketMemberDto basketMemberDto) {
-        return basketQueryRepository.getListBasket(basketMemberDto.getMemberId());
+        List<BasketListDto> list = basketQueryRepository.getListBasket(basketMemberDto.getMemberId());
+
+        list.forEach(items -> items.setTravelImg(fileManager.getFileUrl(items.getTravelImg())));
+        return list;
     }
 }

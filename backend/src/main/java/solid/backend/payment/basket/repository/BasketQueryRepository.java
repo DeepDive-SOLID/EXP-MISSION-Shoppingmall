@@ -20,6 +20,27 @@ public class BasketQueryRepository {
     QBasket basket = QBasket.basket;
     QMember member = QMember.member;
 
+    public BasketListDto getBasketOne(Integer basketId) {
+        return jpaQueryFactory
+                .select(Projections.constructor(BasketListDto.class,
+                        basket.basketId,
+                        basket.travel.travelId,
+                        basket.product.productId,
+                        basket.travel.travelName,
+                        basket.travel.travelPrice,
+                        basket.travel.travelStartDt,
+                        basket.travel.travelEndDt,
+                        basket.travel.travelImg,
+                        basket.product.productName,
+                        basket.product.productPrice,
+                        basket.basketTravelAmount,
+                        basket.basketProductAmount
+                ))
+                .from(basket)
+                .where(basket.basketId.eq(basketId))
+                .fetchOne();
+    }
+
     /**
      * 설명: 해당하는 유저의 장바구니 리스트
      * @param memberId
@@ -29,6 +50,8 @@ public class BasketQueryRepository {
         return jpaQueryFactory
                 .select(Projections.constructor(BasketListDto.class,
                         basket.basketId,
+                        basket.travel.travelId,
+                        basket.product.productId,
                         basket.travel.travelName,
                         basket.travel.travelPrice,
                         basket.travel.travelStartDt,

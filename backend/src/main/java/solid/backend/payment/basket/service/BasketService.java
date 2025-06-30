@@ -7,6 +7,9 @@ import solid.backend.payment.basket.dto.BasketMemberDto;
 import java.util.List;
 
 public interface BasketService {
+
+    BasketListDto getBasketOne(Integer basketId);
+
     /**
      * 설명: 장바구니 저장
      * @param basketAddDto

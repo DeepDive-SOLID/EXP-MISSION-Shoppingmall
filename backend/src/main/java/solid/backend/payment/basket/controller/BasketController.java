@@ -20,6 +20,12 @@ import java.util.List;
 public class BasketController {
     private final BasketService basketService;
 
+    @ResponseBody
+    @GetMapping("/order")
+    public BasketListDto getBasketOne(@RequestParam("basketId") Integer basketId) {
+        return basketService.getBasketOne(basketId);
+    }
+
     /**
      * 설명: 장바구니 저장
      * @param basketAddDto
