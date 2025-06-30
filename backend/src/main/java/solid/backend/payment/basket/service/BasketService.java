@@ -25,7 +25,7 @@ public interface BasketService {
      * 설명: 장바구니 삭제
      * @param basketId
      */
-    void delete(Integer basketId);
+    void delete(Integer basketId,String memberId);
     /**
      * 설명: 해당하는 유저의 장바구니 리스트 조회
      * @param basketMemberDto

@@ -57,7 +57,7 @@ public class BasketController {
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteBasket(@RequestBody BasketDeleteDto basketDeleteDto) {
         try {
-            basketService.delete(basketDeleteDto.getTravelId());
+            basketService.delete(basketDeleteDto.getTravelId(), basketDeleteDto.getMemberId());
             return ResponseEntity.ok("SUCCESS");
         } catch (Exception e) {
             e.printStackTrace();

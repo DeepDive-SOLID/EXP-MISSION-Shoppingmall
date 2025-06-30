@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import solid.backend.common.FileManager;
 import solid.backend.entity.Basket;
+import solid.backend.entity.Member;
 import solid.backend.entity.Travel;
 import solid.backend.jpaRepository.BasketRepository;
 import solid.backend.jpaRepository.MemberRepository;
@@ -15,7 +16,6 @@ import solid.backend.payment.basket.dto.BasketListDto;
 import solid.backend.payment.basket.dto.BasketMemberDto;
 import solid.backend.payment.basket.repository.BasketQueryRepository;
 
-import java.beans.Transient;
 import java.util.List;
 
 
@@ -71,9 +71,10 @@ public class BasketServiceImpl implements BasketService {
      */
     @Transactional
     @Override
-    public void delete(Integer travelId) {
+    public void delete(Integer travelId, String memberId) {
         Travel travel = travelRepository.findById(travelId).orElseThrow(() -> new IllegalArgumentException("해당하는 상품이 없습니다"));
-        basketRepository.deleteAllByTravel(travel);
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다"));
+        basketRepository.deleteAllByTravelAndMember(travel, member);
     }
 
     /**
