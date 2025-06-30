@@ -83,6 +83,7 @@ public class JwtUtil {
     public String createRefresh(AccessToken accessToken, long refreshTokenExpTime) {
         Claims claims = Jwts.claims();
         claims.put("memberId", accessToken.getMemberId());
+        claims.put("authId", accessToken.getAuthId());
         claims.put("type", "refresh");
 
         ZonedDateTime now = ZonedDateTime.now();
@@ -149,6 +150,19 @@ public class JwtUtil {
                     .getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
+        }
+    }
+
+    /**
+     * 설명: jwt 토큰에서 type을 꺼내서 access token, refresh token 구분
+     * @param token
+     * @return String (Claims)
+     */
+    public String getTokenType(String token) {
+        try {
+            return parseClaims(token).get("type", String.class);
+        } catch (Exception e) {
+            return null;
         }
     }
 }

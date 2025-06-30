@@ -1,5 +1,6 @@
 package solid.backend.main.sign.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import solid.backend.main.sign.dto.*;
 
 
@@ -19,8 +20,9 @@ public interface SignService {
     /**
      * 설명: 로그인
      * @param signInDto
+     * @param request
      */
-    String login(SignInDto signInDto);
+    String login(SignInDto signInDto, HttpServletRequest request);
 
     /**
      * 설명: 아이디 찾기
