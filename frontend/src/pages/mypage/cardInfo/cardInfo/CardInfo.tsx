@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CardInfo.module.scss";
 import { FiCreditCard, FiPlus } from "react-icons/fi";
-import Header from "../../../../components/common/Header_login/Header";
+import Header from "../../../../components/common/Header/Header";
 import Sidebar from "../../../../components/common/Sidebar_mypage/Sidebar";
 import samsungCard from "../../../../assets/images/samsung.jpg";
 import kbCard from "../../../../assets/images/kb.jpg";

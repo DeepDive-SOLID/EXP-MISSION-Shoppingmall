@@ -19,6 +19,7 @@
   .logo {
     height: 20px;
     object-fit: contain;
+    cursor: pointer;
   }
 }
 
@@ -41,7 +42,7 @@
     padding: 4px;
   }
 
-  svg {
+  .searchIcon {
     font-size: 20px;
     color: #202020;
     cursor: pointer;
@@ -75,6 +76,80 @@
     .menuText {
       margin: 0;
       font-weight: 500;
+    }
+  }
+}
+
+// 반응형 디자인
+@media (max-width: 768px) {
+  .header {
+    padding: 0 15px;
+    height: 70px;
+
+    .center {
+      flex: 1;
+      margin: 0 15px;
+
+      .searchInput {
+        padding: 10px 45px 10px 15px;
+        font-size: 14px;
+      }
+
+      .searchIcon {
+        font-size: 20px;
+        right: 12px;
+      }
+    }
+
+    .right {
+      gap: 10px;
+
+      .menu {
+        padding: 6px 8px;
+
+        .menuText {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    .left {
+      .logo {
+        height: 30px;
+      }
+    }
+
+    .center {
+      .searchInput {
+        padding: 8px 40px 8px 12px;
+        font-size: 13px;
+      }
+
+      .searchIcon {
+        font-size: 18px;
+        right: 10px;
+      }
+    }
+
+    .right {
+      gap: 8px;
+
+      .menu {
+        padding: 4px 6px;
+
+        .menuIcon {
+          width: 16px;
+          height: 16px;
+        }
+
+        .menuText {
+          font-size: 11px;
+        }
+      }
     }
   }
 }

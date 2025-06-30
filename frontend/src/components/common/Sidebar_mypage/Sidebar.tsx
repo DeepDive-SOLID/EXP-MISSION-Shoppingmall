@@ -2,10 +2,8 @@ import styles from "./Sidebar.module.scss";
 import { FiList, FiUser, FiCreditCard } from "react-icons/fi";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {
-  getMemberProfile,
-  MypageMemberProfileDto,
-} from "../../../api/mypage/memberApi";
+import { getMemberProfile } from "../../../api/mypage/memberApi";
+import { MypageMemberProfileDto } from "../../../types/mypage/member";
 import profileImg from "../../../assets/images/profile1.jpg";
 
 interface SidebarProps {

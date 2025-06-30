@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AddFail.module.scss";
 import { FiXCircle } from "react-icons/fi";
-import Header from "../../../../components/common/Header_login/Header";
+import Header from "../../../../components/common/Header/Header";
 import Sidebar from "../../../../components/common/Sidebar_mypage/Sidebar";
 import addFailImage from "../../../../assets/images/addFail.jpg";
 

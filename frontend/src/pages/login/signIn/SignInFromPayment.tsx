@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./SignInFromPayment.module.scss";
 import { logo } from "../../../assets/index";
 import { authApi } from "../../../api/login/authApi";
+import { setToken } from "../../../utils/auth";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const EyeIcon = ({ visible }: { visible: boolean }) =>
   visible ? (
@@ -38,6 +40,7 @@ const EyeIcon = ({ visible }: { visible: boolean }) =>
 
 const SignInFromPayment: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     memberId: "",
     memberPw: "",
@@ -85,7 +88,8 @@ const SignInFromPayment: React.FC = () => {
     setSubmitError("");
     try {
       const token = await authApi.signIn(formData);
-      localStorage.setItem("token", token);
+      setToken(token);
+      login();
       alert("로그인에 성공했습니다!");
       navigate("/");
     } catch (error: unknown) {
@@ -123,7 +127,12 @@ const SignInFromPayment: React.FC = () => {
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.signInContainer}>
-        <img src={logo} alt="로고" className={styles.logo} />
+        <img
+          src={logo}
+          alt="로고"
+          className={styles.logo}
+          onClick={() => navigate("/")}
+        />
         <h1 className={styles.title}>계정에 로그인하세요</h1>
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>

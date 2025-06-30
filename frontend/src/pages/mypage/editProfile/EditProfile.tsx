@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./EditProfile.module.scss";
-import Header from "../../../components/common/Header_login/Header";
+import Header from "../../../components/common/Header/Header";
 import Sidebar from "../../../components/common/Sidebar_mypage/Sidebar";
 import profileImg from "../../../assets/images/profile1.jpg";
+import {
+  getMemberDto,
+  updateMemberDto,
+  deleteMemberDto,
+} from "../../../api/mypage/memberApi";
+import { MypageMemberDto } from "../../../types/mypage/member";
+import { AxiosError } from "axios";
 
 const EyeIcon = ({ visible }: { visible: boolean }) =>
   visible ? (
@@ -43,12 +50,16 @@ const EditProfile = () => {
     phone: "",
     password: "",
     birth: "",
+    img: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showFinalConfirm, setShowFinalConfirm] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   // 전화번호 형식 검증 함수
   const validatePhoneNumber = (phone: string): boolean => {
@@ -100,7 +111,7 @@ const EditProfile = () => {
       newErrors.phone = "전화번호는 010-XXXX-XXXX 형식으로 입력해주세요.";
     }
 
-    // 비밀번호 검증
+    // 비밀번호 검증 (필수)
     if (!form.password.trim()) {
       newErrors.password = "비밀번호를 입력해주세요.";
     } else if (!validatePassword(form.password)) {
@@ -137,15 +148,50 @@ const EditProfile = () => {
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
-    // 저장 로직
-    alert("회원정보가 저장되었습니다.");
+    try {
+      const memberId = "boon";
+
+      // FormData를 사용하여 회원 정보 업데이트
+      const formData = new FormData();
+      formData.append("memberId", memberId);
+      formData.append("memberName", form.name);
+      formData.append("memberPassword", form.password);
+      formData.append("memberEmail", form.email);
+      formData.append("memberPhone", form.phone);
+      formData.append("memberBirth", form.birth);
+
+      // 실제 이미지 파일
+      if (selectedImageFile) {
+        formData.append("MemberImg", selectedImageFile);
+      }
+      // 이미지 파일이 없으면 MemberImg 필드를 전송하지 않음 (기존 이미지 유지)
+
+      const result = await updateMemberDto(formData);
+
+      if (result === "SUCCESS") {
+        alert("회원정보가 성공적으로 저장되었습니다.");
+
+        // 저장 후 페이지 새로고침하여 변경사항 적용
+        window.location.reload();
+      } else {
+        alert("회원정보 저장에 실패했습니다.");
+      }
+    } catch (err) {
+      const error = err as AxiosError;
+      if (error.response && typeof error.response.data === "string") {
+        alert(error.response.data);
+      } else {
+        console.error("회원 정보 저장 실패:", error);
+        alert("회원정보 저장 중 오류가 발생했습니다.");
+      }
+    }
   };
 
   const handleWithdraw = () => {
@@ -157,26 +203,22 @@ const EditProfile = () => {
     setShowFinalConfirm(true);
   };
 
-  const handleFinalWithdraw = () => {
-    // TODO: 실제 회원 탈퇴 API 호출
-    // const withdrawUser = async () => {
-    //   try {
-    //     await api.delete('/user/withdraw');
-    //     // 탈퇴 성공 처리
-    //   } catch (error) {
-    //     console.error('회원 탈퇴 실패:', error);
-    //     alert('회원 탈퇴 중 오류가 발생했습니다.');
-    //     return;
-    //   }
-    // };
-
-    // 탈퇴 완료 후 처리
-    alert("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
-
-    // TODO: 로그아웃 처리 및 홈페이지로 리다이렉트
-    // localStorage.removeItem('token');
-    // window.location.href = "/";
-
+  const handleFinalWithdraw = async () => {
+    try {
+      const memberId = "jiyeon1234"; // 추후 수정
+      const result = await deleteMemberDto(memberId);
+      if (result === "SUCCESS") {
+        alert("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
+        // 로그아웃 처리 및 홈페이지로 리다이렉트
+        // localStorage.removeItem('token');
+        window.location.href = "/";
+      } else {
+        alert("회원 탈퇴에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("회원 탈퇴 실패:", error);
+      alert("회원 탈퇴 중 오류가 발생했습니다.");
+    }
     setShowFinalConfirm(false);
   };
 
@@ -185,120 +227,202 @@ const EditProfile = () => {
     setShowFinalConfirm(false);
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // 파일 크기 검증 (1MB 이하)
+      if (file.size > 1 * 1024 * 1024) {
+        alert("이미지 파일 크기는 1MB 이하여야 합니다.");
+        return;
+      }
+
+      // 파일명 길이 검증 (300자 이하)
+      if (file.name.length > 300) {
+        alert("파일명은 300자 이하여야 합니다.");
+        return;
+      }
+
+      // 파일 타입 검증
+      if (!file.type.startsWith("image/")) {
+        alert("이미지 파일만 업로드 가능합니다.");
+        return;
+      }
+
+      setSelectedImageFile(file);
+
+      // 미리보기 생성
+      const reader = new FileReader();
+      reader.onload = e => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  useEffect(() => {
+    const fetchMemberInfo = async () => {
+      try {
+        const memberId = "boon"; // 주문 내역 페이지와 동일하게 하드코딩
+
+        const memberInfo: MypageMemberDto = await getMemberDto(memberId);
+
+        if (memberInfo) {
+          setForm({
+            name: memberInfo.memberName,
+            email: memberInfo.memberEmail,
+            phone: memberInfo.memberPhone,
+            password: "", // 비밀번호는 보안상 빈 값으로 설정
+            birth: memberInfo.memberBirth,
+            img: memberInfo.memberImg,
+          });
+        }
+      } catch (error) {
+        console.error("회원 정보 로드 실패:", error);
+        alert("회원 정보를 불러오는데 실패했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMemberInfo();
+  }, []);
+
   return (
     <div className={styles.editProfilePage}>
       <Header />
       <div className={styles.mainContent}>
         <Sidebar />
         <div className={styles.profileFormContainer}>
-          <form className={styles.profileForm} onSubmit={handleSave}>
-            <div className={styles.profileSection}>
-              <div className={styles.profileImageBox}>
-                <img
-                  src={profileImg}
-                  alt="프로필"
-                  className={styles.profileImage}
-                />
+          {isLoading ? (
+            <div className={styles.loadingContainer}>
+              <p>회원 정보를 불러오는 중...</p>
+            </div>
+          ) : (
+            <form className={styles.profileForm} onSubmit={handleSave}>
+              <div className={styles.profileSection}>
+                <div className={styles.profileImageBox}>
+                  <img
+                    src={imagePreview || form.img || profileImg}
+                    alt="프로필"
+                    className={styles.profileImage}
+                  />
+                </div>
+                <div className={styles.profileActions}>
+                  <div className={styles.fileNotice}>
+                    <p>
+                      <strong>최대 첨부 파일 크기:</strong> 1MB
+                    </p>
+                    <p>
+                      <strong>허용 확장자:</strong> jpg, png
+                    </p>
+                    <p>
+                      <strong>파일명 길이 제한:</strong> 300자 이하
+                    </p>
+                  </div>
+                  <div className={styles.fileInput}>
+                    <input
+                      id="imageInput"
+                      type="file"
+                      accept=".jpg,.jpeg,.png"
+                      onChange={handleImageChange}
+                    />
+                  </div>
+                </div>
               </div>
-              <div className={styles.profileActions}>
-                <button type="button" className={styles.changePictureButton}>
-                  프로필 사진 변경
-                </button>
-              </div>
-            </div>
-            <div className={styles.inputGroup}>
-              <label>이름 *</label>
-              <input
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                placeholder="이름을 입력하세요"
-                className={errors.name ? styles.errorInput : ""}
-              />
-              {errors.name && (
-                <span className={styles.errorMessage}>{errors.name}</span>
-              )}
-            </div>
-            <div className={styles.inputGroup}>
-              <label>이메일 *</label>
-              <input
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="이메일을 입력하세요"
-                type="email"
-                className={errors.email ? styles.errorInput : ""}
-              />
-              {errors.email && (
-                <span className={styles.errorMessage}>{errors.email}</span>
-              )}
-            </div>
-            <div className={styles.inputGroup}>
-              <label>전화번호 *</label>
-              <input
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                placeholder="010-XXXX-XXXX"
-                type="tel"
-                className={errors.phone ? styles.errorInput : ""}
-              />
-              {errors.phone && (
-                <span className={styles.errorMessage}>{errors.phone}</span>
-              )}
-            </div>
-            <div className={styles.inputGroup}>
-              <label>비밀번호 *</label>
-              <div className={styles.passwordInputWrapper}>
+              <div className={styles.inputGroup}>
+                <label>이름 *</label>
                 <input
-                  name="password"
-                  value={form.password}
+                  name="name"
+                  value={form.name}
                   onChange={handleChange}
-                  placeholder="비밀번호를 입력하세요"
-                  type={showPassword ? "text" : "password"}
-                  className={errors.password ? styles.errorInput : ""}
+                  placeholder="이름을 입력하세요"
+                  className={errors.name ? styles.errorInput : ""}
                 />
-                <button
-                  type="button"
-                  className={styles.eyeBtn}
-                  onClick={() => setShowPassword(v => !v)}
-                  tabIndex={-1}
-                  aria-label={
-                    showPassword ? "비밀번호 숨기기" : "비밀번호 보기"
-                  }
-                >
-                  <EyeIcon visible={showPassword} />
-                </button>
+                {errors.name && (
+                  <span className={styles.errorMessage}>{errors.name}</span>
+                )}
               </div>
-              {errors.password && (
-                <span className={styles.errorMessage}>{errors.password}</span>
-              )}
-            </div>
-            <div className={styles.inputGroup}>
-              <label>생년월일 *</label>
-              <input
-                name="birth"
-                value={form.birth}
-                onChange={handleChange}
-                placeholder="생년월일을 입력하세요"
-                type="date"
-                className={errors.birth ? styles.errorInput : ""}
-              />
-              {errors.birth && (
-                <span className={styles.errorMessage}>{errors.birth}</span>
-              )}
-            </div>
-            <button className={styles.saveButton} type="submit">
-              저장하기
-            </button>
-            <button
-              type="button"
-              className={styles.withdrawButton}
-              onClick={handleWithdraw}
-            >
-              회원 탈퇴
-            </button>
-          </form>
+              <div className={styles.inputGroup}>
+                <label>이메일 *</label>
+                <input
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="이메일을 입력하세요"
+                  type="email"
+                  className={errors.email ? styles.errorInput : ""}
+                />
+                {errors.email && (
+                  <span className={styles.errorMessage}>{errors.email}</span>
+                )}
+              </div>
+              <div className={styles.inputGroup}>
+                <label>전화번호 *</label>
+                <input
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                  placeholder="010-XXXX-XXXX"
+                  type="tel"
+                  className={errors.phone ? styles.errorInput : ""}
+                />
+                {errors.phone && (
+                  <span className={styles.errorMessage}>{errors.phone}</span>
+                )}
+              </div>
+              <div className={styles.inputGroup}>
+                <label>비밀번호 *</label>
+                <div className={styles.passwordInputWrapper}>
+                  <input
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    placeholder="비밀번호를 입력하세요"
+                    type={showPassword ? "text" : "password"}
+                    className={errors.password ? styles.errorInput : ""}
+                  />
+                  <button
+                    type="button"
+                    className={styles.eyeBtn}
+                    onClick={() => setShowPassword(v => !v)}
+                    tabIndex={-1}
+                    aria-label={
+                      showPassword ? "비밀번호 숨기기" : "비밀번호 보기"
+                    }
+                  >
+                    <EyeIcon visible={showPassword} />
+                  </button>
+                </div>
+                {errors.password && (
+                  <span className={styles.errorMessage}>{errors.password}</span>
+                )}
+              </div>
+              <div className={styles.inputGroup}>
+                <label>생년월일 *</label>
+                <input
+                  name="birth"
+                  value={form.birth}
+                  onChange={handleChange}
+                  placeholder="생년월일을 입력하세요"
+                  type="date"
+                  className={errors.birth ? styles.errorInput : ""}
+                />
+                {errors.birth && (
+                  <span className={styles.errorMessage}>{errors.birth}</span>
+                )}
+              </div>
+              <button className={styles.saveButton} type="submit">
+                저장하기
+              </button>
+              <button
+                type="button"
+                className={styles.withdrawButton}
+                onClick={handleWithdraw}
+              >
+                회원 탈퇴
+              </button>
+            </form>
+          )}
         </div>
       </div>
 

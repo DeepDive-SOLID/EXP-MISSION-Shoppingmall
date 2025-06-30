@@ -64,7 +64,12 @@ const FindId: React.FC = () => {
             style={{ width: 28, height: 28 }}
           />
         </button>
-        <img src={logo} alt="로고" className={styles.logo} />
+        <img
+          src={logo}
+          alt="로고"
+          className={styles.logo}
+          onClick={() => navigate("/")}
+        />
         <div className={styles.tabs}>
           <div
             className={

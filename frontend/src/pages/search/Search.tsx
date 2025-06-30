@@ -1,5 +1,5 @@
 import SearchSidebar from "../../components/search/SearchSidebar/SearchSidebar";
-import Header from "../../components/common/Header_login/Header";
+import Header from "../../components/common/Header/Header";
 import SearchMain from "../../components/search/SearchMain/SearchMain";
 
 const Search = () => {
@@ -11,4 +11,5 @@ const Search = () => {
     </div>
   );
 };
+
 export default Search;

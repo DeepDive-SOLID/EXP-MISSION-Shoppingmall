@@ -11,6 +11,20 @@
   padding: 24px;
 }
 
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  width: 100%;
+}
+
+.loadingContainer p {
+  font-size: 16px;
+  color: #666;
+  font-weight: 500;
+}
+
 .profileForm {
   background: #fff;
   border-radius: 14px;
@@ -164,6 +178,7 @@
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
+  padding-top: 70px;
 }
 
 .modalOverlay {
@@ -251,6 +266,48 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.fileNotice {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.fileNotice p {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.fileNotice p:last-child {
+  margin-bottom: 0;
+}
+
+.fileNotice strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+.fileInput {
+  width: 100%;
+}
+
+.fileInput input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.fileInput input[type="file"]:hover {
+  border-color: #4a6cf7;
 }
 
 .changePictureButton {

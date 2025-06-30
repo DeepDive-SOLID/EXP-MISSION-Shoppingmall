@@ -6,7 +6,7 @@ interface CounterBoxProps {
   price: number;
   onDecrease: () => void;
   onIncrease: () => void;
-  hidePrice?: boolean; // ✅ 새로 추가된 prop (선택형)
+  hidePrice?: boolean;
 }
 
 const CounterBox = ({
