@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "./OrderAgreement.module.scss";
 import { FaCheckCircle } from "react-icons/fa";
 
+// 약관 데이터
 const terms = [
   {
     title: "[필수] 개인정보 수집 및 이용 동의",
@@ -33,12 +34,14 @@ const OrderAgreement = ({ onAgreementChange }: OrderAgreementProps) => {
   const [agreements, setAgreements] = useState([false, false]);
   const allChecked = agreements.every(Boolean);
 
+  // 전체 동의 토글
   const handleAllToggle = () => {
     const updated = !allChecked ? [true, true] : [false, false];
     setAgreements(updated);
     onAgreementChange(updated.every(Boolean));
   };
 
+  // 개별 약관 동의 토글
   const handleIndividualToggle = (index: number) => {
     const updated = [...agreements];
     updated[index] = !updated[index];

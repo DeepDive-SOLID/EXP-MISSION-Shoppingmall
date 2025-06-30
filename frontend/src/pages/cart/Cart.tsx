@@ -11,7 +11,9 @@ const Cart = () => {
   const [items, setItems] = useState<(BasketListDto & { checked: boolean })[]>(
     [],
   );
+  const navigate = useNavigate();
 
+  // 장바구니 데이터 로딩
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -30,14 +32,15 @@ const Cart = () => {
     fetchData();
   }, []);
 
+  // 전체 선택 상태 여부
   const allChecked = items.length > 0 && items.every(item => item.checked);
 
-  const navigate = useNavigate();
-
+  // 전체 선택 토글
   const handleToggleAll = () => {
     setItems(items.map(item => ({ ...item, checked: !allChecked })));
   };
 
+  // 개별 선택 토글
   const handleToggleItem = (basketId: number) => {
     setItems(
       items.map(item =>
@@ -46,6 +49,7 @@ const Cart = () => {
     );
   };
 
+  // 수량 변경
   const handleQuantityChange = (basketId: number, delta: number) => {
     setItems(
       items.map(item =>
@@ -62,6 +66,7 @@ const Cart = () => {
     );
   };
 
+  // 장바구니에서 항목 삭제
   const handleRemove = async (basketId: number) => {
     try {
       await deleteFromBasket({ basketId });
@@ -72,6 +77,7 @@ const Cart = () => {
     }
   };
 
+  // 선택된 항목 및 총 가격 계산
   const selectedItems = items.filter(item => item.checked);
   const totalBase = selectedItems.reduce(
     (sum, item) => sum + item.travelPrice * item.basketTravelAmount,

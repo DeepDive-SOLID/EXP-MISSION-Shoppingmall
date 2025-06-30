@@ -3,6 +3,7 @@ import styles from "./AddCard.module.scss";
 import { addCard } from "../../../api/order/orderApi";
 import { getCurrentMemberId } from "../../../utils/auth";
 
+// 카드 폼 데이터 타입
 interface CardFormData {
   card1: string;
   card2: string;
@@ -15,6 +16,7 @@ interface CardFormData {
   cardPassword: string;
 }
 
+// 모달 props 타입
 interface AddCardModalProps {
   onClose: () => void;
 }
@@ -22,6 +24,7 @@ interface AddCardModalProps {
 const AddCard = ({ onClose }: AddCardModalProps) => {
   const { register, handleSubmit } = useForm<CardFormData>();
 
+  // 카드 등록 요청
   const onSubmit = async (data: CardFormData) => {
     const memberId = getCurrentMemberId();
     if (!memberId) {

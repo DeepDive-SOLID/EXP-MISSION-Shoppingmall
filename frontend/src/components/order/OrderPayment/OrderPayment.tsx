@@ -9,6 +9,7 @@ import { fetchCardList, addOrder } from "../../../api/order/orderApi";
 import { PaymentCardDto, OrderAddDto } from "../../../types/order/order";
 import { BasketListDto } from "../../../types/basket/basket";
 
+// 폼 데이터 타입
 interface FormData {
   name: string;
   birthYear: string;
@@ -21,6 +22,7 @@ interface FormData {
   detailAddress: string;
 }
 
+// props 타입
 interface OrderPaymentProps {
   selectedItems: (BasketListDto & {
     personCount: number;
@@ -42,6 +44,7 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
   const navigate = useNavigate();
   const memberId = getCurrentMemberId();
 
+  // 카드 목록 불러오기
   const fetchCardListData = async () => {
     if (!memberId) return;
     const cards = await fetchCardList(memberId);
@@ -49,13 +52,16 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
     setCardList(cards);
   };
 
+  // 카드 목록 초기 로딩
   useEffect(() => {
     fetchCardListData();
   }, [memberId]);
 
+  // 카드 추가 모달 열고/닫기
   const openAddCardModal = () => setShowAddCard(true);
   const closeAddCardModal = () => setShowAddCard(false);
 
+  // 카드 선택 처리
   const handleCardSelect = (paymentId: number) => {
     if (selectedCardId === paymentId) {
       setSelectedCardId(null);
@@ -64,6 +70,7 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
     }
   };
 
+  // 결제 처리
   const onSubmit = async (form: FormData) => {
     if (!memberId) return alert("로그인 정보가 없습니다.");
     if (!selectedCardId) return alert("카드를 선택해주세요.");
