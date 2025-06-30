@@ -12,13 +12,18 @@ const api = axios.create({
 api.interceptors.request.use(
   config => {
     // /mypage로 시작하는 요청에만 토큰 추가
-    if (config.url && config.url.startsWith("/mypage")) {
+
+    if (
+      config.url &&
+      (config.url.startsWith("/mypage") || config.url.startsWith("/payment"))
+    ) {
       const token = localStorage.getItem("token");
       if (token) {
         config.headers = config.headers || {};
         config.headers["Authorization"] = `Bearer ${token}`;
       }
     }
+
     console.log("API 요청:", config.method?.toUpperCase(), config.url);
     return config;
   },

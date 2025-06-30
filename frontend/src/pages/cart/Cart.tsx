@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Header from "../../components/common/Header_login/Header";
+import Header from "../../components/common/Header/Header";
 import styles from "./Cart.module.scss";
 import { carrier } from "../../assets";
 

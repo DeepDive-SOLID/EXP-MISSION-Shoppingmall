@@ -1,4 +1,4 @@
-import Header from "../../components/common/Header_login/Header";
+import Header from "../../components/common/Header/Header";
 import { FaTimesCircle } from "react-icons/fa";
 import styles from "./payResult.module.scss";
 import { home_banner } from "../../assets";

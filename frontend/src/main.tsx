@@ -66,19 +66,35 @@ const router = createBrowserRouter([
       },
       {
         path: "cart",
-        element: <Cart />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <Cart />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "order",
-        element: <Order />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <Order />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "order/payresult/success",
-        element: <PaySuccess />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <PaySuccess />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "order/payresult/fail",
-        element: <PayFail />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <PayFail />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "dashboard",

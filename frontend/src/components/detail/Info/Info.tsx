@@ -8,7 +8,8 @@ import { ProductDto } from "../../../types/home/homeProduct";
 import { ReviewDto } from "../../../types/home/review";
 import { fetchProducts, fetchReviews } from "../../../api/home/homeApi";
 import { useNavigate } from "react-router-dom";
-import { isLoggedIn } from "../../../utils/auth";
+import { isLoggedIn, getCurrentMemberId } from "../../../utils/auth";
+import { addToBasket } from "../../../api/basket/basketApi";
 
 interface InfoProps {
   travelId: number;
@@ -84,14 +85,35 @@ const Info = ({ travelId, travel }: InfoProps) => {
 
   const navigate = useNavigate();
 
-  const handleCartClick = () => {
+  const handleCartClick = async () => {
     if (!isLoggedIn()) {
       alert("로그인이 필요합니다.");
       navigate("/login");
       return;
     }
 
-    alert("장바구니에 담았습니다!");
+    const memberId = getCurrentMemberId();
+    if (!memberId) {
+      alert("회원 정보를 확인할 수 없습니다.");
+      return;
+    }
+
+    try {
+      for (const item of selectedProducts) {
+        await addToBasket({
+          memberId,
+          travelId: travel.travelId,
+          productId: item.id,
+          basketTravelAmount: peopleCount,
+          basketProductAmount: item.count,
+        });
+      }
+
+      alert("장바구니에 담았습니다!");
+    } catch (error) {
+      console.error("장바구니 담기 실패:", error);
+      alert("장바구니 담기에 실패했습니다.");
+    }
   };
 
   const handleReserveClick = () => {
