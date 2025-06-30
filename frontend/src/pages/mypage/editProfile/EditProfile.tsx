@@ -69,6 +69,7 @@ const EditProfile = () => {
   const [emailError, setEmailError] = useState("");
   const [emailSuccess, setEmailSuccess] = useState(false);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [originalEmail, setOriginalEmail] = useState(""); // 원본 이메일 값 저장
 
   // 현재 로그인한 사용자의 memberId 사용
   const memberId = userInfo?.memberId;
@@ -126,6 +127,15 @@ const EditProfile = () => {
     }
   };
 
+  // 이메일이 변경되지 않았을 때 중복확인 상태를 자동으로 설정
+  useEffect(() => {
+    if (!isEmailChanged() && form.email === originalEmail && originalEmail) {
+      setEmailChecked(true);
+      setEmailError("");
+      setEmailSuccess(false);
+    }
+  }, [form.email, originalEmail]);
+
   // 이메일 중복확인
   const handleEmailCheck = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -173,7 +183,14 @@ const EditProfile = () => {
       const formData = new FormData();
       formData.append("memberId", memberId);
       formData.append("memberName", form.name);
-      formData.append("memberPassword", form.password);
+
+      // 비밀번호가 입력된 경우에만 추가
+      if (form.password.trim()) {
+        formData.append("memberPassword", form.password);
+      } else {
+        // 비밀번호가 입력되지 않으면 필드를 추가하지 않음 (기존 비밀번호 유지)
+      }
+
       formData.append("memberEmail", form.email);
       formData.append("memberPhone", form.phone);
       formData.append("memberBirth", form.birth);
@@ -295,6 +312,7 @@ const EditProfile = () => {
             birth: memberInfo.memberBirth,
             img: memberInfo.memberImg,
           });
+          setOriginalEmail(memberInfo.memberEmail);
         }
       } catch (error) {
         console.error("회원 정보 로드 실패:", error);
@@ -321,7 +339,7 @@ const EditProfile = () => {
       newErrors.email = "이메일을 입력해주세요.";
     } else if (!validateEmail(form.email)) {
       newErrors.email = "올바른 이메일 형식을 입력해주세요.";
-    } else if (!emailChecked) {
+    } else if (isEmailChanged() && !emailChecked) {
       newErrors.email = "이메일 중복확인을 해주세요.";
     }
 
@@ -332,10 +350,8 @@ const EditProfile = () => {
       newErrors.phone = "전화번호는 010-XXXX-XXXX 형식으로 입력해주세요.";
     }
 
-    // 비밀번호 검증 (필수)
-    if (!form.password.trim()) {
-      newErrors.password = "비밀번호를 입력해주세요.";
-    } else if (!validatePassword(form.password)) {
+    // 비밀번호 검증 (선택사항)
+    if (form.password.trim() && !validatePassword(form.password)) {
       newErrors.password = "최소 8자 이상, 숫자와 특수문자 포함";
     }
 
@@ -348,6 +364,11 @@ const EditProfile = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // 이메일이 변경되었는지 확인하는 함수
+  const isEmailChanged = (): boolean => {
+    return form.email !== originalEmail;
   };
 
   return (
@@ -393,7 +414,7 @@ const EditProfile = () => {
                 </div>
               </div>
               <div className={styles.inputGroup}>
-                <label>이름 *</label>
+                <label>이름</label>
                 <input
                   name="name"
                   value={form.name}
@@ -406,7 +427,7 @@ const EditProfile = () => {
                 )}
               </div>
               <div className={styles.inputGroup}>
-                <label>이메일 *</label>
+                <label>이메일</label>
                 <div className={styles.emailInputWrapper}>
                   <input
                     name="email"
@@ -414,16 +435,18 @@ const EditProfile = () => {
                     onChange={handleChange}
                     placeholder="이메일을 입력하세요"
                     type="email"
-                    className={`${errors.email ? styles.errorInput : ""} ${styles.inputWithButton}`}
+                    className={`${errors.email ? styles.errorInput : ""} ${isEmailChanged() ? styles.inputWithButton : ""}`}
                   />
-                  <button
-                    type="button"
-                    className={styles.emailCheckBtn}
-                    onClick={handleEmailCheck}
-                    disabled={!form.email || isCheckingEmail}
-                  >
-                    {isCheckingEmail ? "확인중..." : "중복확인"}
-                  </button>
+                  {isEmailChanged() && (
+                    <button
+                      type="button"
+                      className={styles.emailCheckBtn}
+                      onClick={handleEmailCheck}
+                      disabled={!form.email || isCheckingEmail}
+                    >
+                      {isCheckingEmail ? "확인중..." : "중복확인"}
+                    </button>
+                  )}
                 </div>
                 {errors.email && (
                   <span className={styles.errorMessage}>{errors.email}</span>
@@ -438,7 +461,7 @@ const EditProfile = () => {
                 )}
               </div>
               <div className={styles.inputGroup}>
-                <label>전화번호 *</label>
+                <label>전화번호</label>
                 <input
                   name="phone"
                   value={form.phone}
@@ -452,13 +475,13 @@ const EditProfile = () => {
                 )}
               </div>
               <div className={styles.inputGroup}>
-                <label>비밀번호 *</label>
+                <label>새 비밀번호</label>
                 <div className={styles.passwordInputWrapper}>
                   <input
                     name="password"
                     value={form.password}
                     onChange={handleChange}
-                    placeholder="비밀번호를 입력하세요"
+                    placeholder="새 비밀번호를 입력하세요"
                     type={showPassword ? "text" : "password"}
                     className={errors.password ? styles.errorInput : ""}
                   />
@@ -479,7 +502,7 @@ const EditProfile = () => {
                 )}
               </div>
               <div className={styles.inputGroup}>
-                <label>생년월일 *</label>
+                <label>생년월일</label>
                 <input
                   name="birth"
                   value={form.birth}
