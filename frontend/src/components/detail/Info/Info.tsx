@@ -140,18 +140,33 @@ const Info = ({ travelId, travel }: InfoProps) => {
 
     navigate("/order", {
       state: {
-        selectedItems: selectedProducts.map(item => ({
-          basketId: item.id,
-          travelName: travel.travelName,
-          travelImg: travel.travelImg,
-          travelStartDt: travel.travelStartDt,
-          travelEndDt: travel.travelEndDt,
-          productName: item.label,
-          productPrice: item.price,
-          travelPrice: travel.travelPrice,
-          basketTravelAmount: peopleCount,
-          basketProductAmount: item.count,
-        })),
+        selectedItems: [
+          {
+            basketId: -1,
+            travelName: travel.travelName,
+            travelImg: travel.travelImg,
+            travelStartDt: travel.travelStartDt,
+            travelEndDt: travel.travelEndDt,
+            productName: "미선택",
+            productPrice: 0,
+            travelPrice: travel.travelPrice,
+            basketTravelAmount: peopleCount,
+            basketProductAmount: 0,
+          },
+
+          ...selectedProducts.map(item => ({
+            basketId: item.id,
+            travelName: travel.travelName,
+            travelImg: travel.travelImg,
+            travelStartDt: travel.travelStartDt,
+            travelEndDt: travel.travelEndDt,
+            productName: item.label,
+            productPrice: item.price,
+            travelPrice: travel.travelPrice,
+            basketTravelAmount: peopleCount,
+            basketProductAmount: item.count,
+          })),
+        ],
       },
     });
   };
