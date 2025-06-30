@@ -80,7 +80,7 @@ public class PaymentServiceImpl implements PaymentService {
     public void saveOrdersProduct(OrderAddDto orderAddDto, Orders orders) {
         OrderProduct orderProduct = new OrderProduct();
         Product product = productRepository.findById(orderAddDto.getProductId()).orElseThrow(() -> new IllegalArgumentException("해당 제품이 없습니다."));
-        OrderProductId key = new OrderProductId(orders.getOrdersId(), orders.getPayment().getPaymentId(),orders.getMember().getMemberId(), orderAddDto.getTravelId());
+        OrderProductId key = new OrderProductId(orders.getOrdersId(), orders.getPayment().getPaymentId(),orders.getMember().getMemberId(), orderAddDto.getProductId());
 
         orderProduct.setId(key);
         orderProduct.setOrder(orders);
