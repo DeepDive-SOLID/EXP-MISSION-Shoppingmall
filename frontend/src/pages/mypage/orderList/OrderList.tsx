@@ -8,12 +8,15 @@ import {
   getOrdersList,
   cancelOrder,
   addOrdersReview,
+  getOrdersReviewDto,
+  updOrdersReviewDto,
 } from "../../../api/mypage/orderApi";
 import { MypageOrdersListDto } from "../../../types/mypage/order";
 import { useAuth } from "../../../contexts/AuthContext";
 import { getMemberProfile } from "../../../api/mypage/memberApi";
 import { MypageMemberProfileDto } from "../../../types/mypage/member";
 
+// 주문 상태 텍스트 반환
 const getStatusText = (status: number) => {
   switch (status) {
     case 0:
@@ -29,6 +32,7 @@ const getStatusText = (status: number) => {
   }
 };
 
+// 주문 상태 아이콘 반환
 const getStatusIcon = (status: number) => {
   switch (status) {
     case 0:
@@ -44,6 +48,7 @@ const getStatusIcon = (status: number) => {
   }
 };
 
+// 주문 상태별 색상 반환
 const getStatusColor = (status: number) => {
   switch (status) {
     case 0:
@@ -60,13 +65,16 @@ const getStatusColor = (status: number) => {
 };
 
 const OrderList = () => {
+  // 사용자 정보 및 상태 관리
   const { userInfo } = useAuth();
   const [orders, setOrders] = useState<MypageOrdersListDto[]>([]);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedOrder, setSelectedOrder] =
     useState<MypageOrdersListDto | null>(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  // 리뷰 데이터 및 모드(작성/수정) 상태
   const [reviewData, setReviewData] = useState({
+    reviewCode: undefined as number | undefined,
     rating: 5,
     title: "",
     content: "",
@@ -74,9 +82,11 @@ const OrderList = () => {
   });
   const [memberProfile, setMemberProfile] =
     useState<MypageMemberProfileDto | null>(null);
+  const [isEditReview, setIsEditReview] = useState(false);
 
   const memberId = userInfo?.memberId;
 
+  // 마이페이지 프로필 정보 불러오기
   useEffect(() => {
     const fetchMemberProfile = async () => {
       if (!memberId) return;
@@ -92,6 +102,7 @@ const OrderList = () => {
     fetchMemberProfile();
   }, [memberId]);
 
+  // 주문 내역 불러오기
   useEffect(() => {
     if (memberId) {
       getOrdersList(memberId)
@@ -133,16 +144,52 @@ const OrderList = () => {
     noticeMessage = "예정된 여행이 없습니다!";
   }
 
+  // 예약취소 모달 열기
   const handleCancelOrder = (order: MypageOrdersListDto) => {
     setSelectedOrder(order);
     setShowCancelModal(true);
   };
 
-  const handleReviewOrder = (order: MypageOrdersListDto) => {
+  // 리뷰 작성/수정 모달 열기 (기존 리뷰가 있으면 데이터 불러옴)
+  const handleReviewOrder = async (order: MypageOrdersListDto) => {
     setSelectedOrder(order);
+    if (order.reviewCheck && memberId) {
+      setIsEditReview(true);
+      try {
+        const data = await getOrdersReviewDto({
+          travelId: order.orderTravelId,
+          memberId: memberId,
+        });
+        setReviewData({
+          reviewCode: data.reviewCode,
+          rating: data.reviewRate,
+          title: "",
+          content: data.reviewComment,
+          images: [],
+        });
+      } catch {
+        setReviewData({
+          reviewCode: undefined,
+          rating: 5,
+          title: "",
+          content: "",
+          images: [],
+        });
+      }
+    } else {
+      setIsEditReview(false);
+      setReviewData({
+        reviewCode: undefined,
+        rating: 5,
+        title: "",
+        content: "",
+        images: [],
+      });
+    }
     setShowReviewModal(true);
   };
 
+  // 예약취소 확정
   const confirmCancelOrder = async () => {
     if (selectedOrder) {
       try {
@@ -167,11 +214,13 @@ const OrderList = () => {
     }
   };
 
+  // 모달 닫기 및 상태 초기화
   const closeModal = () => {
     setShowCancelModal(false);
     setShowReviewModal(false);
     setSelectedOrder(null);
     setReviewData({
+      reviewCode: undefined,
       rating: 5,
       title: "",
       content: "",
@@ -179,6 +228,7 @@ const OrderList = () => {
     });
   };
 
+  // 리뷰 작성/수정 제출
   const handleReviewSubmit = async () => {
     if (reviewData.content.trim().length < 10) {
       alert("내용을 최소 10자 이상 입력해주세요.");
@@ -187,27 +237,50 @@ const OrderList = () => {
     if (!selectedOrder || !memberId) return;
 
     try {
-      const result = await addOrdersReview({
-        travelId: selectedOrder.orderTravelId,
-        memberId: memberId,
-        reviewRate: reviewData.rating,
-        reviewComment: reviewData.content,
-      });
-      if (result === "SUCCESS") {
-        alert("리뷰가 성공적으로 등록되었습니다!");
-        closeModal();
+      let result;
+      if (isEditReview) {
+        result = await updOrdersReviewDto({
+          reviewCode: reviewData.reviewCode!,
+          reviewRate: reviewData.rating,
+          reviewComment: reviewData.content,
+        });
       } else {
-        alert("리뷰 등록에 실패했습니다.");
+        result = await addOrdersReview({
+          travelId: selectedOrder.orderTravelId,
+          memberId: memberId,
+          reviewRate: reviewData.rating,
+          reviewComment: reviewData.content,
+        });
+      }
+      if (result === "SUCCESS") {
+        alert(
+          isEditReview
+            ? "리뷰가 성공적으로 수정되었습니다!"
+            : "리뷰가 성공적으로 등록되었습니다!",
+        );
+        window.location.reload();
+      } else {
+        alert(
+          isEditReview
+            ? "리뷰 수정에 실패했습니다."
+            : "리뷰 등록에 실패했습니다.",
+        );
       }
     } catch {
-      alert("리뷰 등록 중 오류가 발생했습니다.");
+      alert(
+        isEditReview
+          ? "리뷰 수정 중 오류가 발생했습니다."
+          : "리뷰 등록 중 오류가 발생했습니다.",
+      );
     }
   };
 
+  // 별점 변경 핸들러
   const handleRatingChange = (rating: number) => {
     setReviewData(prev => ({ ...prev, rating }));
   };
 
+  // 리뷰 입력값 변경 핸들러
   const handleInputChange = (field: "title" | "content", value: string) => {
     setReviewData(prev => ({ ...prev, [field]: value }));
   };
@@ -296,7 +369,7 @@ const OrderList = () => {
                               className={styles.actionButton}
                               onClick={() => handleReviewOrder(order)}
                             >
-                              리뷰 작성
+                              {order.reviewCheck ? "리뷰 수정" : "리뷰 작성"}
                             </button>
                           )}
                         {order.orderStatus === 0 &&
@@ -381,7 +454,7 @@ const OrderList = () => {
               onClick={handleReviewSubmit}
               disabled={reviewData.content.trim().length < 10}
             >
-              리뷰 제출
+              {isEditReview ? "리뷰 수정" : "리뷰 제출"}
             </button>
           </div>
         </div>
