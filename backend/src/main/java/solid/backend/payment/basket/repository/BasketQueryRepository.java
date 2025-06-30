@@ -77,6 +77,12 @@ public class BasketQueryRepository {
                 .fetch();
     }
 
+    /**
+     * 설명: 장바구니에서 product 리스트를 반환, 물품을 2개이상 구매할 수 있기 때문
+     * @param memberId
+     * @param travelId
+     * @return List<BasketProductDto>
+     */
     public List<BasketProductDto> getListProduct(String memberId, Integer travelId) {
         return jpaQueryFactory
                 .select(Projections.constructor(BasketProductDto.class,
