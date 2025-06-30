@@ -22,7 +22,7 @@ export interface BasketListDto {
   basketTravelAmount: number;
   basketProductAmount: number;
   travelId: number;
-  productId?: number;
+  productId: number;
 }
 
 export interface BasketMemberDto {

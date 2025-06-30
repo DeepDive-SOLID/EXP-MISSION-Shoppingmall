@@ -131,11 +131,12 @@ const Info = ({ travelId, travel }: InfoProps) => {
       <p className={styles.title}>{travel.travelName}</p>
 
       <div className={styles.infoBadge}>
-        {travel.travelLabel.split(",").map((label, idx) => (
-          <span key={idx} className={styles.badge}>
-            #{label.trim()}
-          </span>
-        ))}
+        {travel.travelLabel &&
+          travel.travelLabel.split(",").map((label, idx) => (
+            <span key={idx} className={styles.badge}>
+              #{label.trim()}
+            </span>
+          ))}
       </div>
 
       <div className={styles.rate}>

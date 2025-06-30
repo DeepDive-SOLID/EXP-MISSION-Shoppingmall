@@ -117,10 +117,7 @@ const Cart = () => {
                 />
 
                 <div className={styles.leftSection}>
-                  <img
-                    src={`http://localhost:8080/solid${item.travelImg}`}
-                    alt="여행 이미지"
-                  />
+                  <img src={item.travelImg} alt="여행 이미지" />
                 </div>
 
                 <div className={styles.rightSection}>
