@@ -13,7 +13,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requireAuth = true,
   requireManager = false,
 }) => {
-  const { isLoggedIn, isManager } = useAuth();
+  const { isLoggedIn, isManager, isLoading } = useAuth();
+
+  // 초기 로딩 중에는 대기
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
 
   // 로그인이 필요한데 로그인하지 않은 경우
   if (requireAuth && !isLoggedIn) {

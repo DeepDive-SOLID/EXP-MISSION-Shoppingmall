@@ -35,6 +35,12 @@ export const authApi = {
     return response.data;
   },
 
+  // 토큰 재발급
+  refreshToken: async (): Promise<string> => {
+    const response = await api.post<string>("/token/refresh");
+    return response.data;
+  },
+
   // 아이디 찾기
   findId: async (signFindIdDto: SignFindIdDto): Promise<FindIdResponse> => {
     const response = await api.post<FindIdResponse>(
