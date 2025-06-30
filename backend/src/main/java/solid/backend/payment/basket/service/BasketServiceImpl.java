@@ -1,8 +1,10 @@
 package solid.backend.payment.basket.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import solid.backend.entity.Basket;
+import solid.backend.entity.Product;
 import solid.backend.jpaRepository.BasketRepository;
 import solid.backend.jpaRepository.MemberRepository;
 import solid.backend.jpaRepository.ProductRepository;
@@ -26,6 +28,7 @@ public class BasketServiceImpl implements BasketService {
 
     /**
      * 설명: 장바구니 저장
+     *
      * @param basketAddDto
      */
     @Override
@@ -33,15 +36,21 @@ public class BasketServiceImpl implements BasketService {
         Basket basket = new Basket();
         basket.setMember(memberRepository.findById(basketAddDto.getMemberId()).orElseThrow(() -> new IllegalArgumentException("해당 하는 유저가 없습니다.")));
         basket.setTravel(travelRepository.findById(basketAddDto.getTravelId()).orElseThrow(() -> new IllegalArgumentException("해당 하는 상품이 없습니다.")));
-        basket.setProduct(productRepository.findById(basketAddDto.getProductId()).orElseThrow(() -> new IllegalArgumentException("해당 하는 물품이 없습니다.")));
         basket.setBasketTravelAmount(basketAddDto.getBasketTravelAmount());
-        basket.setBasketProductAmount(basketAddDto.getBasketProductAmount());
+        if (basketAddDto.getProductId() != null) {
+            basket.setProduct(productRepository.findById(basketAddDto.getProductId()).orElseThrow(() -> new IllegalArgumentException("해당 하는 물품이 없습니다.")));
+            basket.setBasketProductAmount(basketAddDto.getBasketProductAmount());
+        } else {
+            basket.setProduct(null);
+            basket.setBasketProductAmount(null);
+        }
 
         basketRepository.save(basket);
     }
 
     /**
      * 설명: 장바구니 삭제
+     *
      * @param basketId
      */
     @Override
@@ -52,6 +61,7 @@ public class BasketServiceImpl implements BasketService {
 
     /**
      * 설명: 해당하는 유저의 장바구니 리스트 조회
+     *
      * @param basketMemberDto
      * @return List<BasketListDto>
      */
