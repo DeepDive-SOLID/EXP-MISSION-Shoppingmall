@@ -279,24 +279,37 @@ const OrderList = () => {
                       </div>
                     </div>
 
-                    {(order.orderStatus === 3 || order.orderStatus === 0) && (
+                    {((order.orderStatus === 3 &&
+                      dayjs(order.travelStartDt, "YYYY-MM-DD")
+                        .startOf("day")
+                        .diff(today, "day") < 0) ||
+                      (order.orderStatus === 0 &&
+                        dayjs(order.travelStartDt, "YYYY-MM-DD")
+                          .startOf("day")
+                          .diff(today, "day") >= 0)) && (
                       <div className={styles.orderActions}>
-                        {order.orderStatus === 3 && (
-                          <button
-                            className={styles.actionButton}
-                            onClick={() => handleReviewOrder(order)}
-                          >
-                            리뷰 작성
-                          </button>
-                        )}
-                        {order.orderStatus === 0 && (
-                          <button
-                            className={styles.actionButton}
-                            onClick={() => handleCancelOrder(order)}
-                          >
-                            예약취소
-                          </button>
-                        )}
+                        {order.orderStatus === 3 &&
+                          dayjs(order.travelStartDt, "YYYY-MM-DD")
+                            .startOf("day")
+                            .diff(today, "day") < 0 && (
+                            <button
+                              className={styles.actionButton}
+                              onClick={() => handleReviewOrder(order)}
+                            >
+                              리뷰 작성
+                            </button>
+                          )}
+                        {order.orderStatus === 0 &&
+                          dayjs(order.travelStartDt, "YYYY-MM-DD")
+                            .startOf("day")
+                            .diff(today, "day") >= 0 && (
+                            <button
+                              className={styles.actionButton}
+                              onClick={() => handleCancelOrder(order)}
+                            >
+                              예약취소
+                            </button>
+                          )}
                       </div>
                     )}
                   </div>
