@@ -37,6 +37,11 @@ public class BasketController {
         }
     }
 
+    /**
+     * 설명: 장바구니 삭제
+     * @param basketDeleteDto
+     * @return ResponseEntity<String>
+     */
     @ResponseBody
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteBasket(@RequestBody BasketDeleteDto basketDeleteDto) {
