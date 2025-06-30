@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -12,14 +13,11 @@ import java.time.LocalDate;
 public class BasketListDto {
     private Integer basketId;
     private Integer travelId;
-    private Integer productId;
     private String travelName;
     private Integer travelPrice;
     private LocalDate travelStartDt;
     private LocalDate travelEndDt;
     private String travelImg;
-    private String productName;
-    private Integer productPrice;
     private Integer basketTravelAmount;
-    private Integer basketProductAmount;
+    private List<BasketProductDto> basketProducts;
 }

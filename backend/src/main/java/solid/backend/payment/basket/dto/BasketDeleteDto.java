@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class BasketDeleteDto {
-    private Integer basketId;
+    private Integer travelId;
 }

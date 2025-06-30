@@ -1,11 +1,11 @@
 package solid.backend.payment.basket.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import solid.backend.common.FileManager;
 import solid.backend.entity.Basket;
-import solid.backend.entity.Product;
+import solid.backend.entity.Travel;
 import solid.backend.jpaRepository.BasketRepository;
 import solid.backend.jpaRepository.MemberRepository;
 import solid.backend.jpaRepository.ProductRepository;
@@ -15,6 +15,7 @@ import solid.backend.payment.basket.dto.BasketListDto;
 import solid.backend.payment.basket.dto.BasketMemberDto;
 import solid.backend.payment.basket.repository.BasketQueryRepository;
 
+import java.beans.Transient;
 import java.util.List;
 
 
@@ -30,6 +31,7 @@ public class BasketServiceImpl implements BasketService {
 
     /**
      * 설명: 장바구니에서 결제하기 화면으로 바로 넘어갈때 넘겨줄 데이터
+     *
      * @param basketId
      * @return BasketListDto
      */
@@ -65,12 +67,13 @@ public class BasketServiceImpl implements BasketService {
     /**
      * 설명: 장바구니 삭제
      *
-     * @param basketId
+     * @param travelId
      */
+    @Transactional
     @Override
-    public void delete(Integer basketId) {
-        Basket basket = basketRepository.findById(basketId).orElseThrow(() -> new IllegalArgumentException("해당하는 상품이 없습니다."));
-        basketRepository.delete(basket);
+    public void delete(Integer travelId) {
+        Travel travel = travelRepository.findById(travelId).orElseThrow(() -> new IllegalArgumentException("해당하는 상품이 없습니다"));
+        basketRepository.deleteAllByTravel(travel);
     }
 
     /**
@@ -83,7 +86,11 @@ public class BasketServiceImpl implements BasketService {
     public List<BasketListDto> getListBasket(BasketMemberDto basketMemberDto) {
         List<BasketListDto> list = basketQueryRepository.getListBasket(basketMemberDto.getMemberId());
 
-        list.forEach(items -> items.setTravelImg(fileManager.getFileUrl(items.getTravelImg())));
+        list.forEach(items -> {
+                    items.setBasketProducts(basketQueryRepository.getListProduct(basketMemberDto.getMemberId(), items.getTravelId()));
+                    items.setTravelImg(fileManager.getFileUrl(items.getTravelImg()));
+                }
+        );
         return list;
     }
 }

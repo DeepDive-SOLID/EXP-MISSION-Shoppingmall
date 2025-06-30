@@ -1,5 +1,6 @@
 package solid.backend.payment.basket.repository;
 
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import solid.backend.entity.QBasket;
 import solid.backend.entity.QMember;
 
 import solid.backend.payment.basket.dto.BasketListDto;
+import solid.backend.payment.basket.dto.BasketProductDto;
 
 import java.util.List;
 
@@ -22,6 +24,7 @@ public class BasketQueryRepository {
 
     /**
      * 설명: 장바구니에서 바로 결제하기로 넘어갔을 때 넘겨줄 데이터
+     *
      * @param basketId
      * @return
      */
@@ -50,29 +53,43 @@ public class BasketQueryRepository {
 
     /**
      * 설명: 해당하는 유저의 장바구니 리스트
+     *
      * @param memberId
      * @return List<BasketListDto>
      */
     public List<BasketListDto> getListBasket(String memberId) {
         return jpaQueryFactory
-                .select(Projections.constructor(BasketListDto.class,
-                        basket.basketId,
+                .select(Projections.fields(BasketListDto.class,
+                        ExpressionUtils.as(basket.basketId.max(), "basketId"),
                         basket.travel.travelId,
-                        basket.product.productId,
                         basket.travel.travelName,
                         basket.travel.travelPrice,
                         basket.travel.travelStartDt,
                         basket.travel.travelEndDt,
                         basket.travel.travelImg,
-                        basket.product.productName,
-                        basket.product.productPrice,
-                        basket.basketTravelAmount,
-                        basket.basketProductAmount
+                        basket.basketTravelAmount
                 ))
                 .from(basket)
                 .leftJoin(basket.member, member).on(member.memberId.eq(memberId))
                 .leftJoin(basket.product)
                 .leftJoin(basket.travel)
+                .groupBy(basket.travel.travelId)
+                .fetch();
+    }
+
+    public List<BasketProductDto> getListProduct(String memberId, Integer travelId) {
+        return jpaQueryFactory
+                .select(Projections.constructor(BasketProductDto.class,
+                        basket.product.productId,
+                        basket.product.productName,
+                        basket.product.productPrice,
+                        basket.basketTravelAmount
+                ))
+                .from(basket)
+                .leftJoin(basket.member, member).on(member.memberId.eq(memberId))
+                .leftJoin(basket.product)
+                .leftJoin(basket.travel)
+                .where(basket.travel.travelId.eq(travelId))
                 .fetch();
     }
 }
