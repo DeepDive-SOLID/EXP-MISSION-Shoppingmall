@@ -15,8 +15,8 @@ import FindPw from "./pages/login/findPw/FindPw";
 import SignInFromPayment from "./pages/login/signIn/SignInFromPayment";
 import Cart from "./pages/cart/Cart";
 import Order from "./pages/order/Order";
-import PaySuccess from "./pages/payresult/paySuccess";
-import PayFail from "./pages/payresult/payFail";
+import PaySuccess from "./pages/payresult/PaySuccess";
+import PayFail from "./pages/payresult/PayFail";
 
 const router = createBrowserRouter([
   {
