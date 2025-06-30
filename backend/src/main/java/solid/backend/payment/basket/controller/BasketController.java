@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import solid.backend.payment.basket.dto.BasketAddDto;
 import solid.backend.payment.basket.dto.BasketDeleteDto;
 import solid.backend.payment.basket.dto.BasketListDto;
+import solid.backend.payment.basket.dto.BasketMemberDto;
 import solid.backend.payment.basket.service.BasketService;
 
 import java.util.List;
@@ -50,12 +51,12 @@ public class BasketController {
 
     /**
      * 설명: 해당하는 유저의 장바구니 리스트
-     * @param memberId
+     * @param basketMemberDto
      * @return List<BasketListDto>
      */
     @ResponseBody
     @PostMapping("/list")
-    public List<BasketListDto> getBasketList(@RequestBody String memberId) {
-        return basketService.getListBasket(memberId);
+    public List<BasketListDto> getBasketList(@RequestBody BasketMemberDto basketMemberDto) {
+        return basketService.getListBasket(basketMemberDto);
     }
 }

@@ -9,6 +9,7 @@ import solid.backend.jpaRepository.ProductRepository;
 import solid.backend.jpaRepository.TravelRepository;
 import solid.backend.payment.basket.dto.BasketAddDto;
 import solid.backend.payment.basket.dto.BasketListDto;
+import solid.backend.payment.basket.dto.BasketMemberDto;
 import solid.backend.payment.basket.repository.BasketQueryRepository;
 
 import java.util.List;
@@ -51,11 +52,11 @@ public class BasketServiceImpl implements BasketService {
 
     /**
      * 설명: 해당하는 유저의 장바구니 리스트 조회
-     * @param memberId
+     * @param basketMemberDto
      * @return List<BasketListDto>
      */
     @Override
-    public List<BasketListDto> getListBasket(String memberId) {
-        return basketQueryRepository.getListBasket(memberId);
+    public List<BasketListDto> getListBasket(BasketMemberDto basketMemberDto) {
+        return basketQueryRepository.getListBasket(basketMemberDto.getMemberId());
     }
 }

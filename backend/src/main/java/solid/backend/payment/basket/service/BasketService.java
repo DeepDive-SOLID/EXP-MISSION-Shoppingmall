@@ -2,6 +2,7 @@ package solid.backend.payment.basket.service;
 
 import solid.backend.payment.basket.dto.BasketAddDto;
 import solid.backend.payment.basket.dto.BasketListDto;
+import solid.backend.payment.basket.dto.BasketMemberDto;
 
 import java.util.List;
 
@@ -19,8 +20,8 @@ public interface BasketService {
     void delete(Integer basketId);
     /**
      * 설명: 해당하는 유저의 장바구니 리스트 조회
-     * @param memberId
+     * @param basketMemberDto
      * @return List<BasketListDto>
      */
-    List<BasketListDto> getListBasket(String memberId);
+    List<BasketListDto> getListBasket(BasketMemberDto basketMemberDto);
 }
