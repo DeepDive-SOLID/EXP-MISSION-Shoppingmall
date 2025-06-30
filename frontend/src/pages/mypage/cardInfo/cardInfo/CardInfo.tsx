@@ -75,18 +75,17 @@ const CardInfo = () => {
     setSelectedCard(null);
   };
 
-  const maskCardNumber = (cardNumber: number) => {
-    // 숫자를 문자열로 변환하고 4자리씩 나누기
-    const cardStr = cardNumber.toString();
-    if (cardStr.length !== 16) {
-      return cardStr; // 16자리가 아니면 원본 반환
+  const maskCardNumber = (cardNumber: string) => {
+    // 문자열을 4자리씩 나누기
+    if (cardNumber.length !== 16) {
+      return cardNumber; // 16자리가 아니면 원본 반환
     }
 
     const parts = [
-      cardStr.substring(0, 4),
-      cardStr.substring(4, 8),
-      cardStr.substring(8, 12),
-      cardStr.substring(12, 16),
+      cardNumber.substring(0, 4),
+      cardNumber.substring(4, 8),
+      cardNumber.substring(8, 12),
+      cardNumber.substring(12, 16),
     ];
 
     return `${parts[0]}-${parts[1].substring(0, 2)}**-****-****`;
