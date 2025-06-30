@@ -129,7 +129,7 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
             {...register("phone")}
             placeholder="연락처를 입력하세요"
             onChange={e => {
-              const rawValue = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 남김
+              const rawValue = e.target.value.replace(/[^0-9]/g, "");
               let formatted = rawValue;
 
               if (rawValue.length <= 3) {
@@ -142,7 +142,7 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
 
               e.target.value = formatted;
             }}
-            maxLength={13} // 예: 010-1234-5678
+            maxLength={13}
           />
         </div>
 
@@ -176,7 +176,7 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
           <div
             key={card.paymentId}
             className={`${styles.savedCard} ${
-              selectedCardId === Number(card.paymentId) ? styles.active : ""
+              selectedCardId === card.paymentId ? styles.active : ""
             }`}
             onClick={() => {
               console.log("clicked:", card.paymentId);
@@ -189,7 +189,7 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
             </p>
             <FaCheckCircle
               className={
-                selectedCardId === Number(card.paymentId)
+                selectedCardId === card.paymentId
                   ? styles.checked
                   : styles.unchecked
               }
