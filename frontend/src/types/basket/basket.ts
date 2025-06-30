@@ -14,13 +14,14 @@ export interface BasketListDto {
   basketId: number;
   travelName: string;
   travelPrice: number;
-  travelStartDt: Date;
-  travelEndDt: Date;
+  travelStartDt: string;
+  travelEndDt: string;
   travelImg: string;
   productName: string;
   productPrice: number;
   basketTravelAmount: number;
   basketProductAmount: number;
+  travelId: number;
 }
 
 export interface BasketMemberDto {

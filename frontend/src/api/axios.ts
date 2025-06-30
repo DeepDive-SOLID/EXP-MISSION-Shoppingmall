@@ -15,7 +15,9 @@ api.interceptors.request.use(
 
     if (
       config.url &&
-      (config.url.startsWith("/mypage") || config.url.startsWith("/payment"))
+      (config.url.startsWith("/mypage") ||
+        config.url.startsWith("/payment") ||
+        config.url.startsWith("/cart"))
     ) {
       const token = localStorage.getItem("token");
       if (token) {

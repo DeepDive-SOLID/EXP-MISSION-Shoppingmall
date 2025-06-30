@@ -1,71 +1,84 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../components/common/Header/Header";
 import styles from "./Cart.module.scss";
-import { carrier } from "../../assets";
-
-const initialItems = [
-  {
-    id: 1,
-    title: "부산여행",
-    days: "1박 2일",
-    date: "(2025.06.02~2025.06.03)",
-    basePrice: 20000,
-    extraPrice: 1000,
-    quantity: 1,
-    checked: false,
-  },
-  {
-    id: 2,
-    title: "경주여행",
-    days: "1박 2일",
-    date: "(2025.06.04~2025.06.05)",
-    basePrice: 20000,
-    extraPrice: 1000,
-    quantity: 1,
-    checked: false,
-  },
-];
+import { fetchBasketList, deleteFromBasket } from "../../api/basket/basketApi";
+import { BasketListDto } from "../../types/basket/basket";
+import { getCurrentMemberId } from "../../utils/auth";
+import { useNavigate } from "react-router-dom";
+import CounterBox from "../../components/common/CounterBox/CounterBox";
 
 const Cart = () => {
-  const [items, setItems] = useState(initialItems);
-  const allChecked = items.every(item => item.checked);
+  const [items, setItems] = useState<(BasketListDto & { checked: boolean })[]>(
+    [],
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const memberId = getCurrentMemberId();
+        if (!memberId) throw new Error("로그인 정보가 없습니다.");
+
+        const res = await fetchBasketList(memberId);
+
+        const withChecked = res.map(item => ({ ...item, checked: false }));
+        setItems(withChecked);
+      } catch (err) {
+        console.error("장바구니 로딩 실패:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const allChecked = items.length > 0 && items.every(item => item.checked);
+
+  const navigate = useNavigate();
 
   const handleToggleAll = () => {
     setItems(items.map(item => ({ ...item, checked: !allChecked })));
   };
 
-  const handleToggleItem = (id: number) => {
+  const handleToggleItem = (basketId: number) => {
     setItems(
       items.map(item =>
-        item.id === id ? { ...item, checked: !item.checked } : item,
+        item.basketId === basketId ? { ...item, checked: !item.checked } : item,
       ),
     );
   };
 
-  const handleQuantityChange = (id: number, delta: number) => {
+  const handleQuantityChange = (basketId: number, delta: number) => {
     setItems(
       items.map(item =>
-        item.id === id
+        item.basketId === basketId
           ? {
               ...item,
-              quantity: Math.max(1, item.quantity + delta),
+              basketProductAmount: Math.max(
+                1,
+                item.basketProductAmount + delta,
+              ),
             }
           : item,
       ),
     );
   };
 
-  const handleRemove = (id: number) => {
-    setItems(items.filter(item => item.id !== id));
+  const handleRemove = async (basketId: number) => {
+    try {
+      await deleteFromBasket({ basketId });
+      setItems(prev => prev.filter(item => item.basketId !== basketId));
+    } catch (err) {
+      console.error("삭제 실패:", err);
+      alert("장바구니 삭제에 실패했습니다.");
+    }
   };
 
   const selectedItems = items.filter(item => item.checked);
   const totalBase = selectedItems.reduce(
-    (sum, item) => sum + item.basePrice,
+    (sum, item) => sum + item.travelPrice * item.basketTravelAmount,
     0,
   );
   const totalExtra = selectedItems.reduce(
-    (sum, item) => sum + item.extraPrice * item.quantity,
+    (sum, item) => sum + item.productPrice * item.basketProductAmount,
     0,
   );
   const total = totalBase + totalExtra;
@@ -89,10 +102,10 @@ const Cart = () => {
         <div className={styles.cartContentWrapper}>
           <div className={styles.productList}>
             {items.map(item => (
-              <div key={item.id} className={styles.productSection}>
+              <div key={item.basketId} className={styles.productSection}>
                 <button
                   className={styles.removeButton}
-                  onClick={() => handleRemove(item.id)}
+                  onClick={() => handleRemove(item.basketId)}
                 >
                   x
                 </button>
@@ -100,39 +113,50 @@ const Cart = () => {
                   type="checkbox"
                   className={styles.productCheckbox}
                   checked={item.checked}
-                  onChange={() => handleToggleItem(item.id)}
+                  onChange={() => handleToggleItem(item.basketId)}
                 />
 
                 <div className={styles.leftSection}>
-                  <img src={carrier} alt="여행 이미지" />
+                  <img
+                    src={`http://localhost:8080/solid${item.travelImg}`}
+                    alt="여행 이미지"
+                  />
                 </div>
 
                 <div className={styles.rightSection}>
                   <div className={styles.travelInfo}>
-                    <p className={styles.title}>{item.title}</p>
-                    <p className={styles.days}>{item.days}</p>
-                    <p className={styles.date}>{item.date}</p>
-                    <button className={styles.changeButton}>변경</button>
+                    <p className={styles.title}>{item.travelName}</p>
+                    <p className={styles.date}>
+                      {item.travelStartDt.slice(0, 10)} ~{" "}
+                      {item.travelEndDt.slice(0, 10)}
+                    </p>
+                    <button
+                      className={styles.changeButton}
+                      onClick={() =>
+                        navigate(`/detail/${item.travelId}`, {
+                          state: { travel: item },
+                        })
+                      }
+                    >
+                      변경
+                    </button>
                   </div>
 
                   <div className={styles.extraAndPrice}>
                     <div className={styles.extra}>
                       <p className={styles.extraTitle}>추가 구매 내역</p>
                       <div className={styles.extraItem}>
-                        <span>우산</span>
-                        <div className={styles.amount}>
-                          <button
-                            onClick={() => handleQuantityChange(item.id, -1)}
-                          >
-                            -
-                          </button>
-                          <span>{item.quantity}</span>
-                          <button
-                            onClick={() => handleQuantityChange(item.id, 1)}
-                          >
-                            +
-                          </button>
-                        </div>
+                        <CounterBox
+                          label={item.productName}
+                          count={item.basketProductAmount}
+                          price={item.productPrice}
+                          onDecrease={() =>
+                            handleQuantityChange(item.basketId, -1)
+                          }
+                          onIncrease={() =>
+                            handleQuantityChange(item.basketId, 1)
+                          }
+                        />
                       </div>
                     </div>
 
@@ -140,8 +164,8 @@ const Cart = () => {
                       <p>총 합계</p>
                       <span className={styles.totalPrice}>
                         {(
-                          item.basePrice +
-                          item.extraPrice * item.quantity
+                          item.travelPrice * item.basketTravelAmount +
+                          item.productPrice * item.basketProductAmount
                         ).toLocaleString()}
                         원
                       </span>
@@ -152,7 +176,6 @@ const Cart = () => {
             ))}
           </div>
 
-          {/* 총 금액 정보 */}
           <div className={styles.totalPriceSection}>
             <p className={styles.summaryTitle}>구매 금액</p>
 
