@@ -3,7 +3,6 @@ package solid.backend.main.home.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import solid.backend.entity.Travel;
 import solid.backend.main.home.dto.*;
 import solid.backend.main.home.service.HomeService;
 
@@ -22,7 +21,7 @@ public class HomeController {
      */
     @ResponseBody
     @GetMapping("/list")
-    public List<Travel> getTravelList() {
+    public List<HomeTravelDto> getTravelList() {
         return homeService.getTravelList();
     }
 
