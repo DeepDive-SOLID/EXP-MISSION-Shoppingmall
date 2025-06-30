@@ -24,6 +24,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
     { id: number; label: string; price: number; count: number }[]
   >([]);
 
+  // 상품 및 리뷰 데이터 불러오기
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -38,6 +39,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
     fetchData();
   }, [travelId]);
 
+  // 상품 선택 시 추가
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const productId = Number(e.target.value);
     const found = productList.find(p => p.productId === productId);
@@ -57,6 +59,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
     ]);
   };
 
+  // 상품 수량 업데이트
   const updateProductCount = (id: number, delta: number) => {
     setSelectedProducts(prev =>
       prev
@@ -67,24 +70,29 @@ const Info = ({ travelId, travel }: InfoProps) => {
     );
   };
 
+  // 선택된 상품 삭제
   const removeProduct = (id: number) => {
     setSelectedProducts(prev => prev.filter(p => p.id !== id));
   };
 
+  // 리뷰 개수 및 평균 평점 계산
   const reviewCount = reviews.length;
   const averageRate =
     reviewCount === 0
       ? 0
       : reviews.reduce((sum, r) => sum + r.reviewRate, 0) / reviewCount;
 
+  // 총 수량 및 총 가격 계산
   const totalCount =
     peopleCount + selectedProducts.reduce((sum, item) => sum + item.count, 0);
+
   const totalPrice =
     peopleCount * travel.travelPrice +
     selectedProducts.reduce((sum, item) => sum + item.count * item.price, 0);
 
   const navigate = useNavigate();
 
+  // 장바구니 버튼 클릭 시 처리
   const handleCartClick = async () => {
     if (!isLoggedIn()) {
       alert("로그인이 필요합니다.");
@@ -116,14 +124,36 @@ const Info = ({ travelId, travel }: InfoProps) => {
     }
   };
 
-  const handleReserveClick = () => {
+  // 예약하기 버튼 클릭 시 처리
+  const handleReserveClick = async () => {
     if (!isLoggedIn()) {
       alert("로그인이 필요합니다.");
       navigate("/login");
       return;
     }
 
-    navigate("/order");
+    const memberId = getCurrentMemberId();
+    if (!memberId) {
+      alert("회원 정보를 확인할 수 없습니다.");
+      return;
+    }
+
+    navigate("/order", {
+      state: {
+        selectedItems: selectedProducts.map(item => ({
+          basketId: item.id,
+          travelName: travel.travelName,
+          travelImg: travel.travelImg,
+          travelStartDt: travel.travelStartDt,
+          travelEndDt: travel.travelEndDt,
+          productName: item.label,
+          productPrice: item.price,
+          travelPrice: travel.travelPrice,
+          basketTravelAmount: peopleCount,
+          basketProductAmount: item.count,
+        })),
+      },
+    });
   };
 
   return (
