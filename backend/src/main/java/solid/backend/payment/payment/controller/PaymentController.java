@@ -32,7 +32,7 @@ public class PaymentController {
             Orders orders = paymentService.saveOrders(orderAddDto);
             paymentService.saveOrdersTravel(orderAddDto, orders);
 
-            if (orderAddDto.getProductId() != null) {
+            if (!orderAddDto.getProducts().isEmpty()) {
                 paymentService.saveOrdersProduct(orderAddDto, orders);
             }
             return ResponseEntity.ok("SUCCESS");

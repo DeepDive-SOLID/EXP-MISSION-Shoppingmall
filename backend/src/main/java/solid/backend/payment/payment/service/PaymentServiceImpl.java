@@ -1,5 +1,6 @@
 package solid.backend.payment.payment.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import solid.backend.common.AESUtil;
@@ -7,6 +8,7 @@ import solid.backend.common.FileManager;
 import solid.backend.entity.*;
 import solid.backend.jpaRepository.*;
 import solid.backend.payment.payment.dto.OrderAddDto;
+import solid.backend.payment.payment.dto.OrderProductDto;
 import solid.backend.payment.payment.dto.PaymentCardAddDto;
 import solid.backend.payment.payment.dto.PaymentCardDto;
 import solid.backend.payment.payment.repository.PaymentQueryRepository;
@@ -30,8 +32,10 @@ public class PaymentServiceImpl implements PaymentService {
     private final FileManager fileManager;
     private final AESUtil aesUtil;
 
+
     /**
      * 설명: 주문(결제 성공 시) 저장, retrun Orders는 연관된 테이블 저장을 위함
+     *
      * @param orderAddDto
      * @return Orders
      */
@@ -52,6 +56,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     /**
      * 설명: 주문 성공 시 연관된 테이블 (OrderTravel) 저장
+     *
      * @param orderAddDto
      * @param orders
      */
@@ -59,7 +64,7 @@ public class PaymentServiceImpl implements PaymentService {
     public void saveOrdersTravel(OrderAddDto orderAddDto, Orders orders) {
         OrderTravel orderTravel = new OrderTravel();
         Travel travel = travelRepository.findById(orderAddDto.getTravelId()).orElseThrow(() -> new IllegalArgumentException("해당 상품이 없습니다."));
-        OrderTravelId key = new OrderTravelId(orders.getOrdersId(), orders.getPayment().getPaymentId(),orders.getMember().getMemberId(), orderAddDto.getTravelId());
+        OrderTravelId key = new OrderTravelId(orders.getOrdersId(), orders.getPayment().getPaymentId(), orders.getMember().getMemberId(), orderAddDto.getTravelId());
 
         orderTravel.setId(key);
         orderTravel.setMember(orders.getMember());
@@ -73,27 +78,33 @@ public class PaymentServiceImpl implements PaymentService {
 
     /**
      * 설명: 주문 성공 시 연관된 테이블 (OrderProduct) 저장
+     *
      * @param orderAddDto
      * @param orders
      */
+    @Transactional
     @Override
     public void saveOrdersProduct(OrderAddDto orderAddDto, Orders orders) {
-        OrderProduct orderProduct = new OrderProduct();
-        Product product = productRepository.findById(orderAddDto.getProductId()).orElseThrow(() -> new IllegalArgumentException("해당 제품이 없습니다."));
-        OrderProductId key = new OrderProductId(orders.getOrdersId(), orders.getPayment().getPaymentId(),orders.getMember().getMemberId(), orderAddDto.getProductId());
+        List<OrderProductDto> list = orderAddDto.getProducts();
+        list.forEach(items -> {
+            OrderProduct orderProduct = new OrderProduct();
 
-        orderProduct.setId(key);
-        orderProduct.setOrder(orders);
-        orderProduct.setProduct(product);
-        orderProduct.setMember(orders.getMember());
-        orderProduct.setPayment(orders.getPayment());
-        orderProduct.setOrderProductAmount(orderAddDto.getOrderProductAmount());
+            orderProduct.setOrder(orders);
+            orderProduct.setMember(orders.getMember());
+            orderProduct.setPayment(orders.getPayment());
+            OrderProductId key = new OrderProductId(orders.getOrdersId(), orders.getPayment().getPaymentId(), orders.getMember().getMemberId(), items.getProductId());
+            orderProduct.setId(key);
+            Product product = productRepository.findById(items.getProductId()).orElseThrow(() -> new IllegalArgumentException("해당 제품이 없습니다."));
+            orderProduct.setProduct(product);
+            orderProduct.setOrderProductAmount(items.getOrderProductAmount());
 
-        orderProductRepository.save(orderProduct);
+            orderProductRepository.save(orderProduct);
+        });
     }
 
     /**
      * 설명: 결제 수단(카드) 저장
+     *
      * @param paymentCardAddDto
      */
     @Override
@@ -113,6 +124,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     /**
      * 해당하는 유저의 카드 정보 리스트 조회
+     *
      * @param memberId
      * @return
      */
@@ -122,13 +134,14 @@ public class PaymentServiceImpl implements PaymentService {
         list.forEach(items -> {
             String cardNum = aesUtil.decrypt(items.getPaymentNum());
             items.setPaymentNum(cardNum);
-            items.setPaymentCardImg(getPaymentCardImg(Integer.parseInt(cardNum.substring(0,4))));
+            items.setPaymentCardImg(getPaymentCardImg(Integer.parseInt(cardNum.substring(0, 4))));
         });
         return list;
     }
 
     /**
      * 카드 앞 4자리에 따른 카드 이미지 추출
+     *
      * @param cardId
      * @return
      */
