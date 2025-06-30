@@ -188,16 +188,8 @@ const EditProfile = () => {
 
       if (result === "SUCCESS") {
         alert("회원정보가 성공적으로 저장되었습니다.");
-
-        // 페이지 새로고침 대신 폼 상태만 초기화
-        setSelectedImageFile(null);
-        setImagePreview("");
-
-        // 비밀번호 필드만 초기화 (다른 정보는 유지)
-        setForm(prev => ({
-          ...prev,
-          password: "",
-        }));
+        // 페이지 새로고침
+        window.location.reload();
       } else {
         alert("회원정보 저장에 실패했습니다.");
       }

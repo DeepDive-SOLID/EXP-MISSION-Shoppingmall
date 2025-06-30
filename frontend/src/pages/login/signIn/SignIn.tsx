@@ -102,7 +102,6 @@ const SignIn: React.FC = () => {
       login();
 
       // 로그인 성공 시 홈페이지로 이동
-      alert("로그인에 성공했습니다!");
       navigate("/");
     } catch (error: unknown) {
       console.error("로그인 오류:", error);
