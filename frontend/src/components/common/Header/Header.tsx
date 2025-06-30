@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosSearch } from "react-icons/io";
+import { FaUserPlus } from "react-icons/fa";
+import { CiLogin } from "react-icons/ci";
 import { logo, logout, shopping_cart, menu_bar } from "../../../assets/index";
 import { useAuth } from "../../../contexts/AuthContext";
 import styles from "./Header.module.scss";
@@ -96,10 +98,12 @@ const Header = () => {
             // 로그인되지 않은 상태
             <>
               <div className={styles.menu} onClick={() => navigate("/login")}>
+                <CiLogin className={styles.menuIcon} />
                 <p className={styles.menuText}>로그인</p>
               </div>
 
               <div className={styles.menu} onClick={() => navigate("/signup")}>
+                <FaUserPlus className={styles.menuIcon} />
                 <p className={styles.menuText}>회원가입</p>
               </div>
             </>
