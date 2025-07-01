@@ -242,3 +242,47 @@
     }
   }
 }
+
+.emptyState {
+  width: 100%;
+  padding: 60px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.emptyImage {
+  width: 350px;
+}
+
+.emptyText {
+  font-size: 36px;
+  font-weight: 800;
+  color: #555;
+}
+
+.emptySubText {
+  font-size: 16px;
+  color: #888;
+}
+
+.shopButton {
+  margin-top: 12px;
+  padding: 12px 24px;
+  background-color: #0085ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+
+  &:hover {
+    background-color: #0070e0;
+  }
+}

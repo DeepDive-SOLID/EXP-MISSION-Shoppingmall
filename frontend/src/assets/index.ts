@@ -16,3 +16,4 @@ export { default as home_banner5 } from "./images/home_banner/home_banner5.jpg";
 // 추가 이미지
 export { default as korea_map } from "./images/korea_map.png";
 export { default as profile_img } from "./images/profile_img.png";
+export { default as cart } from "./images/cart.png";

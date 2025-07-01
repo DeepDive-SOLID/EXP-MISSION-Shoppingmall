@@ -6,6 +6,7 @@ import { BasketListDto } from "../../types/basket/basket";
 import { getCurrentMemberId } from "../../utils/auth";
 import { useNavigate } from "react-router-dom";
 import CounterBox from "../../components/common/CounterBox/CounterBox";
+import { cart } from "../../assets";
 
 const Cart = () => {
   const [items, setItems] = useState<(BasketListDto & { checked: boolean })[]>(
@@ -141,129 +142,145 @@ const Cart = () => {
         </div>
 
         <div className={styles.cartContentWrapper}>
-          <div className={styles.productList}>
-            {items.map(item => (
-              <div key={item.basketId} className={styles.productSection}>
-                <button
-                  className={styles.removeButton}
-                  onClick={() => handleRemove(item.travelId)}
-                >
-                  x
-                </button>
-                <input
-                  type="checkbox"
-                  className={styles.productCheckbox}
-                  checked={item.checked}
-                  onChange={() => handleToggleItem(item.basketId)}
-                />
+          {items.length === 0 ? (
+            <div className={styles.emptyState}>
+              <img src={cart} alt="빈 장바구니" className={styles.emptyImage} />
 
-                <div className={styles.leftSection}>
-                  <img src={item.travelImg} alt="여행 이미지" />
-                </div>
+              <p className={styles.emptySubText}>
+                장바구니에 담긴 상품이 없습니다.
+              </p>
+              <button
+                className={styles.shopButton}
+                onClick={() => navigate("/")}
+              >
+                쇼핑하러 가기
+              </button>
+            </div>
+          ) : (
+            <div className={styles.productList}>
+              {items.map(item => (
+                <div key={item.basketId} className={styles.productSection}>
+                  <button
+                    className={styles.removeButton}
+                    onClick={() => handleRemove(item.travelId)}
+                  >
+                    x
+                  </button>
+                  <input
+                    type="checkbox"
+                    className={styles.productCheckbox}
+                    checked={item.checked}
+                    onChange={() => handleToggleItem(item.basketId)}
+                  />
 
-                <div className={styles.rightSection}>
-                  <div className={styles.travelInfo}>
-                    <p className={styles.title}>{item.travelName}</p>
-                    <p className={styles.date}>
-                      {item.travelStartDt.slice(0, 10)} ~{" "}
-                      {item.travelEndDt.slice(0, 10)}
-                    </p>
-                    <button
-                      className={styles.changeButton}
-                      onClick={() => {
-                        navigate(`/detail/${item.travelId}`, {
-                          state: {
-                            travel: {
-                              travelId: item.travelId,
-                              travelName: item.travelName,
-                              travelStartDt: item.travelStartDt,
-                              travelEndDt: item.travelEndDt,
-                              travelImg: item.travelImg,
-                              travelPrice: item.travelPrice,
-                              travelAmount: item.travelAmount,
-                              reservedCount: item.reservedCount,
-                              travelLabel: item.travelLabel,
-                              travelSold: item.travelSold,
-                            },
-                            basket: {
-                              basketTravelAmount: item.basketTravelAmount,
-                              basketProducts: item.basketProducts,
-                            },
-                            fromCart: true,
-                          },
-                        });
-                      }}
-                    >
-                      변경
-                    </button>
+                  <div className={styles.leftSection}>
+                    <img src={item.travelImg} alt="여행 이미지" />
                   </div>
 
-                  <div
-                    className={styles.extraAndPrice}
-                    style={{
-                      flexDirection:
-                        item.basketProducts.length > 0 ? "row" : "column",
-                      alignItems:
-                        item.basketProducts.length > 0
-                          ? "flex-start"
-                          : "flex-end",
-                      justifyContent:
-                        item.basketProducts.length > 0
-                          ? "space-between"
-                          : "initial",
-                    }}
-                  >
-                    {item.basketProducts && item.basketProducts.length > 0 && (
-                      <div className={styles.extra}>
-                        <p className={styles.extraTitle}>추가 구매 내역</p>
-                        {item.basketProducts.map((product, index) => (
-                          <div key={index} className={styles.extraItem}>
-                            <CounterBox
-                              label={product.productName ?? ""}
-                              count={product.basketProductAmount ?? 1}
-                              price={product.productPrice ?? 0}
-                              onDecrease={() =>
-                                handleQuantityChange(
-                                  item.basketId,
-                                  product.productId,
-                                  -1,
-                                )
-                              }
-                              onIncrease={() =>
-                                handleQuantityChange(
-                                  item.basketId,
-                                  product.productId,
-                                  1,
-                                )
-                              }
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                  <div className={styles.rightSection}>
+                    <div className={styles.travelInfo}>
+                      <p className={styles.title}>{item.travelName}</p>
+                      <p className={styles.date}>
+                        {item.travelStartDt.slice(0, 10)} ~{" "}
+                        {item.travelEndDt.slice(0, 10)}
+                      </p>
+                      <button
+                        className={styles.changeButton}
+                        onClick={() => {
+                          navigate(`/detail/${item.travelId}`, {
+                            state: {
+                              travel: {
+                                travelId: item.travelId,
+                                travelName: item.travelName,
+                                travelStartDt: item.travelStartDt,
+                                travelEndDt: item.travelEndDt,
+                                travelImg: item.travelImg,
+                                travelPrice: item.travelPrice,
+                                travelAmount: item.travelAmount,
+                                reservedCount: item.reservedCount,
+                                travelLabel: item.travelLabel,
+                                travelSold: item.travelSold,
+                              },
+                              basket: {
+                                basketTravelAmount: item.basketTravelAmount,
+                                basketProducts: item.basketProducts,
+                              },
+                              fromCart: true,
+                            },
+                          });
+                        }}
+                      >
+                        변경
+                      </button>
+                    </div>
 
-                    <div className={styles.summary}>
-                      <p>총 합계</p>
-                      <span className={styles.totalPrice}>
-                        {(
-                          item.travelPrice * item.basketTravelAmount +
-                          item.basketProducts.reduce(
-                            (sum, product) =>
-                              sum +
-                              (product.productPrice ?? 0) *
-                                product.basketProductAmount,
-                            0,
-                          )
-                        ).toLocaleString()}
-                        원
-                      </span>
+                    <div
+                      className={styles.extraAndPrice}
+                      style={{
+                        flexDirection:
+                          item.basketProducts.length > 0 ? "row" : "column",
+                        alignItems:
+                          item.basketProducts.length > 0
+                            ? "flex-start"
+                            : "flex-end",
+                        justifyContent:
+                          item.basketProducts.length > 0
+                            ? "space-between"
+                            : "initial",
+                      }}
+                    >
+                      {item.basketProducts &&
+                        item.basketProducts.length > 0 && (
+                          <div className={styles.extra}>
+                            <p className={styles.extraTitle}>추가 구매 내역</p>
+                            {item.basketProducts.map((product, index) => (
+                              <div key={index} className={styles.extraItem}>
+                                <CounterBox
+                                  label={product.productName ?? ""}
+                                  count={product.basketProductAmount ?? 1}
+                                  price={product.productPrice ?? 0}
+                                  onDecrease={() =>
+                                    handleQuantityChange(
+                                      item.basketId,
+                                      product.productId,
+                                      -1,
+                                    )
+                                  }
+                                  onIncrease={() =>
+                                    handleQuantityChange(
+                                      item.basketId,
+                                      product.productId,
+                                      1,
+                                    )
+                                  }
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                      <div className={styles.summary}>
+                        <p>총 합계</p>
+                        <span className={styles.totalPrice}>
+                          {(
+                            item.travelPrice * item.basketTravelAmount +
+                            item.basketProducts.reduce(
+                              (sum, product) =>
+                                sum +
+                                (product.productPrice ?? 0) *
+                                  product.basketProductAmount,
+                              0,
+                            )
+                          ).toLocaleString()}
+                          원
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-
+              ))}
+            </div>
+          )}
           <div className={styles.totalPriceSection}>
             <p className={styles.summaryTitle}>구매 금액</p>
 
