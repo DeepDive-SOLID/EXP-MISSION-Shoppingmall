@@ -124,7 +124,7 @@ public class PaymentServiceImpl implements PaymentService {
      * 해당하는 유저의 카드 정보 리스트 조회
      *
      * @param memberDto
-     * @return
+     * @return List<PaymentCardDto>
      */
     @Override
     public List<PaymentCardDto> getPaymentCardInfo(MemberDto memberDto) {
@@ -141,7 +141,7 @@ public class PaymentServiceImpl implements PaymentService {
      * 카드 앞 4자리에 따른 카드 이미지 추출
      *
      * @param cardId
-     * @return
+     * @return String
      */
     @Override
     public String getPaymentCardImg(Integer cardId) {
@@ -157,5 +157,20 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public OrderMemberDto getOrderMemberInfo(MemberDto memberDto) {
         return paymentQueryRepository.getOrderMemberInfo(memberDto);
+    }
+
+    /**
+     * 설명: 예약하면 상품의 갯수 업데이트
+     * @param travelId
+     * @param travelAmount
+     */
+    @Override
+    public void updateTravelAmount(Integer travelId, Integer travelAmount) {
+        Travel travel = travelRepository.findById(travelId).orElseThrow(() -> new IllegalArgumentException("해당하는 상품이 없습니다."));
+        travel.setTravelAmount(travel.getTravelAmount() - travelAmount);
+        if (travel.getTravelAmount() == 0) {
+            travel.setTravelSold(true);
+        }
+        travelRepository.save(travel);
     }
 }

@@ -33,6 +33,7 @@ public class PaymentController {
             if (!orderAddDto.getProducts().isEmpty()) {
                 paymentService.saveOrdersProduct(orderAddDto, orders);
             }
+            paymentService.updateTravelAmount(orderAddDto.getTravelId(), orderAddDto.getOrderTravelAmount());
             return ResponseEntity.ok("SUCCESS");
         } catch (Exception e) {
             e.printStackTrace();

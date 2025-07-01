@@ -37,14 +37,14 @@ public interface PaymentService {
     /**
      * 해당하는 유저의 카드 정보 리스트 조회
      * @param memberDto
-     * @return
+     * @return List<PaymentCardDto>
      */
     List<PaymentCardDto> getPaymentCardInfo(MemberDto memberDto);
 
     /**
      * 카드 앞 4자리에 따른 카드 이미지 추출
      * @param cardId
-     * @return
+     * @return String
      */
     String getPaymentCardImg(Integer cardId);
 
@@ -54,4 +54,11 @@ public interface PaymentService {
      * @return OrderMemberDto
      */
     OrderMemberDto getOrderMemberInfo(MemberDto memberDto);
+
+    /**
+     * 설명: 예약하면 상품의 갯수 업데이트
+     * @param travelId
+     * @param travelAmount
+     */
+    void updateTravelAmount(Integer travelId, Integer travelAmount);
 }
