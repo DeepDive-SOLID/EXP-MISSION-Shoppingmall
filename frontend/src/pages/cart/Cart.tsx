@@ -183,6 +183,7 @@ const Cart = () => {
                               travelAmount: item.travelAmount,
                               reservedCount: item.reservedCount,
                               travelLabel: item.travelLabel,
+                              travelSold: item.travelSold,
                             },
                             basket: {
                               basketTravelAmount: item.basketTravelAmount,

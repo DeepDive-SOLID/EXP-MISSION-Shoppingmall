@@ -25,6 +25,7 @@ export interface BasketListDto {
   travelLabel: string;
   travelAmount: number;
   reservedCount: number;
+  travelSold: boolean;
   basketProducts: BasketProductDto[];
 }
 

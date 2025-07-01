@@ -264,8 +264,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
           <div className={styles.personText}>
             <div className={styles.personTop}>
               <span className={styles.personCount}>
-                잔여 개수{" "}
-                {(travel.travelAmount ?? 0) - (travel.reservedCount ?? 0)}개
+                잔여 개수 {travel.travelAmount}개
               </span>
               <span className={styles.personCount}>
                 (현재 예약 인원 {travel.reservedCount ?? 0}명)
@@ -365,12 +364,21 @@ const Info = ({ travelId, travel }: InfoProps) => {
       </div>
 
       <div className={styles.buttonSection}>
-        <button className={styles.cartButton} onClick={handleCartClick}>
-          장바구니
-        </button>
-        <button className={styles.reserveButton} onClick={handleReserveClick}>
-          예약하기
-        </button>
+        {travel.travelSold ? (
+          <p className={styles.soldOutMessage}>품절된 상품입니다.</p>
+        ) : (
+          <>
+            <button className={styles.cartButton} onClick={handleCartClick}>
+              장바구니
+            </button>
+            <button
+              className={styles.reserveButton}
+              onClick={handleReserveClick}
+            >
+              예약하기
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

@@ -10,4 +10,5 @@ export interface HomeTravelDto {
   reviewCount: number;
   reservedCount: number;
   travelAmount: number;
+  travelSold: boolean;
 }
