@@ -259,16 +259,13 @@ const Info = ({ travelId, travel }: InfoProps) => {
           <div className={styles.personText}>
             <div className={styles.personTop}>
               <span className={styles.personCount}>
-                예약 인원 {travel.reservedCount ?? 0}명
+                잔여 개수{" "}
+                {(travel.travelAmount ?? 0) - (travel.reservedCount ?? 0)}개
               </span>
               <span className={styles.personCount}>
-                (잔여 개수{" "}
-                {(travel.maxPeople ?? 0) - (travel.reservedCount ?? 0)}개)
+                (현재 예약 인원 {travel.reservedCount ?? 0}명)
               </span>
             </div>
-            <p className={styles.minPeopleCount}>
-              최소 출발 인원 : {travel.minPeople ?? 10}명
-            </p>
           </div>
         </div>
       </div>
@@ -298,12 +295,19 @@ const Info = ({ travelId, travel }: InfoProps) => {
           <div className={styles.productControl}>
             <CounterBox
               label=""
-              count={item.count}
-              price={item.price}
+              count={peopleCount}
+              price={travel.travelPrice}
               hidePrice={true}
-              onDecrease={() => updateProductCount(item.id, -1)}
-              onIncrease={() => updateProductCount(item.id, 1)}
+              onDecrease={() => setPeopleCount(prev => Math.max(1, prev - 1))}
+              onIncrease={() =>
+                setPeopleCount(prev => {
+                  const maxAvailable =
+                    (travel.travelAmount ?? 0) - (travel.reservedCount ?? 0);
+                  return prev < maxAvailable ? prev + 1 : prev;
+                })
+              }
             />
+
             <span className={styles.productPrice}>
               {(item.count * item.price).toLocaleString()}원
             </span>

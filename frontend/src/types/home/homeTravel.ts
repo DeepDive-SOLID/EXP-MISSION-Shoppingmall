@@ -9,6 +9,5 @@ export interface HomeTravelDto {
   rate: number;
   reviewCount: number;
   reservedCount: number;
-  maxPeople: number;
-  minPeople: number;
+  travelAmount: number;
 }
