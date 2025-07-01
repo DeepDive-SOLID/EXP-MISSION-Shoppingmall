@@ -1,9 +1,7 @@
 package solid.backend.payment.payment.service;
 
 import solid.backend.entity.Orders;
-import solid.backend.payment.payment.dto.OrderAddDto;
-import solid.backend.payment.payment.dto.PaymentCardAddDto;
-import solid.backend.payment.payment.dto.PaymentCardDto;
+import solid.backend.payment.payment.dto.*;
 
 import java.util.List;
 
@@ -38,10 +36,10 @@ public interface PaymentService {
 
     /**
      * 해당하는 유저의 카드 정보 리스트 조회
-     * @param memberId
+     * @param memberDto
      * @return
      */
-    List<PaymentCardDto> getPaymentCardInfo(String memberId);
+    List<PaymentCardDto> getPaymentCardInfo(MemberDto memberDto);
 
     /**
      * 카드 앞 4자리에 따른 카드 이미지 추출
@@ -49,4 +47,11 @@ public interface PaymentService {
      * @return
      */
     String getPaymentCardImg(Integer cardId);
+
+    /**
+     * 설명: 주문 페이지 시 로그인 했으면 유저 정보를 줌
+     * @param memberDto
+     * @return OrderMemberDto
+     */
+    OrderMemberDto getOrderMemberInfo(MemberDto memberDto);
 }

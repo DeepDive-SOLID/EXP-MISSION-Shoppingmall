@@ -7,14 +7,12 @@ import solid.backend.common.AESUtil;
 import solid.backend.common.FileManager;
 import solid.backend.entity.*;
 import solid.backend.jpaRepository.*;
-import solid.backend.payment.payment.dto.OrderAddDto;
-import solid.backend.payment.payment.dto.OrderProductDto;
-import solid.backend.payment.payment.dto.PaymentCardAddDto;
-import solid.backend.payment.payment.dto.PaymentCardDto;
+import solid.backend.payment.payment.dto.*;
 import solid.backend.payment.payment.repository.PaymentQueryRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -125,12 +123,12 @@ public class PaymentServiceImpl implements PaymentService {
     /**
      * 해당하는 유저의 카드 정보 리스트 조회
      *
-     * @param memberId
+     * @param memberDto
      * @return
      */
     @Override
-    public List<PaymentCardDto> getPaymentCardInfo(String memberId) {
-        List<PaymentCardDto> list = paymentQueryRepository.PaymentCardInfo(memberId);
+    public List<PaymentCardDto> getPaymentCardInfo(MemberDto memberDto) {
+        List<PaymentCardDto> list = paymentQueryRepository.PaymentCardInfo(memberDto);
         list.forEach(items -> {
             String cardNum = aesUtil.decrypt(items.getPaymentNum());
             items.setPaymentNum(cardNum);
@@ -149,5 +147,15 @@ public class PaymentServiceImpl implements PaymentService {
     public String getPaymentCardImg(Integer cardId) {
         Card card = cardRepository.findById(cardId).orElseThrow(() -> new IllegalArgumentException("해당 카드가 없습니다."));
         return fileManager.getFileUrl(card.getCardImg());
+    }
+
+    /**
+     * 설명: 주문 페이지 시 로그인 했으면 유저 정보를 줌
+     * @param memberDto
+     * @return OrderMemberDto
+     */
+    @Override
+    public OrderMemberDto getOrderMemberInfo(MemberDto memberDto) {
+        return paymentQueryRepository.getOrderMemberInfo(memberDto);
     }
 }

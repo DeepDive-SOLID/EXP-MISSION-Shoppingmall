@@ -6,9 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import solid.backend.entity.Orders;
-import solid.backend.payment.payment.dto.OrderAddDto;
-import solid.backend.payment.payment.dto.PaymentCardAddDto;
-import solid.backend.payment.payment.dto.PaymentCardDto;
+import solid.backend.payment.payment.dto.*;
 import solid.backend.payment.payment.service.PaymentService;
 
 import java.util.List;
@@ -44,13 +42,13 @@ public class PaymentController {
 
     /**
      * 설명: 해당 유저의 카드 정보 리스트
-     * @param memberId
+     * @param memberDto
      * @return List<PaymentCardDto>
      */
     @ResponseBody
     @PostMapping(value = "/card-info")
-    public List<PaymentCardDto> getPaymentCardInfo(@RequestBody String memberId) {
-        return paymentService.getPaymentCardInfo(memberId);
+    public List<PaymentCardDto> getPaymentCardInfo(@RequestBody MemberDto memberDto) {
+        return paymentService.getPaymentCardInfo(memberDto);
     }
 
     /**
@@ -68,5 +66,16 @@ public class PaymentController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("FAILED");
         }
+    }
+
+    /**
+     * 설명: 로그인 유저 정보 조회
+     * @param memberDto
+     * @return OrderMemberDto
+     */
+    @ResponseBody
+    @PostMapping("/member-info")
+    public OrderMemberDto getOrderMemberInfo(@RequestBody MemberDto memberDto) {
+        return paymentService.getOrderMemberInfo(memberDto);
     }
 }
