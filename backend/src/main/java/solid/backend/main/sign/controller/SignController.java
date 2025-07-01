@@ -1,6 +1,7 @@
 package solid.backend.main.sign.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -127,5 +128,19 @@ public class SignController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("FAIL");
         }
+    }
+
+    /**
+     * 설명: 로그아웃 (세션에 저장된 refresh token 삭제)
+     * @param request
+     * @return ResponseEntity<String>
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.removeAttribute("refreshToken");
+        }
+        return ResponseEntity.ok("로그아웃되었습니다.");
     }
 }

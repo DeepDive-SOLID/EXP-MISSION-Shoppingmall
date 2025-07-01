@@ -33,6 +33,7 @@ public class JwtController {
         String refreshToken = (String) session.getAttribute("refreshToken");
 
         if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
+            session.removeAttribute("refreshToken"); // 토큰 삭제
             return ResponseEntity.status(401).body("Refresh Token이 유효하지 않습니다. 다시 로그인하세요.");
         }
 
