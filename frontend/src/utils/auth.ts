@@ -9,6 +9,26 @@ interface TokenPayload {
   [key: string]: unknown;
 }
 
+// 토큰이 존재하고 유효한지 확인 (만료 시간 포함)
+export const isLoggedIn = (): boolean => {
+  const token = localStorage.getItem("token");
+  if (!token) return false;
+
+  // 토큰 디코딩하여 만료 시간 확인
+  const decoded = decodeToken(token);
+  if (!decoded) return false;
+
+  // 만료 시간 확인
+  if (decoded.exp) {
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (currentTime >= decoded.exp) {
+      localStorage.removeItem("token"); // 만료된 토큰 제거
+      return false;
+    }
+  }
+
+  return true;
+
 // 토큰이 존재하는지 확인
 export const isLoggedIn = (): boolean => {
   const token = localStorage.getItem("token");
@@ -58,8 +78,6 @@ export const decodeToken = (token: string): TokenPayload | null => {
     );
 
     const payload = JSON.parse(jsonPayload);
-    console.log("토큰 디코딩 성공:", payload);
-
     return payload;
   } catch (error) {
     console.error("토큰 디코딩 실패:", error);
@@ -70,20 +88,12 @@ export const decodeToken = (token: string): TokenPayload | null => {
 // 현재 로그인한 사용자의 memberId 가져오기
 export const getCurrentMemberId = (): string | null => {
   const token = getToken();
-  if (!token) {
-    console.log("토큰이 없습니다");
-    return null;
-  }
+  if (!token) return null;
 
   const decoded = decodeToken(token);
-  if (!decoded) {
-    console.log("토큰 디코딩 실패");
-    return null;
-  }
+  if (!decoded) return null;
 
-  const memberId = decoded.memberId;
-  console.log("추출된 memberId:", memberId);
-  return memberId || null;
+  return decoded.memberId || null;
 };
 
 // 현재 로그인한 사용자의 정보 가져오기

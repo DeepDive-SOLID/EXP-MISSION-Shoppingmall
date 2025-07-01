@@ -26,7 +26,7 @@ const productApi = {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return response.data;
   },

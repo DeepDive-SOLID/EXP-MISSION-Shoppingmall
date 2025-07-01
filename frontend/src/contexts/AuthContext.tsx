@@ -17,6 +17,7 @@ interface AuthContextType {
   userInfo: { memberId: string; authId: string } | null; // 사용자 정보 (ID, 권한)
   isManager: boolean; // 관리자 권한 여부 (ADMIN, MANAGER)
   isAdmin: boolean; // 최고 관리자 권한 여부 (ADMIN만)
+  isLoading: boolean; // 초기 로딩 상태
   login: () => void; // 로그인 함수 (Context 상태를 true로 변경)
   logout: () => void; // 로그아웃 함수 (토큰 제거 + Context 상태를 false로 변경)
 }
@@ -50,18 +51,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     memberId: string;
     authId: string;
   } | null>(null);
+  // 초기 로딩 상태
+  const [isLoading, setIsLoading] = useState(true);
 
   // 컴포넌트가 처음 마운트될 때 실행되는 useEffect
   useEffect(() => {
     // localStorage에 저장된 토큰을 확인하여 로그인 상태 초기화
     const loggedIn = checkIsLoggedIn();
-    setIsLoggedIn(loggedIn);
 
-    // 로그인된 상태라면 사용자 정보도 가져오기
     if (loggedIn) {
+      // 토큰이 유효한 경우 사용자 정보 가져오기
       const currentUserInfo = getCurrentUserInfo();
       setUserInfo(currentUserInfo);
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+      setUserInfo(null);
     }
+
+    // 초기화 완료
+    setIsLoading(false);
   }, []); // 빈 배열이므로 컴포넌트 마운트 시에만 실행
 
   // 로그인 함수: Context의 로그인 상태를 true로 변경
@@ -91,6 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     userInfo, // 사용자 정보 (ID, 권한)
     isManager, // 관리자 권한 여부 (ADMIN, MANAGER)
     isAdmin, // 최고 관리자 권한 여부 (ADMIN만)
+    isLoading, // 초기 로딩 상태
     login, // 로그인 함수
     logout, // 로그아웃 함수
   };

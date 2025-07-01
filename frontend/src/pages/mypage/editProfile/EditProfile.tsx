@@ -7,9 +7,11 @@ import {
   getMemberDto,
   updateMemberDto,
   deleteMemberDto,
+  checkEmail,
 } from "../../../api/mypage/memberApi";
 import { MypageMemberDto } from "../../../types/mypage/member";
 import { AxiosError } from "axios";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const EyeIcon = ({ visible }: { visible: boolean }) =>
   visible ? (
@@ -44,6 +46,7 @@ const EyeIcon = ({ visible }: { visible: boolean }) =>
   );
 
 const EditProfile = () => {
+  const { userInfo, logout } = useAuth(); // 현재 로그인한 사용자 정보 가져오기
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -60,6 +63,16 @@ const EditProfile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+
+  // 이메일 중복확인 관련 상태
+  const [emailChecked, setEmailChecked] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [emailSuccess, setEmailSuccess] = useState(false);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [originalEmail, setOriginalEmail] = useState(""); // 원본 이메일 값 저장
+
+  // 현재 로그인한 사용자의 memberId 사용
+  const memberId = userInfo?.memberId;
 
   // 전화번호 형식 검증 함수
   const validatePhoneNumber = (phone: string): boolean => {
@@ -88,47 +101,6 @@ const EditProfile = () => {
     return selectedDate <= today;
   };
 
-  // 폼 검증 함수
-  const validateForm = (): boolean => {
-    const newErrors: { [key: string]: string } = {};
-
-    // 이름 검증
-    if (!form.name.trim()) {
-      newErrors.name = "이름을 입력해주세요.";
-    }
-
-    // 이메일 검증
-    if (!form.email.trim()) {
-      newErrors.email = "이메일을 입력해주세요.";
-    } else if (!validateEmail(form.email)) {
-      newErrors.email = "올바른 이메일 형식을 입력해주세요.";
-    }
-
-    // 전화번호 검증
-    if (!form.phone.trim()) {
-      newErrors.phone = "전화번호를 입력해주세요.";
-    } else if (!validatePhoneNumber(form.phone)) {
-      newErrors.phone = "전화번호는 010-XXXX-XXXX 형식으로 입력해주세요.";
-    }
-
-    // 비밀번호 검증 (필수)
-    if (!form.password.trim()) {
-      newErrors.password = "비밀번호를 입력해주세요.";
-    } else if (!validatePassword(form.password)) {
-      newErrors.password = "최소 8자 이상, 숫자와 특수문자 포함";
-    }
-
-    // 생년월일 검증
-    if (!form.birth) {
-      newErrors.birth = "생년월일을 입력해주세요.";
-    } else if (!validateBirthDate(form.birth)) {
-      newErrors.birth = "생년월일은 오늘 이후 날짜를 입력할 수 없습니다.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
@@ -146,6 +118,52 @@ const EditProfile = () => {
       delete newErrors[name];
       setErrors(newErrors);
     }
+
+    // 이메일이 변경되면 중복확인 상태 초기화
+    if (name === "email") {
+      setEmailChecked(false);
+      setEmailError("");
+      setEmailSuccess(false);
+    }
+  };
+
+  // 이메일이 변경되지 않았을 때 중복확인 상태를 자동으로 설정
+  useEffect(() => {
+    if (!isEmailChanged() && form.email === originalEmail && originalEmail) {
+      setEmailChecked(true);
+      setEmailError("");
+      setEmailSuccess(false);
+    }
+  }, [form.email, originalEmail]);
+
+  // 이메일 중복확인
+  const handleEmailCheck = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!form.email) return;
+
+    setIsCheckingEmail(true);
+    setEmailError("");
+    setEmailSuccess(false);
+
+    try {
+      const isDuplicate = await checkEmail(form.email);
+
+      if (isDuplicate) {
+        setEmailChecked(false);
+        setEmailError("이미 등록된 이메일 입니다.");
+        setEmailSuccess(false);
+      } else {
+        setEmailChecked(true);
+        setEmailError("");
+        setEmailSuccess(true);
+      }
+    } catch (error) {
+      console.error("이메일 중복 확인 오류:", error);
+      setEmailError("이메일 중복 확인 중 오류가 발생했습니다.");
+      setEmailSuccess(false);
+    } finally {
+      setIsCheckingEmail(false);
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -155,14 +173,24 @@ const EditProfile = () => {
       return;
     }
 
-    try {
-      const memberId = "boon";
+    if (!memberId) {
+      alert("사용자 정보를 찾을 수 없습니다.");
+      return;
+    }
 
+    try {
       // FormData를 사용하여 회원 정보 업데이트
       const formData = new FormData();
       formData.append("memberId", memberId);
       formData.append("memberName", form.name);
-      formData.append("memberPassword", form.password);
+
+      // 비밀번호가 입력된 경우에만 추가
+      if (form.password.trim()) {
+        formData.append("memberPassword", form.password);
+      } else {
+        // 비밀번호가 입력되지 않으면 필드를 추가하지 않음 (기존 비밀번호 유지)
+      }
+
       formData.append("memberEmail", form.email);
       formData.append("memberPhone", form.phone);
       formData.append("memberBirth", form.birth);
@@ -177,8 +205,7 @@ const EditProfile = () => {
 
       if (result === "SUCCESS") {
         alert("회원정보가 성공적으로 저장되었습니다.");
-
-        // 저장 후 페이지 새로고침하여 변경사항 적용
+        // 페이지 새로고침
         window.location.reload();
       } else {
         alert("회원정보 저장에 실패했습니다.");
@@ -204,13 +231,20 @@ const EditProfile = () => {
   };
 
   const handleFinalWithdraw = async () => {
+    if (!memberId) {
+      alert("사용자 정보를 찾을 수 없습니다.");
+      return;
+    }
+
     try {
-      const memberId = "jiyeon1234"; // 추후 수정
       const result = await deleteMemberDto(memberId);
       if (result === "SUCCESS") {
         alert("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
-        // 로그아웃 처리 및 홈페이지로 리다이렉트
-        // localStorage.removeItem('token');
+
+        // AuthContext의 logout 함수를 사용해서 토큰 삭제 및 로그아웃 처리
+        logout();
+
+        // 홈페이지로 리다이렉트
         window.location.href = "/";
       } else {
         alert("회원 탈퇴에 실패했습니다.");
@@ -261,9 +295,12 @@ const EditProfile = () => {
 
   useEffect(() => {
     const fetchMemberInfo = async () => {
-      try {
-        const memberId = "boon"; // 주문 내역 페이지와 동일하게 하드코딩
+      if (!memberId) {
+        setIsLoading(false);
+        return;
+      }
 
+      try {
         const memberInfo: MypageMemberDto = await getMemberDto(memberId);
 
         if (memberInfo) {
@@ -275,6 +312,7 @@ const EditProfile = () => {
             birth: memberInfo.memberBirth,
             img: memberInfo.memberImg,
           });
+          setOriginalEmail(memberInfo.memberEmail);
         }
       } catch (error) {
         console.error("회원 정보 로드 실패:", error);
@@ -285,7 +323,53 @@ const EditProfile = () => {
     };
 
     fetchMemberInfo();
-  }, []);
+  }, [memberId]);
+
+  // 폼 검증 함수
+  const validateForm = (): boolean => {
+    const newErrors: { [key: string]: string } = {};
+
+    // 이름 검증
+    if (!form.name.trim()) {
+      newErrors.name = "이름을 입력해주세요.";
+    }
+
+    // 이메일 검증
+    if (!form.email.trim()) {
+      newErrors.email = "이메일을 입력해주세요.";
+    } else if (!validateEmail(form.email)) {
+      newErrors.email = "올바른 이메일 형식을 입력해주세요.";
+    } else if (isEmailChanged() && !emailChecked) {
+      newErrors.email = "이메일 중복확인을 해주세요.";
+    }
+
+    // 전화번호 검증
+    if (!form.phone.trim()) {
+      newErrors.phone = "전화번호를 입력해주세요.";
+    } else if (!validatePhoneNumber(form.phone)) {
+      newErrors.phone = "전화번호는 010-XXXX-XXXX 형식으로 입력해주세요.";
+    }
+
+    // 비밀번호 검증 (선택사항)
+    if (form.password.trim() && !validatePassword(form.password)) {
+      newErrors.password = "최소 8자 이상, 숫자와 특수문자 포함";
+    }
+
+    // 생년월일 검증
+    if (!form.birth) {
+      newErrors.birth = "생년월일을 입력해주세요.";
+    } else if (!validateBirthDate(form.birth)) {
+      newErrors.birth = "생년월일은 오늘 이후 날짜를 입력할 수 없습니다.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // 이메일이 변경되었는지 확인하는 함수
+  const isEmailChanged = (): boolean => {
+    return form.email !== originalEmail;
+  };
 
   return (
     <div className={styles.editProfilePage}>
@@ -330,7 +414,7 @@ const EditProfile = () => {
                 </div>
               </div>
               <div className={styles.inputGroup}>
-                <label>이름 *</label>
+                <label>이름</label>
                 <input
                   name="name"
                   value={form.name}
@@ -343,21 +427,41 @@ const EditProfile = () => {
                 )}
               </div>
               <div className={styles.inputGroup}>
-                <label>이메일 *</label>
-                <input
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  placeholder="이메일을 입력하세요"
-                  type="email"
-                  className={errors.email ? styles.errorInput : ""}
-                />
+                <label>이메일</label>
+                <div className={styles.emailInputWrapper}>
+                  <input
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="이메일을 입력하세요"
+                    type="email"
+                    className={`${errors.email ? styles.errorInput : ""} ${isEmailChanged() ? styles.inputWithButton : ""}`}
+                  />
+                  {isEmailChanged() && (
+                    <button
+                      type="button"
+                      className={styles.emailCheckBtn}
+                      onClick={handleEmailCheck}
+                      disabled={!form.email || isCheckingEmail}
+                    >
+                      {isCheckingEmail ? "확인중..." : "중복확인"}
+                    </button>
+                  )}
+                </div>
                 {errors.email && (
                   <span className={styles.errorMessage}>{errors.email}</span>
                 )}
+                {emailError && (
+                  <span className={styles.emailError}>{emailError}</span>
+                )}
+                {emailSuccess && (
+                  <span className={styles.emailSuccess}>
+                    사용 가능한 이메일 입니다.
+                  </span>
+                )}
               </div>
               <div className={styles.inputGroup}>
-                <label>전화번호 *</label>
+                <label>전화번호</label>
                 <input
                   name="phone"
                   value={form.phone}
@@ -371,13 +475,13 @@ const EditProfile = () => {
                 )}
               </div>
               <div className={styles.inputGroup}>
-                <label>비밀번호 *</label>
+                <label>새 비밀번호</label>
                 <div className={styles.passwordInputWrapper}>
                   <input
                     name="password"
                     value={form.password}
                     onChange={handleChange}
-                    placeholder="비밀번호를 입력하세요"
+                    placeholder="새 비밀번호를 입력하세요"
                     type={showPassword ? "text" : "password"}
                     className={errors.password ? styles.errorInput : ""}
                   />
@@ -398,7 +502,7 @@ const EditProfile = () => {
                 )}
               </div>
               <div className={styles.inputGroup}>
-                <label>생년월일 *</label>
+                <label>생년월일</label>
                 <input
                   name="birth"
                   value={form.birth}

@@ -4,7 +4,8 @@ import styles from "./CardAdd.module.scss";
 import Header from "../../../../components/common/Header/Header";
 import Sidebar from "../../../../components/common/Sidebar_mypage/Sidebar";
 import kbCard from "../../../../assets/images/kb.jpg";
-import api from "../../../../api/axios";
+import { addCard, getCardImage } from "../../../../api/mypage/cardApi";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 // 비밀번호 보이기/숨기기 아이콘 컴포넌트
 const EyeIcon = ({ visible }: { visible: boolean }) =>
@@ -41,8 +42,12 @@ const EyeIcon = ({ visible }: { visible: boolean }) =>
 
 const CardAdd = () => {
   const navigate = useNavigate();
+  const { userInfo } = useAuth(); // 현재 로그인한 사용자 정보 가져오기
   const cardNumberInputs = useRef<(HTMLInputElement | null)[]>([]);
   const expiryDateInputs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // 현재 로그인한 사용자의 memberId 사용
+  const memberId = userInfo?.memberId;
 
   const [newCard, setNewCard] = useState({
     cardOwner: "",
@@ -65,22 +70,41 @@ const CardAdd = () => {
   const [showCardPassword, setShowCardPassword] = useState(false);
 
   const [cardImgUrl, setCardImgUrl] = useState<string | null>(null);
+  const [paymentName, setPaymentName] = useState<string>("");
+
+  // 카드번호 앞 4자리로 카드사 매칭
+  const getPaymentNameByCardNumber = (cardNumber: string): string => {
+    if (cardNumber.length !== 4) return "";
+
+    const cardBins: { [key: string]: string } = {
+      "1111": "카카오카드",
+      "2222": "국민카드",
+      "3333": "농협카드",
+      "4444": "삼성카드",
+      "5555": "신한카드",
+    };
+
+    return cardBins[cardNumber] || "";
+  };
 
   useEffect(() => {
     const firstFour = newCard.cardNumber[0];
     if (firstFour.length === 4) {
-      api
-        .post("/mypage/payment/getCardImg", firstFour, {
-          headers: { "Content-Type": "application/json" },
-        })
+      // 카드 이미지 가져오기
+      getCardImage(firstFour)
         .then(res => {
-          setCardImgUrl(res.data);
+          setCardImgUrl(res);
         })
         .catch(() => {
           setCardImgUrl(null);
         });
+
+      // 카드사명 자동 매칭
+      const matchedPaymentName = getPaymentNameByCardNumber(firstFour);
+      setPaymentName(matchedPaymentName);
     } else {
       setCardImgUrl(null);
+      setPaymentName("");
     }
   }, [newCard.cardNumber[0]]);
 
@@ -98,13 +122,15 @@ const CardAdd = () => {
     index: number,
   ) => {
     const { value } = e.target;
-    if (!/^\d*$/.test(value)) return;
+    // 숫자만 허용하고 문자열로 유지
+    const numericValue = value.replace(/\D/g, "");
+    if (numericValue !== value) return; // 숫자가 아닌 문자가 있으면 무시
 
     const newCardNumber = [...newCard.cardNumber];
-    newCardNumber[index] = value;
+    newCardNumber[index] = numericValue;
     setNewCard(prev => ({ ...prev, cardNumber: newCardNumber }));
 
-    if (value.length === 4 && index < 3) {
+    if (numericValue.length === 4 && index < 3) {
       cardNumberInputs.current[index + 1]?.focus();
     }
   };
@@ -114,13 +140,15 @@ const CardAdd = () => {
     index: number,
   ) => {
     const { value } = e.target;
-    if (!/^\d*$/.test(value)) return;
+    // 숫자만 허용하고 문자열로 유지
+    const numericValue = value.replace(/\D/g, "");
+    if (numericValue !== value) return; // 숫자가 아닌 문자가 있으면 무시
 
     const newExpiryDate = [...newCard.expiryDate];
-    newExpiryDate[index] = value;
+    newExpiryDate[index] = numericValue;
     setNewCard(prev => ({ ...prev, expiryDate: newExpiryDate }));
 
-    if (value.length === 2 && index < 1) {
+    if (numericValue.length === 2 && index < 1) {
       expiryDateInputs.current[index + 1]?.focus();
     }
   };
@@ -182,24 +210,22 @@ const CardAdd = () => {
       newErrors.cardOwner = "카드 소유자 이름은 2자 이상 입력해주세요.";
     }
 
-    // 카드번호 검증
+    // 카드번호 검증 (문자열 기반)
     const fullCardNumber = newCard.cardNumber.join("");
-    if (fullCardNumber.length !== 16) {
+    if (!/^\d{16}$/.test(fullCardNumber)) {
       newErrors.cardNumber = "카드번호 16자리를 모두 입력해주세요.";
     }
 
-    // 카드 비밀번호 검증
+    // 카드 비밀번호 검증 (문자열 기반)
     if (!newCard.cardPassword) {
       newErrors.cardPassword = "카드 비밀번호를 입력해주세요.";
-    } else if (newCard.cardPassword.length !== 4) {
-      newErrors.cardPassword = "카드 비밀번호는 4자리 숫자입니다.";
     } else if (!/^\d{4}$/.test(newCard.cardPassword)) {
-      newErrors.cardPassword = "카드 비밀번호는 숫자만 입력 가능합니다.";
+      newErrors.cardPassword = "카드 비밀번호는 4자리 숫자입니다.";
     }
 
     // 만료일 검증
     const [month, year] = newCard.expiryDate;
-    if (month.length !== 2 || year.length !== 2) {
+    if (!/^\d{2}$/.test(month) || !/^\d{2}$/.test(year)) {
       newErrors.expiryDate = "만료일을 모두 입력해주세요.";
     } else {
       const currentDate = new Date();
@@ -216,11 +242,10 @@ const CardAdd = () => {
       }
     }
 
-    // CVV 검증
-    const cvvRegex = /^\d{3,4}$/;
+    // CVV 검증 (문자열 기반)
     if (!newCard.cvv) {
       newErrors.cvv = "보안 코드(CVV/CVC)를 입력해주세요.";
-    } else if (!cvvRegex.test(newCard.cvv)) {
+    } else if (!/^\d{3,4}$/.test(newCard.cvv)) {
       newErrors.cvv = "보안 코드(CVV/CVC)는 3-4자리 숫자입니다.";
     }
 
@@ -228,17 +253,40 @@ const CardAdd = () => {
     return !Object.values(newErrors).some(error => error !== "");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      // 여기서 실제 API 호출을 하거나 상태 관리를 통해 카드 추가
-      // 현재는 시연을 위해 항상 실패한다고 가정
-      const isSuccess = false;
+    if (!memberId) {
+      alert("사용자 정보를 찾을 수 없습니다.");
+      return;
+    }
 
-      if (isSuccess) {
-        navigate("/mypage/card-add/complete");
-      } else {
+    if (validateForm()) {
+      // PaymentAddDto 형태로 데이터 변환 (문자열로 전송)
+      const currentYear = new Date().getFullYear();
+      const inputYear = parseInt(newCard.expiryDate[1]);
+      const fullYear = currentYear - (currentYear % 100) + inputYear; // 2자리 연도를 4자리로 변환
+
+      const paymentDto = {
+        memberId: memberId,
+        paymentName: paymentName,
+        paymentNum: newCard.cardNumber.join(""), // 문자열로 전송
+        paymentEndDt: `${fullYear}-${newCard.expiryDate[0].padStart(2, "0")}`, // YYYY-MM 형식
+        paymentOwner: newCard.cardOwner,
+        paymentSecurity: newCard.cvv, // 문자열로 전송
+        paymentPw: newCard.cardPassword, // 문자열로 전송
+      };
+
+      try {
+        const res = await addCard(paymentDto);
+        if (res === "SUCCESS") {
+          navigate("/mypage/card-add/complete");
+        } else {
+          navigate("/mypage/card-add/fail");
+        }
+      } catch (error) {
+        console.log("카드 추가 에러:", error);
+        // Primary Key 중복이나 기타 에러 시 실패 페이지로 이동
         navigate("/mypage/card-add/fail");
       }
     }
