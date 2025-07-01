@@ -96,6 +96,12 @@ public class PaymentOrderServiceImpl implements PaymentOrderService {
             orderProduct.setOrderProductAmount(items.getOrderProductAmount());
 
             orderProductRepository.save(orderProduct);
+
+            product.setProductAmount(product.getProductAmount() - items.getOrderProductAmount());
+            if (product.getProductAmount() == 0) {
+                product.setProductSold(true);
+            }
+            productRepository.save(product);
         });
     }
 
