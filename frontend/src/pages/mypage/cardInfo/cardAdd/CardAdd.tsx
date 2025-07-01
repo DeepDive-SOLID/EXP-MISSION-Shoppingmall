@@ -1,9 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CardAdd.module.scss";
-import Header from "../../../../components/common/Header_login/Header";
+import Header from "../../../../components/common/Header/Header";
 import Sidebar from "../../../../components/common/Sidebar_mypage/Sidebar";
 import kbCard from "../../../../assets/images/kb.jpg";
+import api from "../../../../api/axios";
 
 // 비밀번호 보이기/숨기기 아이콘 컴포넌트
 const EyeIcon = ({ visible }: { visible: boolean }) =>
@@ -62,6 +63,26 @@ const CardAdd = () => {
   // 비밀번호 보이기/숨기기 상태
   const [showCvv, setShowCvv] = useState(false);
   const [showCardPassword, setShowCardPassword] = useState(false);
+
+  const [cardImgUrl, setCardImgUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const firstFour = newCard.cardNumber[0];
+    if (firstFour.length === 4) {
+      api
+        .post("/mypage/payment/getCardImg", firstFour, {
+          headers: { "Content-Type": "application/json" },
+        })
+        .then(res => {
+          setCardImgUrl(res.data);
+        })
+        .catch(() => {
+          setCardImgUrl(null);
+        });
+    } else {
+      setCardImgUrl(null);
+    }
+  }, [newCard.cardNumber[0]]);
 
   const handleInputChange = (field: string, value: string) => {
     setNewCard(prev => ({ ...prev, [field]: value }));
@@ -239,7 +260,19 @@ const CardAdd = () => {
             </div>
 
             <div className={styles.cardPreview}>
-              <img src={kbCard} alt="KB 카드" className={styles.cardImage} />
+              {cardImgUrl ? (
+                <img
+                  src={cardImgUrl}
+                  alt="카드 이미지"
+                  className={styles.cardImage}
+                />
+              ) : (
+                <img
+                  src={kbCard}
+                  alt="기본 카드"
+                  className={styles.cardImage}
+                />
+              )}
             </div>
 
             <form onSubmit={handleSubmit} className={styles.form}>
