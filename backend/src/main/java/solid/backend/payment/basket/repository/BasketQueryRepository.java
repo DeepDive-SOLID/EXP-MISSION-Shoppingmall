@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import solid.backend.entity.QBasket;
 import solid.backend.entity.QMember;
 
+import solid.backend.payment.basket.dto.BasketAddDto;
 import solid.backend.payment.basket.dto.BasketListDto;
 import solid.backend.payment.basket.dto.BasketProductDto;
 
@@ -74,11 +75,13 @@ public class BasketQueryRepository {
                 .leftJoin(basket.product)
                 .leftJoin(basket.travel)
                 .groupBy(basket.travel.travelId)
+                .where(member.memberId.eq(memberId))
                 .fetch();
     }
 
     /**
      * 설명: 장바구니에서 product 리스트를 반환, 물품을 2개이상 구매할 수 있기 때문
+     *
      * @param memberId
      * @param travelId
      * @return List<BasketProductDto>
@@ -96,6 +99,7 @@ public class BasketQueryRepository {
                 .leftJoin(basket.product)
                 .leftJoin(basket.travel)
                 .where(basket.travel.travelId.eq(travelId))
+                .where(member.memberId.eq(memberId))
                 .fetch();
     }
 }
