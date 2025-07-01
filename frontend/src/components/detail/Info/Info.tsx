@@ -266,7 +266,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
               <span className={styles.personCount}>
                 잔여 개수 {travel.travelAmount}개
               </span>
-              <span className={styles.personCount}>
+              <span className={styles.minPeopleCount}>
                 (현재 예약 인원 {travel.reservedCount ?? 0}명)
               </span>
             </div>
