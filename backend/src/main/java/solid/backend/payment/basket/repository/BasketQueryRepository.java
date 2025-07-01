@@ -1,5 +1,6 @@
 package solid.backend.payment.basket.repository;
 
+import com.querydsl.core.QueryFactory;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -9,6 +10,9 @@ import org.springframework.stereotype.Repository;
 import solid.backend.entity.QBasket;
 import solid.backend.entity.QMember;
 
+import solid.backend.entity.QOrderTravel;
+import solid.backend.entity.QTravel;
+import solid.backend.main.home.dto.HomeTravelDto;
 import solid.backend.payment.basket.dto.BasketAddDto;
 import solid.backend.payment.basket.dto.BasketListDto;
 import solid.backend.payment.basket.dto.BasketProductDto;
@@ -22,6 +26,8 @@ public class BasketQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
     QBasket basket = QBasket.basket;
     QMember member = QMember.member;
+    QTravel travel = QTravel.travel;
+    QOrderTravel orderTravel = QOrderTravel.orderTravel;
 
     /**
      * 설명: 장바구니에서 바로 결제하기로 넘어갔을 때 넘겨줄 데이터
@@ -68,7 +74,9 @@ public class BasketQueryRepository {
                         basket.travel.travelStartDt,
                         basket.travel.travelEndDt,
                         basket.travel.travelImg,
-                        basket.basketTravelAmount
+                        basket.basketTravelAmount,
+                        basket.travel.travelLabel,
+                        basket.travel.travelAmount
                 ))
                 .from(basket)
                 .leftJoin(basket.member, member).on(member.memberId.eq(memberId))
@@ -101,5 +109,15 @@ public class BasketQueryRepository {
                 .where(basket.travel.travelId.eq(travelId))
                 .where(member.memberId.eq(memberId))
                 .fetch();
+    }
+
+    public Integer getOrderTravelAmount(Integer travelId) {
+        return jpaQueryFactory.select(
+                        orderTravel.id.travelId.count().intValue()
+                )
+                .from(travel)
+                .leftJoin(orderTravel).on(travel.travelId.eq(travelId))
+                .groupBy(travel.travelId)
+                .fetch().getFirst();
     }
 }

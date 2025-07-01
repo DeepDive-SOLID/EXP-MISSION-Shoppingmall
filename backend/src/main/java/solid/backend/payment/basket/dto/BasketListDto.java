@@ -20,4 +20,7 @@ public class BasketListDto {
     private String travelImg;
     private Integer basketTravelAmount;
     private List<BasketProductDto> basketProducts;
+    private String travelLabel;
+    private Integer travelAmount;
+    private Integer reservedCount;
 }

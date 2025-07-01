@@ -105,6 +105,7 @@ public class BasketServiceImpl implements BasketService {
         List<BasketListDto> list = basketQueryRepository.getListBasket(basketMemberDto.getMemberId());
 
         list.forEach(items -> {
+                    items.setReservedCount(basketQueryRepository.getOrderTravelAmount(items.getTravelId()));
                     items.setBasketProducts(basketQueryRepository.getListProduct(basketMemberDto.getMemberId(), items.getTravelId()));
                     items.setTravelImg(fileManager.getFileUrl(items.getTravelImg()));
                 }
