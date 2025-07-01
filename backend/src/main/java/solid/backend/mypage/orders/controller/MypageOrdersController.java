@@ -83,7 +83,7 @@ public class MypageOrdersController {
      * @return ResponseEntity<String>
      */
     @ResponseBody
-    @PostMapping("/updOrdersReviewDto")
+    @PutMapping("/updOrdersReviewDto")
     public ResponseEntity<String> updOrdersReviewDto(@RequestBody MypageOrdersReviewUpdDto reviewDto) {
         try {
             mypageOrdersService.updOrdersReviewDto(reviewDto);

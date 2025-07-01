@@ -358,7 +358,7 @@ param : MypageOrdersReviewIdDto(reviewIds)
 return : MypageOrdersReviewDto
 
 [리뷰 정보 수정]  
-HTTP method : POST  
+HTTP method : PUT  
 HTTP request URL : /mypage/orders/updOrdersReviewDto  
 param : MypageOrdersReviewUpdDto(reviewDto)  
 return : ResponseEntity(String)
