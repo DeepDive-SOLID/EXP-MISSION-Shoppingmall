@@ -43,7 +43,7 @@ public class HomeController {
      */
     @ResponseBody
     @GetMapping("/detail-page-reviews")
-    public List<HomeReviewDto> getTravelDetailPageReviews(@RequestParam Integer travelId) {
+    public List<HomeReviewDto> getTravelDetailPageReviews(@RequestParam("travelId") Integer travelId) {
         return homeService.getTravelDetailPageReviews(travelId);
     }
     /**
