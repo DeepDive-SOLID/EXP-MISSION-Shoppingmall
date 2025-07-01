@@ -286,9 +286,54 @@ const Cart = () => {
 
             <button
               className={styles.payButton}
-              onClick={() => {
+              onClick={async () => {
                 if (selectedItems.length === 0) {
                   alert("결제할 상품을 선택해주세요.");
+                  return;
+                }
+
+                const soldOutItems = selectedItems.filter(
+                  item => item.travelSold,
+                );
+
+                if (soldOutItems.length > 0) {
+                  const soldNames = soldOutItems
+                    .map(item => `- ${item.travelName}`)
+                    .join("\n");
+
+                  alert(
+                    `다음 상품은 품절되어 결제에서 제외되며 장바구니에서도 삭제됩니다:\n\n${soldNames}`,
+                  );
+
+                  const memberId = getCurrentMemberId();
+                  if (!memberId) {
+                    alert("회원 정보가 없습니다. 다시 로그인해주세요.");
+                    return;
+                  }
+
+                  for (const item of soldOutItems) {
+                    try {
+                      await deleteFromBasket({
+                        travelId: item.travelId,
+                        memberId,
+                      });
+                    } catch (err) {
+                      console.error(
+                        `품절 상품 삭제 실패 (travelId=${item.travelId})`,
+                        err,
+                      );
+                    }
+                  }
+
+                  setItems(prev =>
+                    prev.filter(
+                      item =>
+                        !soldOutItems.some(
+                          sold => sold.basketId === item.basketId,
+                        ),
+                    ),
+                  );
+
                   return;
                 }
 
