@@ -54,7 +54,7 @@ export const updOrdersReviewDto = async (review: {
   reviewRate: number;
   reviewComment: string;
 }) => {
-  const response = await axios.post(
+  const response = await axios.put(
     "/mypage/orders/updOrdersReviewDto",
     review,
   );
