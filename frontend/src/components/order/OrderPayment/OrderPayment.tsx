@@ -98,10 +98,14 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
 
     try {
       for (const item of items) {
-        const products = item.basketProducts.map(product => ({
-          productId: product.productId,
-          orderProductAmount: product.basketProductAmount,
-        }));
+        const products = item.basketProducts?.length
+          ? item.basketProducts
+              .filter(p => p.productId !== null && p.productId !== undefined)
+              .map(p => ({
+                productId: p.productId,
+                orderProductAmount: p.basketProductAmount,
+              }))
+          : [];
 
         const order: OrderAddDto = {
           orderAddr: form.address,

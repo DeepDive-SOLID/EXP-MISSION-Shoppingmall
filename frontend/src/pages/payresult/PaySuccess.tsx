@@ -60,13 +60,17 @@ const PaySuccess = () => {
                 <div className={styles.detailRow}>
                   <span>추가 구매 상품</span>
                   <span>
-                    {item.productDetails.map((product, i) => (
-                      <div key={i}>
-                        {product.productName} {product.productCount}개
-                        <br />
-                        <small>{product.total.toLocaleString()}원</small>
-                      </div>
-                    ))}
+                    {(item.productDetails ?? []).length > 0 ? (
+                      item.productDetails.map((product, i) => (
+                        <div key={i}>
+                          {product.productName} {product.productCount}개
+                          <br />
+                          <small>{product.total.toLocaleString()}원</small>
+                        </div>
+                      ))
+                    ) : (
+                      <div>추가 상품 0개</div>
+                    )}
                   </span>
                 </div>
               )}
