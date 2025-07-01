@@ -87,16 +87,6 @@ const Info = ({ travelId, travel }: InfoProps) => {
     ]);
   };
 
-  const updateProductCount = (id: number, delta: number) => {
-    setSelectedProducts(prev =>
-      prev
-        .map(p =>
-          p.id === id ? { ...p, count: Math.max(0, p.count + delta) } : p,
-        )
-        .filter(p => p.count > 0),
-    );
-  };
-
   const removeProduct = (id: number) => {
     setSelectedProducts(prev => prev.filter(p => p.id !== id));
   };
@@ -146,14 +136,26 @@ const Info = ({ travelId, travel }: InfoProps) => {
         }
       }
 
+      console.log("🧺 장바구니에 담을 selectedProducts:", selectedProducts);
+      console.log(
+        "🧺 변환된 products 배열:",
+        selectedProducts.map(item => ({
+          productId: item.id,
+          basketProductAmount: item.count,
+        })),
+      );
+
       await addToBasket({
         memberId,
         travelId: travel.travelId,
         basketTravelAmount: peopleCount,
-        products: selectedProducts.map(item => ({
-          productId: item.id,
-          basketProductAmount: item.count,
-        })),
+        products:
+          selectedProducts && selectedProducts.length > 0
+            ? selectedProducts.map(item => ({
+                productId: item.id,
+                basketProductAmount: item.count,
+              }))
+            : [],
       });
 
       alert("장바구니에 담았습니다!");
@@ -189,10 +191,13 @@ const Info = ({ travelId, travel }: InfoProps) => {
         memberId,
         travelId: travel.travelId,
         basketTravelAmount: peopleCount,
-        products: selectedProducts.map(item => ({
-          productId: item.id,
-          basketProductAmount: item.count,
-        })),
+        products:
+          selectedProducts.length > 0
+            ? selectedProducts.map(item => ({
+                productId: item.id,
+                basketProductAmount: item.count,
+              }))
+            : [],
       });
 
       navigate("/order", {
@@ -289,38 +294,46 @@ const Info = ({ travelId, travel }: InfoProps) => {
         </select>
       </div>
 
-      {selectedProducts.map(item => (
-        <div className={styles.productItem} key={item.id}>
-          <span className={styles.productLabel}>{item.label}</span>
-          <div className={styles.productControl}>
-            <CounterBox
-              label=""
-              count={peopleCount}
-              price={travel.travelPrice}
-              hidePrice={true}
-              onDecrease={() => setPeopleCount(prev => Math.max(1, prev - 1))}
-              onIncrease={() =>
-                setPeopleCount(prev => {
-                  const maxAvailable =
-                    (travel.travelAmount ?? 0) - (travel.reservedCount ?? 0);
-                  return prev < maxAvailable ? prev + 1 : prev;
-                })
-              }
-            />
-
-            <span className={styles.productPrice}>
-              {(item.count * item.price).toLocaleString()}원
-            </span>
-            <button
-              className={styles.removeButton}
-              onClick={() => removeProduct(item.id)}
-              aria-label={`${item.label} 삭제`}
-            >
-              x
-            </button>
+      {selectedProducts.length > 0 &&
+        selectedProducts.map(item => (
+          <div className={styles.productItem} key={item.id}>
+            <span className={styles.productLabel}>{item.label}</span>
+            <div className={styles.productControl}>
+              <CounterBox
+                label=""
+                count={item.count}
+                price={item.price}
+                hidePrice={true}
+                onDecrease={() =>
+                  setSelectedProducts(prev =>
+                    prev.map(p =>
+                      p.id === item.id
+                        ? { ...p, count: Math.max(1, p.count - 1) }
+                        : p,
+                    ),
+                  )
+                }
+                onIncrease={() =>
+                  setSelectedProducts(prev =>
+                    prev.map(p =>
+                      p.id === item.id ? { ...p, count: p.count + 1 } : p,
+                    ),
+                  )
+                }
+              />
+              <span className={styles.productPrice}>
+                {(item.count * item.price).toLocaleString()}원
+              </span>
+              <button
+                className={styles.removeButton}
+                onClick={() => removeProduct(item.id)}
+                aria-label={`${item.label} 삭제`}
+              >
+                x
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
 
       <div className={styles.personItem}>
         <span className={styles.productLabel}>인원</span>

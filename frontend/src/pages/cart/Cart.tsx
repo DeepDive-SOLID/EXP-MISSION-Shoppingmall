@@ -23,9 +23,15 @@ const Cart = () => {
         const res = await fetchBasketList(memberId);
         console.log("서버 응답:", res);
 
-        const withChecked = res.map(item => ({ ...item, checked: false }));
+        const cleaned = res.map(item => ({
+          ...item,
+          basketProducts: (item.basketProducts || []).filter(
+            p => p.productId !== null && p.productName !== null,
+          ),
+          checked: false,
+        }));
 
-        setItems(withChecked);
+        setItems(cleaned);
       } catch (err) {
         console.error("장바구니 로딩 실패:", err);
       }
@@ -188,11 +194,25 @@ const Cart = () => {
                     </button>
                   </div>
 
-                  <div className={styles.extraAndPrice}>
-                    <div className={styles.extra}>
-                      <p className={styles.extraTitle}>추가 구매 내역</p>
-                      {item.basketProducts && item.basketProducts.length > 0 ? (
-                        item.basketProducts.map((product, index) => (
+                  <div
+                    className={styles.extraAndPrice}
+                    style={{
+                      flexDirection:
+                        item.basketProducts.length > 0 ? "row" : "column",
+                      alignItems:
+                        item.basketProducts.length > 0
+                          ? "flex-start"
+                          : "flex-end",
+                      justifyContent:
+                        item.basketProducts.length > 0
+                          ? "space-between"
+                          : "initial",
+                    }}
+                  >
+                    {item.basketProducts && item.basketProducts.length > 0 && (
+                      <div className={styles.extra}>
+                        <p className={styles.extraTitle}>추가 구매 내역</p>
+                        {item.basketProducts.map((product, index) => (
                           <div key={index} className={styles.extraItem}>
                             <CounterBox
                               label={product.productName ?? ""}
@@ -214,11 +234,9 @@ const Cart = () => {
                               }
                             />
                           </div>
-                        ))
-                      ) : (
-                        <p className={styles.noExtra}>추가 구매 없음</p>
-                      )}
-                    </div>
+                        ))}
+                      </div>
+                    )}
 
                     <div className={styles.summary}>
                       <p>총 합계</p>
