@@ -8,15 +8,14 @@ import solid.backend.common.FileManager;
 import solid.backend.entity.*;
 import solid.backend.jpaRepository.*;
 import solid.backend.payment.payment.dto.*;
-import solid.backend.payment.payment.repository.PaymentQueryRepository;
+import solid.backend.payment.payment.repository.PaymentOrderQueryRepository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class PaymentServiceImpl implements PaymentService {
+public class PaymentOrderServiceImpl implements PaymentOrderService {
 
     private final OrdersRepository ordersRepository;
     private final MemberRepository memberRepository;
@@ -25,7 +24,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final ProductRepository productRepository;
     private final OrderTravelRepository orderTravelRepository;
     private final OrderProductRepository orderProductRepository;
-    private final PaymentQueryRepository paymentQueryRepository;
+    private final PaymentOrderQueryRepository paymentOrderQueryRepository;
     private final CardRepository cardRepository;
     private final FileManager fileManager;
     private final AESUtil aesUtil;
@@ -128,7 +127,7 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Override
     public List<PaymentCardDto> getPaymentCardInfo(MemberDto memberDto) {
-        List<PaymentCardDto> list = paymentQueryRepository.PaymentCardInfo(memberDto);
+        List<PaymentCardDto> list = paymentOrderQueryRepository.PaymentCardInfo(memberDto);
         list.forEach(items -> {
             String cardNum = aesUtil.decrypt(items.getPaymentNum());
             items.setPaymentNum(cardNum);
@@ -156,7 +155,7 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Override
     public OrderMemberDto getOrderMemberInfo(MemberDto memberDto) {
-        return paymentQueryRepository.getOrderMemberInfo(memberDto);
+        return paymentOrderQueryRepository.getOrderMemberInfo(memberDto);
     }
 
     /**

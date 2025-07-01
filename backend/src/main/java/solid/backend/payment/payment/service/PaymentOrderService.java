@@ -5,7 +5,7 @@ import solid.backend.payment.payment.dto.*;
 
 import java.util.List;
 
-public interface PaymentService {
+public interface PaymentOrderService {
 
     /**
      * 설명: 주문(결제 성공 시) 저장, retrun Orders는 연관된 테이블 저장을 위함

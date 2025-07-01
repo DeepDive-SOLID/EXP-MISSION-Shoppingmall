@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class PaymentQueryRepository {
+public class PaymentOrderQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 

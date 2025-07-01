@@ -7,16 +7,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import solid.backend.entity.Orders;
 import solid.backend.payment.payment.dto.*;
-import solid.backend.payment.payment.service.PaymentService;
+import solid.backend.payment.payment.service.PaymentOrderService;
 
 import java.util.List;
 
 @Controller
 @RequestMapping("/payment")
 @RequiredArgsConstructor
-public class PaymentController {
+public class PaymentOrderController {
 
-    private final PaymentService paymentService;
+    private final PaymentOrderService paymentOrderService;
 
     /**
      * 설명: 주문(결제완료) 저장
@@ -27,13 +27,13 @@ public class PaymentController {
     @PostMapping("/save")
     public ResponseEntity<String> addOrder(@RequestBody OrderAddDto orderAddDto) {
         try {
-            Orders orders = paymentService.saveOrders(orderAddDto);
-            paymentService.saveOrdersTravel(orderAddDto, orders);
+            Orders orders = paymentOrderService.saveOrders(orderAddDto);
+            paymentOrderService.saveOrdersTravel(orderAddDto, orders);
 
             if (!orderAddDto.getProducts().isEmpty()) {
-                paymentService.saveOrdersProduct(orderAddDto, orders);
+                paymentOrderService.saveOrdersProduct(orderAddDto, orders);
             }
-            paymentService.updateTravelAmount(orderAddDto.getTravelId(), orderAddDto.getOrderTravelAmount());
+            paymentOrderService.updateTravelAmount(orderAddDto.getTravelId(), orderAddDto.getOrderTravelAmount());
             return ResponseEntity.ok("SUCCESS");
         } catch (Exception e) {
             e.printStackTrace();
@@ -49,7 +49,7 @@ public class PaymentController {
     @ResponseBody
     @PostMapping(value = "/card-info")
     public List<PaymentCardDto> getPaymentCardInfo(@RequestBody MemberDto memberDto) {
-        return paymentService.getPaymentCardInfo(memberDto);
+        return paymentOrderService.getPaymentCardInfo(memberDto);
     }
 
     /**
@@ -61,7 +61,7 @@ public class PaymentController {
     @PostMapping("/add-card")
     public ResponseEntity<String> addPaymentCard(@RequestBody PaymentCardAddDto paymentCardAddDto) {
         try {
-            paymentService.addPaymentCard(paymentCardAddDto);
+            paymentOrderService.addPaymentCard(paymentCardAddDto);
             return ResponseEntity.ok("SUCCESS");
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,6 +77,6 @@ public class PaymentController {
     @ResponseBody
     @PostMapping("/member-info")
     public OrderMemberDto getOrderMemberInfo(@RequestBody MemberDto memberDto) {
-        return paymentService.getOrderMemberInfo(memberDto);
+        return paymentOrderService.getOrderMemberInfo(memberDto);
     }
 }
