@@ -248,11 +248,16 @@ const Cart = () => {
 
             <button
               className={styles.payButton}
-              onClick={() =>
+              onClick={() => {
+                if (selectedItems.length === 0) {
+                  alert("결제할 상품을 선택해주세요.");
+                  return;
+                }
+
                 navigate("/order", {
                   state: { selectedItems },
-                })
-              }
+                });
+              }}
             >
               결제하기
             </button>
