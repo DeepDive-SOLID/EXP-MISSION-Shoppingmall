@@ -42,7 +42,7 @@ public class HomeQueryRepository {
                         travel.travelImg,
                         review.reviewRate.avg().doubleValue(),
                         review.count().intValue(),
-                        orderTravel.id.travelId.count().intValue(),
+                        orderTravel.orderTravelAmount.sum().intValue(),
                         travel.travelAmount
                 ))
                 .from(travel)
@@ -73,7 +73,7 @@ public class HomeQueryRepository {
                         travel.travelImg,
                         review.reviewRate.avg().doubleValue(),
                         review.count().intValue(),
-                        orderTravel.id.travelId.count().intValue(),
+                        orderTravel.orderTravelAmount.sum().intValue(),
                         travel.travelAmount
                 ))
                 .from(travel)

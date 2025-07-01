@@ -113,11 +113,12 @@ public class BasketQueryRepository {
 
     public Integer getOrderTravelAmount(Integer travelId) {
         return jpaQueryFactory.select(
-                        orderTravel.id.travelId.count().intValue()
+                        orderTravel.orderTravelAmount.sum().intValue()
                 )
                 .from(travel)
                 .leftJoin(orderTravel).on(travel.travelId.eq(travelId))
                 .groupBy(travel.travelId)
+                .where(travel.travelId.eq(travelId))
                 .fetch().getFirst();
     }
 }
