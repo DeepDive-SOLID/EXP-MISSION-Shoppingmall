@@ -14,6 +14,7 @@ import solid.backend.jpaRepository.TravelRepository;
 import solid.backend.payment.basket.dto.BasketAddDto;
 import solid.backend.payment.basket.dto.BasketListDto;
 import solid.backend.payment.basket.dto.BasketMemberDto;
+import solid.backend.payment.basket.dto.BasketProductDto;
 import solid.backend.payment.basket.repository.BasketQueryRepository;
 
 import java.util.List;
@@ -47,21 +48,37 @@ public class BasketServiceImpl implements BasketService {
      *
      * @param basketAddDto
      */
+    @Transactional
     @Override
     public void save(BasketAddDto basketAddDto) {
+        List<BasketProductDto> list = basketAddDto.getProducts();
+        if (!list.isEmpty()) {
+            list.forEach(items -> {
+                Basket basket = getBasket(basketAddDto);
+                basket.setProduct(productRepository.findById(items.getProductId()).orElseThrow(() -> new IllegalArgumentException("해당 하는 물품이 없습니다.")));
+                basket.setBasketProductAmount(items.getBasketProductAmount());
+                basketRepository.save(basket);
+            });
+        } else {
+            Basket basket = getBasket(basketAddDto);
+            basket.setProduct(null);
+            basket.setBasketProductAmount(null);
+            basketRepository.save(basket);
+        }
+    }
+
+    /**
+     * 설명: 중복 로직 메서드화
+     * @param basketAddDto
+     * @return Basket
+     */
+    private Basket getBasket(BasketAddDto basketAddDto) {
         Basket basket = new Basket();
         basket.setMember(memberRepository.findById(basketAddDto.getMemberId()).orElseThrow(() -> new IllegalArgumentException("해당 하는 유저가 없습니다.")));
         basket.setTravel(travelRepository.findById(basketAddDto.getTravelId()).orElseThrow(() -> new IllegalArgumentException("해당 하는 상품이 없습니다.")));
         basket.setBasketTravelAmount(basketAddDto.getBasketTravelAmount());
-        if (basketAddDto.getProductId() != null) {
-            basket.setProduct(productRepository.findById(basketAddDto.getProductId()).orElseThrow(() -> new IllegalArgumentException("해당 하는 물품이 없습니다.")));
-            basket.setBasketProductAmount(basketAddDto.getBasketProductAmount());
-        } else {
-            basket.setProduct(null);
-            basket.setBasketProductAmount(null);
-        }
 
-        basketRepository.save(basket);
+        return basket;
     }
 
     /**
