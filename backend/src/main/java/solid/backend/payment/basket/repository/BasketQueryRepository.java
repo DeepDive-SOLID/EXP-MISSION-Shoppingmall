@@ -92,7 +92,7 @@ public class BasketQueryRepository {
                         basket.product.productId,
                         basket.product.productName,
                         basket.product.productPrice,
-                        basket.basketTravelAmount
+                        basket.basketProductAmount
                 ))
                 .from(basket)
                 .leftJoin(basket.member, member).on(member.memberId.eq(memberId))
