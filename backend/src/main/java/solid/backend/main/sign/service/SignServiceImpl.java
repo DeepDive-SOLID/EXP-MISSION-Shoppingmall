@@ -57,6 +57,16 @@ public class SignServiceImpl implements SignService {
     }
 
     /**
+     * 설명: 회원가입 이메일 중복 확인
+     * @param memberEmail
+     * @return Boolean (중복이면 true, 아니면 false)
+     */
+    @Override
+    public Boolean isDuplicatedEmail(String memberEmail) {
+        return signRepository.findByMemberEmail(memberEmail).isPresent();
+    }
+
+    /**
      * 설명: 로그인 시 토큰 발급
      * @param signInDto
      * @return token
