@@ -9,6 +9,7 @@ export interface MypageOrdersListDto {
   travelEndDt: string;
   travelImg: string;
   totalPrice: number;
+  reviewCheck: boolean;
 }
 
 export interface MypageOrdersReviewDto {

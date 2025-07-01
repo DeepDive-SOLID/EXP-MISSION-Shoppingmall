@@ -11,6 +11,20 @@
   padding: 24px;
 }
 
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  width: 100%;
+}
+
+.loadingContainer p {
+  font-size: 16px;
+  color: #666;
+  font-weight: 500;
+}
+
 .profileForm {
   background: #fff;
   border-radius: 14px;
@@ -164,6 +178,7 @@
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
+  padding-top: 70px;
 }
 
 .modalOverlay {
@@ -253,6 +268,48 @@
   gap: 12px;
 }
 
+.fileNotice {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.fileNotice p {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.fileNotice p:last-child {
+  margin-bottom: 0;
+}
+
+.fileNotice strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+.fileInput {
+  width: 100%;
+}
+
+.fileInput input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.fileInput input[type="file"]:hover {
+  border-color: #4a6cf7;
+}
+
 .changePictureButton {
   background: #fff;
   color: #666;
@@ -269,4 +326,72 @@
   background: #f8fafc;
   border-color: #4a6cf7;
   color: #4a6cf7;
+}
+
+.emailInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.emailCheckBtn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  height: 27px;
+  min-width: 60px;
+  background: #0085ff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.2s;
+  z-index: 2;
+
+  &:hover {
+    background: #0074d9;
+  }
+
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.emailError {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.emailSuccess {
+  color: #10b981;
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.input {
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+
+  &::placeholder {
+    color: #999;
+  }
+}
+
+.inputWithButton {
+  padding-right: 110px;
 }

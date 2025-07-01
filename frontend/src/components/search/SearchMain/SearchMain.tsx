@@ -61,7 +61,13 @@ const SearchMain = () => {
         <div
           className={styles.searchItem}
           key={item.travelId}
-          onClick={() => navigate(`/detail/${item.travelId}`, { state: item })}
+          onClick={() =>
+            navigate(`/detail/${item.travelId}`, {
+              state: {
+                travel: item,
+              },
+            })
+          }
         >
           <div className={styles.leftSection}>
             <img
