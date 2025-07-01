@@ -43,7 +43,8 @@ public class HomeQueryRepository {
                         review.reviewRate.avg().doubleValue(),
                         review.count().intValue(),
                         orderTravel.orderTravelAmount.sum().intValue(),
-                        travel.travelAmount
+                        travel.travelAmount,
+                        travel.travelSold
                 ))
                 .from(travel)
                 .leftJoin(orderTravel).on(travel.travelId.eq(orderTravel.id.travelId))
@@ -74,7 +75,8 @@ public class HomeQueryRepository {
                         review.reviewRate.avg().doubleValue(),
                         review.count().intValue(),
                         orderTravel.orderTravelAmount.sum().intValue(),
-                        travel.travelAmount
+                        travel.travelAmount,
+                        travel.travelSold
                 ))
                 .from(travel)
                 .leftJoin(orderTravel).on(travel.travelId.eq(orderTravel.id.travelId))

@@ -21,4 +21,5 @@ public class HomeTravelDto {
     private Integer reviewCount;
     private Integer reservedCount;
     private Integer travelAmount;
+    private Boolean travelSold;
 }

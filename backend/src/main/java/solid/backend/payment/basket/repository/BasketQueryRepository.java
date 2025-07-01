@@ -76,7 +76,8 @@ public class BasketQueryRepository {
                         basket.travel.travelImg,
                         basket.basketTravelAmount,
                         basket.travel.travelLabel,
-                        basket.travel.travelAmount
+                        basket.travel.travelAmount,
+                        travel.travelSold
                 ))
                 .from(basket)
                 .leftJoin(basket.member, member).on(member.memberId.eq(memberId))

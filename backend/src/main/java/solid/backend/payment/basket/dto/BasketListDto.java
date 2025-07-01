@@ -23,4 +23,5 @@ public class BasketListDto {
     private String travelLabel;
     private Integer travelAmount;
     private Integer reservedCount;
+    private Boolean travelSold;
 }
