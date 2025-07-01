@@ -136,9 +136,9 @@ const Info = ({ travelId, travel }: InfoProps) => {
         }
       }
 
-      console.log("🧺 장바구니에 담을 selectedProducts:", selectedProducts);
+      console.log("장바구니에 담을 selectedProducts:", selectedProducts);
       console.log(
-        "🧺 변환된 products 배열:",
+        "변환된 products 배열:",
         selectedProducts.map(item => ({
           productId: item.id,
           basketProductAmount: item.count,
@@ -344,8 +344,15 @@ const Info = ({ travelId, travel }: InfoProps) => {
             price={travel.travelPrice}
             hidePrice={true}
             onDecrease={() => setPeopleCount(prev => Math.max(1, prev - 1))}
-            onIncrease={() => setPeopleCount(prev => prev + 1)}
+            onIncrease={() =>
+              setPeopleCount(prev => {
+                const maxCount =
+                  (travel.travelAmount ?? 0) - (travel.reservedCount ?? 0);
+                return prev < maxCount ? prev + 1 : prev;
+              })
+            }
           />
+
           <span className={styles.productPrice}>
             {(peopleCount * travel.travelPrice).toLocaleString()}원
           </span>
