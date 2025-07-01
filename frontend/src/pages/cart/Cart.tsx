@@ -180,6 +180,9 @@ const Cart = () => {
                               travelEndDt: item.travelEndDt,
                               travelImg: item.travelImg,
                               travelPrice: item.travelPrice,
+                              travelAmount: item.travelAmount,
+                              reservedCount: item.reservedCount,
+                              travelLabel: item.travelLabel,
                             },
                             basket: {
                               basketTravelAmount: item.basketTravelAmount,

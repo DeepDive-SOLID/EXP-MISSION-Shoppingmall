@@ -22,6 +22,9 @@ export interface BasketListDto {
   basketTravelAmount: number;
   basketProductAmount: number;
   travelId: number;
+  travelLabel: string;
+  travelAmount: number;
+  reservedCount: number;
   basketProducts: BasketProductDto[];
 }
 
