@@ -1,6 +1,5 @@
 import axios from "axios";
-import { authApi } from "./login/authApi";
-import { isLoggedIn } from "../utils/auth";
+import { isLoggedIn, refreshNewToken } from "../utils/auth";
 
 // axios 기본 설정
 const api = axios.create({
@@ -36,13 +35,11 @@ api.interceptors.response.use(
     if (!isLoggedIn() && !error.config._retry) {
       error.config._retry = true;
 
-      try {
-        const newToken = await authApi.refreshToken();
-        localStorage.setItem("token", newToken);
+      const newToken = await refreshNewToken();
+      if (newToken) {
         error.config.headers["Authorization"] = `Bearer ${newToken}`;
         return api(error.config);
-      } catch {
-        localStorage.removeItem("token");
+      } else {
         window.location.href = "/login";
       }
     }

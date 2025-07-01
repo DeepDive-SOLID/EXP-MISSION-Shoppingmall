@@ -8,14 +8,13 @@ import { ProductDto } from "../../../types/home/homeProduct";
 import { ReviewDto } from "../../../types/home/review";
 import { fetchProducts, fetchReviews } from "../../../api/home/homeApi";
 import { useNavigate, useLocation } from "react-router-dom";
-import { isLoggedIn, getCurrentMemberId } from "../../../utils/auth";
+import { isLoggedIn, getCurrentMemberId, refreshNewToken } from "../../../utils/auth";
 import {
   addToBasket,
   deleteFromBasket,
   fetchBasketList,
 } from "../../../api/basket/basketApi";
 import { BasketProductDto } from "../../../types/basket/basket";
-
 interface InfoProps {
   travelId: number;
   travel: HomeTravelDto;
@@ -110,9 +109,12 @@ const Info = ({ travelId, travel }: InfoProps) => {
 
   const handleCartClick = async () => {
     if (!isLoggedIn()) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
-      return;
+      const newToken = await refreshNewToken();
+      if (!newToken) {
+        alert("로그인이 필요합니다.");
+        navigate("/login");
+        return;
+      }
     }
 
     const memberId = getCurrentMemberId();
@@ -168,9 +170,12 @@ const Info = ({ travelId, travel }: InfoProps) => {
 
   const handleReserveClick = async () => {
     if (!isLoggedIn()) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
-      return;
+      const newToken = await refreshNewToken();
+      if (!newToken) {
+        alert("로그인이 필요합니다.");
+        navigate("/login");
+        return;
+      }
     }
 
     const memberId = getCurrentMemberId();
