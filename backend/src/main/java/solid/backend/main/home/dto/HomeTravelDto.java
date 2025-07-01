@@ -19,5 +19,5 @@ public class HomeTravelDto {
     private String travelImg;
     private Double rate;
     private Integer reviewCount;
-
+    private Integer reservedCount;
 }

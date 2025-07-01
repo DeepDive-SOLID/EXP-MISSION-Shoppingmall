@@ -18,6 +18,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
@@ -30,17 +31,32 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String token = resolveToken(request);
 
-        if (token != null && jwtUtil.validateToken(token)) {
-            String memberId = jwtUtil.getMemberId(token);
-            String authId = jwtUtil.getAuthId(token);
+        try {
+            if (token != null && jwtUtil.validateToken(token)) {
+                // 리프레시 토큰인지 확인
+                String tokenType = jwtUtil.getTokenType(token);
+                if ("refresh".equals(tokenType)) {
+                    log.info("리프레시 토큰 요청입니다. 인증 처리 없이 통과시킵니다.");
+                    filterChain.doFilter(request, response);
+                    return;
+                }
 
-            String role = authId.toUpperCase(); // 스프링 스큐리티 규칙
-            List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+                String memberId = jwtUtil.getMemberId(token);
+                String authId = jwtUtil.getAuthId(token);
 
-            Authentication auth = new UsernamePasswordAuthenticationToken(memberId, null, authorities);
+                String role = authId.toUpperCase(); // 스프링 스큐리티 규칙
+                List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
+                Authentication auth = new UsernamePasswordAuthenticationToken(memberId, null, authorities);
+
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            log.warn("만료된 토큰입니다. 재발급 요청으로 진행될 수 있습니다: {}", e.getMessage());
+        } catch (Exception e) {
+            log.error("JWT 필터 처리 중 예외 발생: {}", e.getMessage());
         }
+
 
         filterChain.doFilter(request, response);
     }

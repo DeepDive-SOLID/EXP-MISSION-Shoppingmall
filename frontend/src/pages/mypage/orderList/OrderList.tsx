@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from "react";
 import styles from "./OrderList.module.scss";
 import { FiPackage, FiTruck, FiCheckCircle, FiXCircle } from "react-icons/fi";
-import Header from "../../../components/common/Header_login/Header";
+import Header from "../../../components/common/Header/Header";
 import Sidebar from "../../../components/common/Sidebar_mypage/Sidebar";
 import dayjs from "dayjs";
 import {
   getOrdersList,
   cancelOrder,
   addOrdersReview,
+  getOrdersReviewDto,
+  updOrdersReviewDto,
 } from "../../../api/mypage/orderApi";
 import { MypageOrdersListDto } from "../../../types/mypage/order";
+import { useAuth } from "../../../contexts/AuthContext";
+import { getMemberProfile } from "../../../api/mypage/memberApi";
+import { MypageMemberProfileDto } from "../../../types/mypage/member";
 
+// 주문 상태 텍스트 반환
 const getStatusText = (status: number) => {
   switch (status) {
     case 0:
@@ -26,6 +32,7 @@ const getStatusText = (status: number) => {
   }
 };
 
+// 주문 상태 아이콘 반환
 const getStatusIcon = (status: number) => {
   switch (status) {
     case 0:
@@ -41,6 +48,7 @@ const getStatusIcon = (status: number) => {
   }
 };
 
+// 주문 상태별 색상 반환
 const getStatusColor = (status: number) => {
   switch (status) {
     case 0:
@@ -57,26 +65,52 @@ const getStatusColor = (status: number) => {
 };
 
 const OrderList = () => {
-  const userName = "사용자";
-  const memberId = "boon";
+  // 사용자 정보 및 상태 관리
+  const { userInfo } = useAuth();
   const [orders, setOrders] = useState<MypageOrdersListDto[]>([]);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedOrder, setSelectedOrder] =
     useState<MypageOrdersListDto | null>(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  // 리뷰 데이터 및 모드(작성/수정) 상태
   const [reviewData, setReviewData] = useState({
+    reviewCode: undefined as number | undefined,
     rating: 5,
     title: "",
     content: "",
     images: [] as string[],
   });
+  const [memberProfile, setMemberProfile] =
+    useState<MypageMemberProfileDto | null>(null);
+  const [isEditReview, setIsEditReview] = useState(false);
 
+  const memberId = userInfo?.memberId;
+
+  // 마이페이지 프로필 정보 불러오기
   useEffect(() => {
-    getOrdersList(memberId)
-      .then(setOrders)
-      .catch(e => {
-        console.error("주문 내역을 불러오지 못했습니다.", e);
-      });
+    const fetchMemberProfile = async () => {
+      if (!memberId) return;
+
+      try {
+        const profile = await getMemberProfile(memberId);
+        setMemberProfile(profile);
+      } catch (error) {
+        console.error("사용자 프로필 정보를 가져오는데 실패했습니다:", error);
+      }
+    };
+
+    fetchMemberProfile();
+  }, [memberId]);
+
+  // 주문 내역 불러오기
+  useEffect(() => {
+    if (memberId) {
+      getOrdersList(memberId)
+        .then(setOrders)
+        .catch(e => {
+          console.error("주문 내역을 불러오지 못했습니다.", e);
+        });
+    }
   }, [memberId]);
 
   const today = dayjs().startOf("day");
@@ -102,24 +136,60 @@ const OrderList = () => {
   let noticeMessage;
   if (upcoming) {
     if (daysLeft === 0) {
-      noticeMessage = `${userName}님 <b>오늘</b> 여행이 예정되어 있습니다!`;
+      noticeMessage = `${memberProfile?.memberName || "사용자"} 님 <b>오늘</b> 여행이 예정되어 있습니다!`;
     } else {
-      noticeMessage = `${userName}님 <b>${daysLeft}일 뒤</b> 여행이 예정되어 있습니다!`;
+      noticeMessage = `${memberProfile?.memberName || "사용자"} 님 <b>${daysLeft}일 뒤</b> 여행이 예정되어 있습니다!`;
     }
   } else {
     noticeMessage = "예정된 여행이 없습니다!";
   }
 
+  // 예약취소 모달 열기
   const handleCancelOrder = (order: MypageOrdersListDto) => {
     setSelectedOrder(order);
     setShowCancelModal(true);
   };
 
-  const handleReviewOrder = (order: MypageOrdersListDto) => {
+  // 리뷰 작성/수정 모달 열기 (기존 리뷰가 있으면 데이터 불러옴)
+  const handleReviewOrder = async (order: MypageOrdersListDto) => {
     setSelectedOrder(order);
+    if (order.reviewCheck && memberId) {
+      setIsEditReview(true);
+      try {
+        const data = await getOrdersReviewDto({
+          travelId: order.orderTravelId,
+          memberId: memberId,
+        });
+        setReviewData({
+          reviewCode: data.reviewCode,
+          rating: data.reviewRate,
+          title: "",
+          content: data.reviewComment,
+          images: [],
+        });
+      } catch {
+        setReviewData({
+          reviewCode: undefined,
+          rating: 5,
+          title: "",
+          content: "",
+          images: [],
+        });
+      }
+    } else {
+      setIsEditReview(false);
+      setReviewData({
+        reviewCode: undefined,
+        rating: 5,
+        title: "",
+        content: "",
+        images: [],
+      });
+    }
     setShowReviewModal(true);
   };
 
+  // 예약취소 확정
   const confirmCancelOrder = async () => {
     if (selectedOrder) {
       try {
@@ -144,11 +214,13 @@ const OrderList = () => {
     }
   };
 
+  // 모달 닫기 및 상태 초기화
   const closeModal = () => {
     setShowCancelModal(false);
     setShowReviewModal(false);
     setSelectedOrder(null);
     setReviewData({
+      reviewCode: undefined,
       rating: 5,
       title: "",
       content: "",
@@ -156,35 +228,59 @@ const OrderList = () => {
     });
   };
 
+  // 리뷰 작성/수정 제출
   const handleReviewSubmit = async () => {
     if (reviewData.content.trim().length < 10) {
       alert("내용을 최소 10자 이상 입력해주세요.");
       return;
     }
-    if (!selectedOrder) return;
+    if (!selectedOrder || !memberId) return;
 
     try {
-      const result = await addOrdersReview({
-        travelId: selectedOrder.orderTravelId,
-        memberId: memberId,
-        reviewRate: reviewData.rating,
-        reviewComment: reviewData.content,
-      });
-      if (result === "SUCCESS") {
-        alert("리뷰가 성공적으로 등록되었습니다!");
-        closeModal();
+      let result;
+      if (isEditReview) {
+        result = await updOrdersReviewDto({
+          reviewCode: reviewData.reviewCode!,
+          reviewRate: reviewData.rating,
+          reviewComment: reviewData.content,
+        });
       } else {
-        alert("리뷰 등록에 실패했습니다.");
+        result = await addOrdersReview({
+          travelId: selectedOrder.orderTravelId,
+          memberId: memberId,
+          reviewRate: reviewData.rating,
+          reviewComment: reviewData.content,
+        });
+      }
+      if (result === "SUCCESS") {
+        alert(
+          isEditReview
+            ? "리뷰가 성공적으로 수정되었습니다!"
+            : "리뷰가 성공적으로 등록되었습니다!",
+        );
+        window.location.reload();
+      } else {
+        alert(
+          isEditReview
+            ? "리뷰 수정에 실패했습니다."
+            : "리뷰 등록에 실패했습니다.",
+        );
       }
     } catch {
-      alert("리뷰 등록 중 오류가 발생했습니다.");
+      alert(
+        isEditReview
+          ? "리뷰 수정 중 오류가 발생했습니다."
+          : "리뷰 등록 중 오류가 발생했습니다.",
+      );
     }
   };
 
+  // 별점 변경 핸들러
   const handleRatingChange = (rating: number) => {
     setReviewData(prev => ({ ...prev, rating }));
   };
 
+  // 리뷰 입력값 변경 핸들러
   const handleInputChange = (field: "title" | "content", value: string) => {
     setReviewData(prev => ({ ...prev, [field]: value }));
   };
@@ -256,24 +352,37 @@ const OrderList = () => {
                       </div>
                     </div>
 
-                    {(order.orderStatus === 3 || order.orderStatus === 0) && (
+                    {((order.orderStatus === 3 &&
+                      dayjs(order.travelStartDt, "YYYY-MM-DD")
+                        .startOf("day")
+                        .diff(today, "day") < 0) ||
+                      (order.orderStatus === 0 &&
+                        dayjs(order.travelStartDt, "YYYY-MM-DD")
+                          .startOf("day")
+                          .diff(today, "day") >= 0)) && (
                       <div className={styles.orderActions}>
-                        {order.orderStatus === 3 && (
-                          <button
-                            className={styles.actionButton}
-                            onClick={() => handleReviewOrder(order)}
-                          >
-                            리뷰 작성
-                          </button>
-                        )}
-                        {order.orderStatus === 0 && (
-                          <button
-                            className={styles.actionButton}
-                            onClick={() => handleCancelOrder(order)}
-                          >
-                            예약취소
-                          </button>
-                        )}
+                        {order.orderStatus === 3 &&
+                          dayjs(order.travelStartDt, "YYYY-MM-DD")
+                            .startOf("day")
+                            .diff(today, "day") < 0 && (
+                            <button
+                              className={styles.actionButton}
+                              onClick={() => handleReviewOrder(order)}
+                            >
+                              {order.reviewCheck ? "리뷰 수정" : "리뷰 작성"}
+                            </button>
+                          )}
+                        {order.orderStatus === 0 &&
+                          dayjs(order.travelStartDt, "YYYY-MM-DD")
+                            .startOf("day")
+                            .diff(today, "day") >= 0 && (
+                            <button
+                              className={styles.actionButton}
+                              onClick={() => handleCancelOrder(order)}
+                            >
+                              예약취소
+                            </button>
+                          )}
                       </div>
                     )}
                   </div>
@@ -345,7 +454,7 @@ const OrderList = () => {
               onClick={handleReviewSubmit}
               disabled={reviewData.content.trim().length < 10}
             >
-              리뷰 제출
+              {isEditReview ? "리뷰 수정" : "리뷰 제출"}
             </button>
           </div>
         </div>

@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./SignIn.module.scss";
 import { logo } from "../../../assets/index";
 import { authApi } from "../../../api/login/authApi";
+import { setToken } from "../../../utils/auth";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const EyeIcon = ({ visible }: { visible: boolean }) =>
   visible ? (
@@ -38,6 +40,7 @@ const EyeIcon = ({ visible }: { visible: boolean }) =>
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     memberId: "",
     memberPw: "",
@@ -93,10 +96,12 @@ const SignIn: React.FC = () => {
       const token = await authApi.signIn(formData);
 
       // JWT 토큰을 localStorage에 저장
-      localStorage.setItem("token", token);
+      setToken(token);
+
+      // Context의 로그인 상태 업데이트
+      login();
 
       // 로그인 성공 시 홈페이지로 이동
-      alert("로그인에 성공했습니다!");
       navigate("/");
     } catch (error: unknown) {
       console.error("로그인 오류:", error);
@@ -136,7 +141,12 @@ const SignIn: React.FC = () => {
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.signInContainer}>
-        <img src={logo} alt="로고" className={styles.logo} />
+        <img
+          src={logo}
+          alt="로고"
+          className={styles.logo}
+          onClick={() => navigate("/")}
+        />
         <h1 className={styles.title}>계정에 로그인하세요</h1>
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>

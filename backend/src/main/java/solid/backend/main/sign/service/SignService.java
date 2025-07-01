@@ -1,5 +1,6 @@
 package solid.backend.main.sign.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import solid.backend.main.sign.dto.*;
 
 
@@ -17,10 +18,17 @@ public interface SignService {
     Boolean isDuplicatedId(String memberId);
 
     /**
+     * 설명: 회원가입 이메일 중복 확인
+     * @param memberEmail
+     */
+    Boolean isDuplicatedEmail(String memberEmail);
+
+    /**
      * 설명: 로그인
      * @param signInDto
+     * @param request
      */
-    String login(SignInDto signInDto);
+    String login(SignInDto signInDto, HttpServletRequest request);
 
     /**
      * 설명: 아이디 찾기

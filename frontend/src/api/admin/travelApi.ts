@@ -93,7 +93,7 @@ const travelApi = {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return response.data;
   },

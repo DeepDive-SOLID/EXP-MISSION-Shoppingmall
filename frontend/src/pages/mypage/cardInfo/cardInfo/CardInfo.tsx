@@ -1,76 +1,72 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CardInfo.module.scss";
 import { FiCreditCard, FiPlus } from "react-icons/fi";
-import Header from "../../../../components/common/Header_login/Header";
+import Header from "../../../../components/common/Header/Header";
 import Sidebar from "../../../../components/common/Sidebar_mypage/Sidebar";
-import samsungCard from "../../../../assets/images/samsung.jpg";
-import kbCard from "../../../../assets/images/kb.jpg";
-import nhCard from "../../../../assets/images/nh.jpg";
-import kakaoCard from "../../../../assets/images/kakao.jpg";
-
-interface CardItem {
-  cardId: string;
-  cardName: string;
-  cardNumber: string;
-  expiryDate: string;
-  cardImage: string;
-}
-
-const initialCards: CardItem[] = [
-  {
-    cardId: "1",
-    cardName: "삼성카드",
-    cardNumber: "3434-3412-1234-1234",
-    expiryDate: "09/27",
-    cardImage: samsungCard,
-  },
-  {
-    cardId: "2",
-    cardName: "국민카드",
-    cardNumber: "3434-3456-5678-5678",
-    expiryDate: "01/27",
-    cardImage: kbCard,
-  },
-  {
-    cardId: "3",
-    cardName: "농협카드",
-    cardNumber: "3020-8123-4567-8901",
-    expiryDate: "08/26",
-    cardImage: nhCard,
-  },
-  {
-    cardId: "4",
-    cardName: "카카오뱅크",
-    cardNumber: "3333-1234-5678-9012",
-    expiryDate: "10/27",
-    cardImage: kakaoCard,
-  },
-];
+import { getPaymentList, deleteCard } from "../../../../api/mypage/cardApi";
+import { CardInfo } from "../../../../types/mypage/card";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 const CardInfo = () => {
   const navigate = useNavigate();
-  const [cards, setCards] = useState(initialCards);
+  const { userInfo } = useAuth(); // 현재 로그인한 사용자 정보 가져오기
+  const [cards, setCards] = useState<CardInfo[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedCard, setSelectedCard] = useState<CardItem | null>(null);
+  const [selectedCard, setSelectedCard] = useState<CardInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // 현재 로그인한 사용자의 memberId 사용
+  const memberId = userInfo?.memberId;
+
+  // 카드 리스트 조회
+  useEffect(() => {
+    const fetchCards = async () => {
+      if (!memberId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const paymentList = await getPaymentList(memberId);
+        setCards(paymentList);
+      } catch (error) {
+        console.error("카드 리스트 조회 에러:", error);
+        setCards([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCards();
+  }, [memberId]);
 
   const handleAddCard = () => {
     navigate("/mypage/card-add");
   };
 
-  const handleDeleteCard = (card: CardItem) => {
+  const handleDeleteCard = (card: CardInfo) => {
     setSelectedCard(card);
     setShowDeleteModal(true);
   };
 
-  const confirmDeleteCard = () => {
+  const confirmDeleteCard = async () => {
     if (selectedCard) {
-      setCards(prevCards =>
-        prevCards.filter(card => card.cardId !== selectedCard.cardId),
-      );
-      setShowDeleteModal(false);
-      setSelectedCard(null);
-      alert("카드가 삭제되었습니다.");
+      try {
+        const res = await deleteCard(selectedCard.paymentId);
+        if (res === "SUCCESS") {
+          setCards(prevCards =>
+            prevCards.filter(card => card.paymentId !== selectedCard.paymentId),
+          );
+          setShowDeleteModal(false);
+          setSelectedCard(null);
+          alert("카드가 삭제되었습니다.");
+        } else {
+          alert("카드 삭제에 실패했습니다.");
+        }
+      } catch {
+        alert("카드 삭제 중 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -80,15 +76,50 @@ const CardInfo = () => {
   };
 
   const maskCardNumber = (cardNumber: string) => {
-    // 4자리-4자리-4자리-4자리 형식
-    const parts = cardNumber.split("-");
-
-    if (parts.length !== 4) {
-      return cardNumber; // 형식이 맞지 않으면 원본 반환
+    // 문자열을 4자리씩 나누기
+    if (cardNumber.length !== 16) {
+      return cardNumber; // 16자리가 아니면 원본 반환
     }
+
+    const parts = [
+      cardNumber.substring(0, 4),
+      cardNumber.substring(4, 8),
+      cardNumber.substring(8, 12),
+      cardNumber.substring(12, 16),
+    ];
 
     return `${parts[0]}-${parts[1].substring(0, 2)}**-****-****`;
   };
+
+  const formatExpiryDate = (expiryDate: string) => {
+    // "YYYY-MM" 형식을 "MM/YY" 형식으로 변환
+    if (expiryDate && expiryDate.includes("-")) {
+      const [year, month] = expiryDate.split("-");
+      return `${month}/${year.substring(2)}`;
+    }
+    return expiryDate;
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.cardInfoPage}>
+        <Header />
+        <div className={styles.mainContent}>
+          <Sidebar />
+          <div className={styles.cardInfoContainer}>
+            <div className={styles.cardInfoForm}>
+              <div className={styles.pageHeader}>
+                <h1>카드 관리</h1>
+              </div>
+              <div className={styles.loadingState}>
+                <p>카드 정보를 불러오는 중...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.cardInfoPage}>
@@ -118,19 +149,21 @@ const CardInfo = () => {
                 </div>
               ) : (
                 cards.map(card => (
-                  <div key={card.cardId} className={styles.cardItem}>
+                  <div key={card.paymentId} className={styles.cardItem}>
                     <img
-                      src={card.cardImage}
-                      alt={card.cardName}
+                      src={card.paymentImg}
+                      alt={card.paymentName}
                       className={styles.cardImage}
                     />
                     <div className={styles.cardDetails}>
-                      <span className={styles.cardName}>{card.cardName}</span>
+                      <span className={styles.cardName}>
+                        {card.paymentName}
+                      </span>
                       <span className={styles.cardNumber}>
-                        {maskCardNumber(card.cardNumber)}
+                        {maskCardNumber(card.paymentNum)}
                       </span>
                       <span className={styles.cardExpiry}>
-                        ({card.expiryDate})
+                        ({formatExpiryDate(card.paymentEndDt)})
                       </span>
                     </div>
                     <div className={styles.cardActions}>
@@ -154,7 +187,8 @@ const CardInfo = () => {
           <div className={styles.modalContent}>
             <h2>카드 삭제</h2>
             <p className={styles.deleteWarning}>
-              <strong>{selectedCard.cardName}</strong> 카드를 삭제하시겠습니까?
+              <strong>{selectedCard.paymentName}</strong> 카드를
+              삭제하시겠습니까?
             </p>
             <div className={styles.modalActions}>
               <button className={styles.cancelButton} onClick={closeModal}>
