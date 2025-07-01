@@ -23,6 +23,7 @@ public class SecurityConfig {
                         .requestMatchers("/main/sign/**", "/home/**").permitAll() // 메인 홈, 로그인 관련 페이지는 모두 접근 허용
                         .requestMatchers("/admin/member/**").hasAuthority("ADMIN") // 관리자 권한인 경우 admin api 호출가능
                         .requestMatchers("/admin/member/travel/**", "/admin/member/product/**").hasAuthority("MANAGER")
+                        .requestMatchers("/token/refresh").permitAll() // 토큰 재발급 api
                         .requestMatchers("/solid/**").permitAll() // 상품 이미지 파일 경로도 허용해줘야됨.
                         //.requestMatchers("/main/mypage/member").hasAuthority("USER") // 사용자 권한 예시
                         .anyRequest().authenticated()

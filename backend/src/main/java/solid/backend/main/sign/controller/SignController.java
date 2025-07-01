@@ -1,5 +1,6 @@
 package solid.backend.main.sign.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,9 +64,9 @@ public class SignController {
      * @return ResponseEntity<String>
      */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody SignInDto signInDto) {
+    public ResponseEntity<String> login(@RequestBody SignInDto signInDto, HttpServletRequest request) {
         try {
-            String token = signService.login(signInDto);
+            String token = signService.login(signInDto, request);
             return ResponseEntity.ok(token);
         } catch (UsernameNotFoundException | BadCredentialsException e) {
             return ResponseEntity
