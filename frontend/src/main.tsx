@@ -21,6 +21,7 @@ import CardInfo from "./pages/mypage/cardInfo/cardInfo/CardInfo";
 import CardAdd from "./pages/mypage/cardInfo/cardAdd/CardAdd";
 import AddComplete from "./pages/mypage/cardInfo/addComplete/AddComplete";
 import AddFail from "./pages/mypage/cardInfo/addFail/AddFail";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -61,47 +62,91 @@ const router = createBrowserRouter([
       },
       {
         path: "dashboard",
-        element: <Dashboard />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={true}>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "manage-product",
-        element: <ManageProduct />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={true}>
+            <ManageProduct />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "manage-travel",
-        element: <ManageTravel />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={true}>
+            <ManageTravel />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "manage-user",
-        element: <ManageUser />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={true}>
+            <ManageUser />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "manage-order",
-        element: <ManageOrder />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={true}>
+            <ManageOrder />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "mypage/order-list",
-        element: <OrderList />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <OrderList />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "mypage/edit-profile",
-        element: <EditProfile />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <EditProfile />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "mypage/card-info",
-        element: <CardInfo />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <CardInfo />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "mypage/card-add",
-        element: <CardAdd />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <CardAdd />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "mypage/card-add/complete",
-        element: <AddComplete />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <AddComplete />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "mypage/card-add/fail",
-        element: <AddFail />,
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <AddFail />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

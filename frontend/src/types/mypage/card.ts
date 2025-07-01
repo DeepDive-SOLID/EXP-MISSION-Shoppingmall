@@ -2,11 +2,11 @@
 export interface AddCardDto {
   memberId: string;
   paymentName: string;
-  paymentNum: number;
+  paymentNum: string;
   paymentEndDt: string;
   paymentOwner: string;
-  paymentSecurity: number;
-  paymentPw: number;
+  paymentSecurity: string;
+  paymentPw: string;
 }
 
 // 카드 이미지 요청 DTO
@@ -29,11 +29,12 @@ export interface CardInfo {
   paymentId: number;
   memberId: string;
   paymentName: string;
-  paymentNum: number;
+  paymentNum: string;
   paymentEndDt: string;
   paymentOwner: string;
-  paymentSecurity: number;
-  paymentPw: number;
+  paymentSecurity: string;
+  paymentPw: string;
+  paymentImg: string; // 카드 이미지 URL
 }
 
 // API 응답 타입들

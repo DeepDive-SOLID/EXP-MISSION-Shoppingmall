@@ -73,9 +73,13 @@ const SignUp: React.FC = () => {
   const [idChecked, setIdChecked] = useState(false);
   const [idError, setIdError] = useState("");
   const [idSuccess, setIdSuccess] = useState(false);
+  const [emailChecked, setEmailChecked] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [emailSuccess, setEmailSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingId, setIsCheckingId] = useState(false);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
   // 필드별 에러 상태 추가
@@ -118,6 +122,12 @@ const SignUp: React.FC = () => {
       setIdError("");
       setIdSuccess(false);
     }
+
+    if (name === "memberEmail") {
+      setEmailChecked(false);
+      setEmailError("");
+      setEmailSuccess(false);
+    }
   };
 
   // 아이디 중복 확인
@@ -149,6 +159,38 @@ const SignUp: React.FC = () => {
       setIdSuccess(false);
     } finally {
       setIsCheckingId(false);
+    }
+  };
+
+  // 이메일 중복 확인
+  const handleEmailCheck = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!formData.memberEmail) return;
+
+    setIsCheckingEmail(true);
+    setEmailError("");
+    setEmailSuccess(false);
+
+    try {
+      const isDuplicate = await authApi.checkEmail({
+        memberEmail: formData.memberEmail,
+      });
+
+      if (isDuplicate) {
+        setEmailChecked(false);
+        setEmailError("이미 등록된 이메일 입니다.");
+        setEmailSuccess(false);
+      } else {
+        setEmailChecked(true);
+        setEmailError("");
+        setEmailSuccess(true);
+      }
+    } catch (error) {
+      console.error("이메일 중복 확인 오류:", error);
+      setEmailError("이메일 중복 확인 중 오류가 발생했습니다.");
+      setEmailSuccess(false);
+    } finally {
+      setIsCheckingEmail(false);
     }
   };
 
@@ -184,6 +226,8 @@ const SignUp: React.FC = () => {
       errors.memberEmail = "이메일을 입력해주세요";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.memberEmail)) {
       errors.memberEmail = "올바른 이메일 형식을 입력해주세요";
+    } else if (!emailChecked) {
+      errors.memberEmail = "이메일 중복확인을 해주세요";
     }
 
     if (!formData.memberPhone.trim()) {
@@ -288,6 +332,39 @@ const SignUp: React.FC = () => {
             )}
           </div>
           <div className={styles.inputGroup}>
+            <label className={styles.label}>이메일</label>
+            <div className={styles.emailInputWrapper}>
+              <input
+                className={`${styles.input} ${styles.inputWithButton} ${fieldErrors.memberEmail ? styles.inputError : ""}`}
+                type="email"
+                name="memberEmail"
+                placeholder="이메일을 입력해주세요"
+                value={formData.memberEmail}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                className={styles.emailCheckBtn}
+                onClick={handleEmailCheck}
+                disabled={!formData.memberEmail || isCheckingEmail}
+              >
+                {isCheckingEmail ? "확인중..." : "중복확인"}
+              </button>
+            </div>
+            {fieldErrors.memberEmail && (
+              <div className={styles.fieldError}>{fieldErrors.memberEmail}</div>
+            )}
+            {emailError && (
+              <div className={styles.emailError}>{emailError}</div>
+            )}
+            {emailSuccess && (
+              <div className={styles.emailSuccess}>
+                사용 가능한 이메일 입니다.
+              </div>
+            )}
+          </div>
+          <div className={styles.inputGroup}>
             <label className={styles.label}>비밀번호</label>
             <div className={styles.passwordInputWrapper}>
               <input
@@ -316,21 +393,6 @@ const SignUp: React.FC = () => {
               <div className={styles.passwordError}>
                 최소 8자 이상, 숫자와 특수문자 포함
               </div>
-            )}
-          </div>
-          <div className={styles.inputGroup}>
-            <label className={styles.label}>이메일</label>
-            <input
-              className={`${styles.input} ${fieldErrors.memberEmail ? styles.inputError : ""}`}
-              type="email"
-              name="memberEmail"
-              placeholder="이메일을 입력해주세요"
-              value={formData.memberEmail}
-              onChange={handleChange}
-              required
-            />
-            {fieldErrors.memberEmail && (
-              <div className={styles.fieldError}>{fieldErrors.memberEmail}</div>
             )}
           </div>
           <div className={styles.inputGroup}>

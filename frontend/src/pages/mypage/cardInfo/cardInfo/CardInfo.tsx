@@ -2,30 +2,32 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CardInfo.module.scss";
 import { FiCreditCard, FiPlus } from "react-icons/fi";
-import Header from "../../../../components/common/Header_login/Header";
+import Header from "../../../../components/common/Header/Header";
 import Sidebar from "../../../../components/common/Sidebar_mypage/Sidebar";
 import { getPaymentList, deleteCard } from "../../../../api/mypage/cardApi";
-
-interface PaymentListDto {
-  paymentId: number;
-  paymentName: string;
-  paymentNum: number;
-  paymentEndDt: string;
-  paymentImg: string;
-}
+import { CardInfo } from "../../../../types/mypage/card";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 const CardInfo = () => {
   const navigate = useNavigate();
-  const [cards, setCards] = useState<PaymentListDto[]>([]);
+  const { userInfo } = useAuth(); // 현재 로그인한 사용자 정보 가져오기
+  const [cards, setCards] = useState<CardInfo[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedCard, setSelectedCard] = useState<PaymentListDto | null>(null);
+  const [selectedCard, setSelectedCard] = useState<CardInfo | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // 현재 로그인한 사용자의 memberId 사용
+  const memberId = userInfo?.memberId;
 
   // 카드 리스트 조회
   useEffect(() => {
     const fetchCards = async () => {
+      if (!memberId) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const memberId = "boon"; // TODO: 실제 로그인 사용자 정보로 대체
         const paymentList = await getPaymentList(memberId);
         setCards(paymentList);
       } catch (error) {
@@ -37,13 +39,13 @@ const CardInfo = () => {
     };
 
     fetchCards();
-  }, []);
+  }, [memberId]);
 
   const handleAddCard = () => {
     navigate("/mypage/card-add");
   };
 
-  const handleDeleteCard = (card: PaymentListDto) => {
+  const handleDeleteCard = (card: CardInfo) => {
     setSelectedCard(card);
     setShowDeleteModal(true);
   };
@@ -73,18 +75,17 @@ const CardInfo = () => {
     setSelectedCard(null);
   };
 
-  const maskCardNumber = (cardNumber: number) => {
-    // 숫자를 문자열로 변환하고 4자리씩 나누기
-    const cardStr = cardNumber.toString();
-    if (cardStr.length !== 16) {
-      return cardStr; // 16자리가 아니면 원본 반환
+  const maskCardNumber = (cardNumber: string) => {
+    // 문자열을 4자리씩 나누기
+    if (cardNumber.length !== 16) {
+      return cardNumber; // 16자리가 아니면 원본 반환
     }
 
     const parts = [
-      cardStr.substring(0, 4),
-      cardStr.substring(4, 8),
-      cardStr.substring(8, 12),
-      cardStr.substring(12, 16),
+      cardNumber.substring(0, 4),
+      cardNumber.substring(4, 8),
+      cardNumber.substring(8, 12),
+      cardNumber.substring(12, 16),
     ];
 
     return `${parts[0]}-${parts[1].substring(0, 2)}**-****-****`;

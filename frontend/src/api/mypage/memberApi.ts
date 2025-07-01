@@ -44,3 +44,13 @@ export const deleteMemberDto = async (memberId: string): Promise<string> => {
   });
   return response.data;
 };
+
+// 이메일 중복확인 API
+export const checkEmail = async (memberEmail: string): Promise<boolean> => {
+  const response = await axios.post("/mypage/member/checkEmail", memberEmail, {
+    headers: {
+      "Content-Type": "text/plain",
+    },
+  });
+  return response.data;
+};

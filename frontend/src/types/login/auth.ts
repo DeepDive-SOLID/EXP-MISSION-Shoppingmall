@@ -31,6 +31,10 @@ export interface SignUpdPwDto {
   memberPw: string; // 새로운 비밀번호
 }
 
+export interface SignUpCheckEmailDto {
+  memberEmail: string; // 확인할 회원 이메일
+}
+
 export type SignUpResponse = string;
 
 export type SignInResponse = string;
@@ -41,4 +45,6 @@ export type CheckIdEmailResponse = string; // "SUCCESS" or "FAIL"
 
 export type UpdPwResponse = string; // "SUCCESS" or "FAIL"
 
-export type CheckIdResponse = boolean;
+export type CheckIdResponse = boolean; // memberId
+
+export type CheckEmailResponse = boolean; // memberEmail

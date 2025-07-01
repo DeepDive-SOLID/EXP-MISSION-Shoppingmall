@@ -6,12 +6,14 @@ import {
   SignCheckIdEmailDto,
   SignUpdPwDto,
   SignInCheckIdDto,
+  SignUpCheckEmailDto,
   SignUpResponse,
   SignInResponse,
   FindIdResponse,
   CheckIdEmailResponse,
   UpdPwResponse,
   CheckIdResponse,
+  CheckEmailResponse,
 } from "../../types/login/auth";
 
 export const authApi = {
@@ -30,6 +32,12 @@ export const authApi = {
       "/main/sign/login",
       signInDto,
     );
+    return response.data;
+  },
+
+  // 토큰 재발급
+  refreshToken: async (): Promise<string> => {
+    const response = await api.post<string>("/token/refresh");
     return response.data;
   },
 
@@ -71,6 +79,17 @@ export const authApi = {
     const response = await api.post<CheckIdResponse>(
       "/main/sign/checkId",
       signInCheckIdDto,
+    );
+    return response.data;
+  },
+
+  // 이메일 중복 확인
+  checkEmail: async (
+    signUpCheckEmailDto: SignUpCheckEmailDto,
+  ): Promise<CheckEmailResponse> => {
+    const response = await api.post<CheckEmailResponse>(
+      "/main/sign/checkEmail",
+      signUpCheckEmailDto,
     );
     return response.data;
   },
