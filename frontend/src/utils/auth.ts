@@ -28,6 +28,11 @@ export const isLoggedIn = (): boolean => {
   }
 
   return true;
+
+// 토큰이 존재하는지 확인
+export const isLoggedIn = (): boolean => {
+  const token = localStorage.getItem("token");
+  return !!token;
 };
 
 // 토큰을 제거하여 로그아웃 처리

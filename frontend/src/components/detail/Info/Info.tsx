@@ -1,5 +1,5 @@
 import styles from "./Info.module.scss";
-// import { people } from "../../../assets";
+import { people } from "../../../assets";
 import { FaStar, FaComments, FaRegCalendarCheck } from "react-icons/fa6";
 import CounterBox from "../../common/CounterBox/CounterBox";
 import { useState, useEffect } from "react";
@@ -7,6 +7,8 @@ import { HomeTravelDto } from "../../../types/home/homeTravel";
 import { ProductDto } from "../../../types/home/homeProduct";
 import { ReviewDto } from "../../../types/home/review";
 import { fetchProducts, fetchReviews } from "../../../api/home/homeApi";
+import { useNavigate } from "react-router-dom";
+import { isLoggedIn } from "../../../utils/auth";
 
 interface InfoProps {
   travelId: number;
@@ -80,6 +82,28 @@ const Info = ({ travelId, travel }: InfoProps) => {
     peopleCount * travel.travelPrice +
     selectedProducts.reduce((sum, item) => sum + item.count * item.price, 0);
 
+  const navigate = useNavigate();
+
+  const handleCartClick = () => {
+    if (!isLoggedIn()) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    alert("장바구니에 담았습니다!");
+  };
+
+  const handleReserveClick = () => {
+    if (!isLoggedIn()) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    navigate("/order");
+  };
+
   return (
     <div className={styles.rightSection}>
       <p className={styles.title}>{travel.travelName}</p>
@@ -107,12 +131,12 @@ const Info = ({ travelId, travel }: InfoProps) => {
           </span>
         </div>
 
-        {/* <div className={styles.personInfo}>
+        <div className={styles.personInfo}>
           <img src={people} alt="People Icon" className={styles.peopleIcon} />
           <div className={styles.personText}>
             <div className={styles.personTop}>
               <span className={styles.personCount}>
-                예약 인원 {travel.reservedCount}명
+                예약 인원 {travel.reservedCount ?? 0}명
               </span>
               <span className={styles.personCount}>
                 (잔여 개수{" "}
@@ -120,10 +144,10 @@ const Info = ({ travelId, travel }: InfoProps) => {
               </span>
             </div>
             <p className={styles.minPeopleCount}>
-              최소 출발 인원 : {travel.minPeople}명
+              최소 출발 인원 : {travel.minPeople ?? 0}명
             </p>
           </div>
-        </div> */}
+        </div>
       </div>
 
       <div className={styles.subProductInfo}>
@@ -194,8 +218,12 @@ const Info = ({ travelId, travel }: InfoProps) => {
       </div>
 
       <div className={styles.buttonSection}>
-        <button className={styles.cartButton}>장바구니</button>
-        <button className={styles.reserveButton}>예약하기</button>
+        <button className={styles.cartButton} onClick={handleCartClick}>
+          장바구니
+        </button>
+        <button className={styles.reserveButton} onClick={handleReserveClick}>
+          예약하기
+        </button>
       </div>
     </div>
   );

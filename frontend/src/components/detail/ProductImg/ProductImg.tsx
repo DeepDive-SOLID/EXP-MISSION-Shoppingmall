@@ -38,19 +38,24 @@ const ProductImg = ({ travelId, travelImg }: ProductImgProps) => {
   }, [travelId]);
 
   useEffect(() => {
-    if (
-      swiperRef.current &&
-      swiperRef.current.params.navigation &&
-      typeof swiperRef.current.params.navigation !== "boolean" &&
-      prevRef.current &&
-      nextRef.current
-    ) {
-      swiperRef.current.params.navigation.prevEl = prevRef.current;
-      swiperRef.current.params.navigation.nextEl = nextRef.current;
-      swiperRef.current.navigation.destroy();
-      swiperRef.current.navigation.init();
-      swiperRef.current.navigation.update();
-    }
+    const timeout = setTimeout(() => {
+      if (
+        swiperRef.current &&
+        swiperRef.current.params.navigation &&
+        typeof swiperRef.current.params.navigation !== "boolean" &&
+        prevRef.current &&
+        nextRef.current
+      ) {
+        swiperRef.current.params.navigation.prevEl = prevRef.current;
+        swiperRef.current.params.navigation.nextEl = nextRef.current;
+
+        swiperRef.current.navigation.destroy();
+        swiperRef.current.navigation.init();
+        swiperRef.current.navigation.update();
+      }
+    }, 0);
+
+    return () => clearTimeout(timeout);
   }, [subItems]);
 
   return (
@@ -60,14 +65,11 @@ const ProductImg = ({ travelId, travelImg }: ProductImgProps) => {
 
         <div className={styles.sliderWrapper}>
           <Swiper
+            key={subItems.length}
             modules={[Navigation]}
             spaceBetween={16}
             slidesPerView={3}
             loop={true}
-            navigation={{
-              prevEl: prevRef.current,
-              nextEl: nextRef.current,
-            }}
             onSwiper={swiper => {
               swiperRef.current = swiper;
             }}

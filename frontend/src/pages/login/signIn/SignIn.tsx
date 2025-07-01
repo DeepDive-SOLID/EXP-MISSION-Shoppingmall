@@ -141,7 +141,12 @@ const SignIn: React.FC = () => {
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.signInContainer}>
-        <img src={logo} alt="로고" className={styles.logo} />
+        <img
+          src={logo}
+          alt="로고"
+          className={styles.logo}
+          onClick={() => navigate("/")}
+        />
         <h1 className={styles.title}>계정에 로그인하세요</h1>
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>
