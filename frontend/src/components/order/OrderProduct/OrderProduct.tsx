@@ -51,31 +51,45 @@ const OrderProduct = ({ selectedItems }: OrderProductProps) => {
                       {item.travelStartDt.slice(0, 10)} ~{" "}
                       {item.travelEndDt.slice(0, 10)}
                     </p>
+
+                    <div className={styles.personBox}>
+                      <p className={styles.label}>인원</p>
+                      <span className={styles.people}>
+                        {item.personCount}명
+                      </span>
+                      <p className={styles.price}>
+                        {(item.travelPrice * item.personCount).toLocaleString()}
+                        원
+                      </p>
+                    </div>
                   </div>
 
                   <div className={styles.extra}>
                     <p className={styles.extraTitle}>추가 구매 내역</p>
                     {item.basketProducts.length > 0 ? (
-                      item.basketProducts.map((product, index) => (
-                        <div key={index} className={styles.extraItem}>
-                          <span>{product.productName}</span>
-                          <span className={styles.unit}>
-                            {product.basketProductAmount}개
-                          </span>
-                        </div>
-                      ))
+                      <div className={styles.extraItemWrapper}>
+                        {item.basketProducts.map((product, index) => (
+                          <div key={index} className={styles.extraItem}>
+                            <span className={styles.name}>
+                              {product.productName}
+                            </span>
+                            <span className={styles.unit}>
+                              {product.basketProductAmount}개
+                            </span>
+                            <span className={styles.price}>
+                              {(
+                                (product.productPrice ?? 0) *
+                                product.basketProductAmount
+                              ).toLocaleString()}
+                              원
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     ) : (
-                      <p className={styles.noExtra}>추가 구매 없음</p>
+                      <p className={styles.noExtra}></p>
                     )}
                   </div>
-                </div>
-
-                <div className={styles.personBox}>
-                  <p className={styles.label}>인원</p>
-                  <span className={styles.people}>{item.personCount}명</span>
-                  <p className={styles.price}>
-                    {(item.travelPrice * item.personCount).toLocaleString()}원
-                  </p>
                 </div>
 
                 <div className={styles.summary}>

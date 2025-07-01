@@ -4,6 +4,7 @@ import OrderProduct from "../../components/order/OrderProduct/OrderProduct";
 import OrderAgreement from "../../components/order/OrderAgreement/OrderAgreement";
 import OrderPayment from "../../components/order/OrderPayment/OrderPayment";
 import { useState } from "react";
+import Footer from "../../components/common/Footer/Footer";
 
 const Order = () => {
   const location = useLocation();
@@ -16,6 +17,7 @@ const Order = () => {
       <OrderProduct selectedItems={selectedItems} />
       <OrderAgreement onAgreementChange={setIsAgreed} />
       <OrderPayment selectedItems={selectedItems} isAgreed={isAgreed} />
+      <Footer />
     </div>
   );
 };

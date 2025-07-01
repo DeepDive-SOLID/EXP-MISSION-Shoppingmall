@@ -13,6 +13,7 @@ import {
 import { PaymentCardDto, OrderAddDto } from "../../../types/order/order";
 import { BasketListDto } from "../../../types/basket/basket";
 import { deleteFromBasket } from "../../../api/basket/basketApi";
+import DaumPostcode from "react-daum-postcode";
 
 // 폼 데이터 타입
 interface FormData {
@@ -49,6 +50,13 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
   const [showAddCard, setShowAddCard] = useState(false);
   const navigate = useNavigate();
   const memberId = getCurrentMemberId();
+  const [showPostcode, setShowPostcode] = useState(false);
+
+  const handleComplete = (data: { address: string; zonecode: string }) => {
+    const fullAddress = data.address;
+    setValue("address", fullAddress);
+    setShowPostcode(false);
+  };
 
   const [items, setItems] = useState<
     (BasketListDto & { personCount: number; extraCount: number })[]
@@ -168,24 +176,6 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
     }
   };
 
-  const getCardStyleClass = (cardNum: string): string => {
-    const prefix = cardNum.slice(0, 4);
-    switch (prefix) {
-      case "1111":
-        return styles.kakao;
-      case "2222":
-        return styles.kb;
-      case "3333":
-        return styles.nh;
-      case "4444":
-        return styles.samsung;
-      case "5555":
-        return styles.shinhan;
-      default:
-        return styles.defaultCard;
-    }
-  };
-
   useEffect(() => {
     const loadOrderMemberInfo = async () => {
       if (!memberId) return;
@@ -194,19 +184,15 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
         const info = await fetchOrderMemberInfo(memberId);
         console.log("불러온 유저 정보:", info);
 
-        // 이름
         setValue("name", info.memberName);
 
-        // 생일 → YYYYMMDD or YYYY-MM-DD 형식 대응
         const birth = info.memberBirth.replaceAll("-", "");
         setValue("birthYear", birth.slice(0, 4));
         setValue("birthMonth", birth.slice(4, 6));
         setValue("birthDate", birth.slice(6, 8));
 
-        // 연락처
         setValue("phone", info.memberPhone);
 
-        // 이메일 → "abc@naver.com" => ["abc", "naver.com"]
         const [emailId, emailDomain] = info.memberEmail.split("@");
         setValue("emailId", emailId);
         setValue("emailDomain", emailDomain);
@@ -236,59 +222,131 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
           <label>생년 월일</label>
           <div className={styles.birthGroup}>
             <input
-              {...register("birthYear")}
+              {...register("birthYear", {
+                required: "연도는 필수입니다.",
+                validate: value =>
+                  value.length === 4 || "연도는 4자리를 입력해야 합니다.",
+              })}
               placeholder="YYYY"
-              maxLength={4}
             />
             <span>/</span>
-            <input {...register("birthMonth")} placeholder="MM" maxLength={2} />
+            <input
+              {...register("birthMonth", {
+                required: "월은 필수입니다.",
+                validate: value =>
+                  value.length === 2 || "월은 2자리를 입력해야 합니다.",
+              })}
+              placeholder="MM"
+            />
             <span>/</span>
-            <input {...register("birthDate")} placeholder="DD" maxLength={2} />
+            <input
+              {...register("birthDate", {
+                required: "일은 필수입니다.",
+                validate: value =>
+                  value.length === 2 || "일은 2자리를 입력해야 합니다.",
+              })}
+              placeholder="DD"
+            />
           </div>
+          {(errors.birthYear || errors.birthMonth || errors.birthDate) && (
+            <p className={styles.error}>
+              {errors.birthYear?.message ||
+                errors.birthMonth?.message ||
+                errors.birthDate?.message}
+            </p>
+          )}
         </div>
 
         <div className={styles.formRow}>
           <label>연락처</label>
           <input
-            {...register("phone")}
+            {...register("phone", {
+              required: "연락처는 필수입니다.",
+              validate: value =>
+                value.length === 13 || "연락처 형식이 올바르지 않습니다.",
+            })}
             placeholder="연락처를 입력하세요"
+            maxLength={13}
             onChange={e => {
-              const rawValue = e.target.value.replace(/[^0-9]/g, "");
-              let formatted = rawValue;
-
-              if (rawValue.length <= 3) {
-                formatted = rawValue;
-              } else if (rawValue.length <= 7) {
-                formatted = `${rawValue.slice(0, 3)}-${rawValue.slice(3)}`;
-              } else if (rawValue.length <= 11) {
-                formatted = `${rawValue.slice(0, 3)}-${rawValue.slice(3, 7)}-${rawValue.slice(7)}`;
+              const raw = e.target.value.replace(/[^0-9]/g, "");
+              let formatted = raw;
+              if (raw.length <= 3) {
+                formatted = raw;
+              } else if (raw.length <= 7) {
+                formatted = `${raw.slice(0, 3)}-${raw.slice(3)}`;
+              } else {
+                formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7)}`;
               }
-
               e.target.value = formatted;
             }}
-            maxLength={13}
           />
+          {errors.phone && (
+            <p className={styles.error}>{errors.phone.message}</p>
+          )}
         </div>
 
         <div className={styles.formRow}>
           <label>이메일</label>
           <div className={styles.emailGroup}>
-            <input {...register("emailId")} placeholder="아이디" />
+            <input
+              {...register("emailId", {
+                required: "이메일 아이디는 필수입니다.",
+              })}
+              placeholder="아이디"
+            />
             <span>@</span>
-            <input {...register("emailDomain")} placeholder="도메인" />
+            <input
+              {...register("emailDomain", {
+                required: "이메일 도메인은 필수입니다.",
+              })}
+              placeholder="도메인"
+            />
           </div>
+          {(errors.emailId || errors.emailDomain) && (
+            <p className={styles.error}>
+              {errors.emailId?.message || errors.emailDomain?.message}
+            </p>
+          )}
         </div>
 
         <div className={styles.formRow}>
           <label>주소</label>
           <div className={styles.addressGroup}>
-            <input {...register("address")} placeholder="주소를 입력하세요" />
-            <button type="button">주소확인</button>
             <input
-              {...register("detailAddress")}
+              {...register("address", {
+                required: "주소는 필수입니다.",
+              })}
+              placeholder="주소를 입력하세요"
+            />
+            <button type="button" onClick={() => setShowPostcode(true)}>
+              주소 검색
+            </button>
+            {showPostcode && (
+              <div className={styles.postcodeModalOverlay}>
+                <div className={styles.postcodeModal}>
+                  <button
+                    className={styles.closeBtn}
+                    onClick={() => setShowPostcode(false)}
+                  >
+                    X
+                  </button>
+                  <DaumPostcode onComplete={handleComplete} autoClose />
+                </div>
+              </div>
+            )}
+
+            <input
+              {...register("detailAddress", {
+                required: "상세주소는 필수입니다.",
+              })}
               placeholder="상세 주소를 입력하세요"
             />
           </div>
+          {(errors.address || errors.detailAddress) && (
+            <p className={styles.error}>
+              {errors.address?.message || errors.detailAddress?.message}
+            </p>
+          )}
         </div>
       </form>
 
@@ -299,24 +357,27 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
         {cardList.map(card => (
           <div
             key={card.paymentId}
-            className={`${styles.savedCard} ${getCardStyleClass(card.paymentNum)} ${
+            className={`${styles.cardBox} ${
               selectedCardId === card.paymentId ? styles.active : ""
             }`}
-            onClick={() => {
-              handleCardSelect(Number(card.paymentId));
-            }}
+            onClick={() => handleCardSelect(card.paymentId)}
           >
-            <p>
-              <strong>{card.paymentName}</strong>{" "}
-              <span>{card.paymentNum.slice(0, 4)}-****</span>
-            </p>
-            <FaCheckCircle
-              className={
-                selectedCardId === card.paymentId
-                  ? styles.checked
-                  : styles.unchecked
-              }
+            <img
+              src={card.paymentCardImg}
+              alt="카드 이미지"
+              className={styles.cardImage}
             />
+
+            <div className={styles.cardDetails}>
+              <span className={styles.cardName}>{card.paymentName}</span>
+              <span className={styles.cardNumber}>
+                {card.paymentNum.slice(0, 4)} - ****
+              </span>
+            </div>
+
+            {selectedCardId === card.paymentId && (
+              <FaCheckCircle className={styles.checkedIcon} />
+            )}
           </div>
         ))}
 

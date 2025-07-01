@@ -24,7 +24,6 @@ interface AddCardModalProps {
 const AddCard = ({ onClose }: AddCardModalProps) => {
   const { register, handleSubmit } = useForm<CardFormData>();
 
-  // 카드 등록 요청
   const onSubmit = async (data: CardFormData) => {
     const memberId = getCurrentMemberId();
     if (!memberId) {
@@ -64,30 +63,115 @@ const AddCard = ({ onClose }: AddCardModalProps) => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <label>카드 번호</label>
           <div className={styles.cardNumberGroup}>
-            <input {...register("card1")} maxLength={4} />
-            <input {...register("card2")} maxLength={4} />
-            <input {...register("card3")} maxLength={4} />
-            <input {...register("card4")} maxLength={4} />
+            <input
+              {...register("card1", { required: true })}
+              maxLength={4}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onInput={e =>
+                (e.currentTarget.value = e.currentTarget.value.replace(
+                  /\D/g,
+                  "",
+                ))
+              }
+            />
+            <input
+              {...register("card2", { required: true })}
+              maxLength={4}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onInput={e =>
+                (e.currentTarget.value = e.currentTarget.value.replace(
+                  /\D/g,
+                  "",
+                ))
+              }
+            />
+            <input
+              {...register("card3", { required: true })}
+              maxLength={4}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onInput={e =>
+                (e.currentTarget.value = e.currentTarget.value.replace(
+                  /\D/g,
+                  "",
+                ))
+              }
+            />
+            <input
+              {...register("card4", { required: true })}
+              maxLength={4}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onInput={e =>
+                (e.currentTarget.value = e.currentTarget.value.replace(
+                  /\D/g,
+                  "",
+                ))
+              }
+            />
           </div>
 
           <label>만료일</label>
           <div className={styles.expiryGroup}>
-            <input {...register("expMonth")} placeholder="MM" maxLength={2} />
+            <input
+              {...register("expMonth", { required: true })}
+              placeholder="MM"
+              maxLength={2}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onInput={e =>
+                (e.currentTarget.value = e.currentTarget.value.replace(
+                  /\D/g,
+                  "",
+                ))
+              }
+            />
             <span>/</span>
-            <input {...register("expYear")} placeholder="YY" maxLength={2} />
+            <input
+              {...register("expYear", { required: true })}
+              placeholder="YY"
+              maxLength={2}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onInput={e =>
+                (e.currentTarget.value = e.currentTarget.value.replace(
+                  /\D/g,
+                  "",
+                ))
+              }
+            />
           </div>
 
           <label>카드 소유자 이름</label>
-          <input {...register("cardOwner")} placeholder="카드 소유자 이름" />
+          <input
+            {...register("cardOwner", { required: true })}
+            placeholder="카드 소유자 이름"
+          />
 
           <label>보안 코드 (CVC)</label>
-          <input {...register("cvc")} maxLength={3} placeholder="3자리 숫자" />
+          <input
+            {...register("cvc", { required: true })}
+            maxLength={3}
+            placeholder="3자리 숫자"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            onInput={e =>
+              (e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""))
+            }
+          />
 
           <label>카드 비밀번호</label>
           <input
-            {...register("cardPassword")}
+            {...register("cardPassword", { required: true })}
             maxLength={4}
             placeholder="4자리 숫자"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            onInput={e =>
+              (e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""))
+            }
           />
 
           <button type="submit">카드 등록하기</button>
