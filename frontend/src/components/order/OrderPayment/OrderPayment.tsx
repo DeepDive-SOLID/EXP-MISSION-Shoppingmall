@@ -8,6 +8,7 @@ import { getCurrentMemberId } from "../../../utils/auth";
 import { fetchCardList, addOrder } from "../../../api/order/orderApi";
 import { PaymentCardDto, OrderAddDto } from "../../../types/order/order";
 import { BasketListDto } from "../../../types/basket/basket";
+import { deleteFromBasket } from "../../../api/basket/basketApi";
 
 // 폼 데이터 타입
 interface FormData {
@@ -109,6 +110,8 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
 
         const result = await addOrder(order);
         if (result !== "SUCCESS") throw new Error("결제 실패");
+
+        await deleteFromBasket({ travelId: item.travelId, memberId });
       }
 
       const travelTotal = items[0].personCount * items[0].travelPrice;
