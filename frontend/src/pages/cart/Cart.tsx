@@ -21,8 +21,10 @@ const Cart = () => {
         if (!memberId) throw new Error("로그인 정보가 없습니다.");
 
         const res = await fetchBasketList(memberId);
+        console.log("서버 응답:", res);
 
         const withChecked = res.map(item => ({ ...item, checked: false }));
+
         setItems(withChecked);
       } catch (err) {
         console.error("장바구니 로딩 실패:", err);
@@ -162,11 +164,25 @@ const Cart = () => {
                     </p>
                     <button
                       className={styles.changeButton}
-                      onClick={() =>
+                      onClick={() => {
                         navigate(`/detail/${item.travelId}`, {
-                          state: { travel: item },
-                        })
-                      }
+                          state: {
+                            travel: {
+                              travelId: item.travelId,
+                              travelName: item.travelName,
+                              travelStartDt: item.travelStartDt,
+                              travelEndDt: item.travelEndDt,
+                              travelImg: item.travelImg,
+                              travelPrice: item.travelPrice,
+                            },
+                            basket: {
+                              basketTravelAmount: item.basketTravelAmount,
+                              basketProducts: item.basketProducts,
+                            },
+                            fromCart: true,
+                          },
+                        });
+                      }}
                     >
                       변경
                     </button>

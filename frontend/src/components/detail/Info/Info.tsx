@@ -7,9 +7,13 @@ import { HomeTravelDto } from "../../../types/home/homeTravel";
 import { ProductDto } from "../../../types/home/homeProduct";
 import { ReviewDto } from "../../../types/home/review";
 import { fetchProducts, fetchReviews } from "../../../api/home/homeApi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { isLoggedIn, getCurrentMemberId } from "../../../utils/auth";
-import { addToBasket } from "../../../api/basket/basketApi";
+import {
+  addToBasket,
+  deleteFromBasket,
+  fetchBasketList,
+} from "../../../api/basket/basketApi";
 
 interface InfoProps {
   travelId: number;
@@ -24,7 +28,28 @@ const Info = ({ travelId, travel }: InfoProps) => {
     { id: number; label: string; price: number; count: number }[]
   >([]);
 
-  // 상품 및 리뷰 데이터 불러오기
+  const location = useLocation();
+  const fromCart = location.state?.fromCart;
+  const basket = location.state?.basket;
+
+  const navigate = useNavigate();
+
+  // fromCart일 경우 초기화
+  useEffect(() => {
+    if (fromCart && basket) {
+      setPeopleCount(basket.basketTravelAmount);
+      setSelectedProducts(
+        basket.basketProducts.map(p => ({
+          id: p.productId,
+          label: p.productName ?? "",
+          price: p.productPrice ?? 0,
+          count: p.basketProductAmount,
+        })),
+      );
+    }
+  }, [fromCart, basket]);
+
+  // 상품 및 리뷰 불러오기
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -39,7 +64,6 @@ const Info = ({ travelId, travel }: InfoProps) => {
     fetchData();
   }, [travelId]);
 
-  // 상품 선택 시 추가
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const productId = Number(e.target.value);
     const found = productList.find(p => p.productId === productId);
@@ -59,7 +83,6 @@ const Info = ({ travelId, travel }: InfoProps) => {
     ]);
   };
 
-  // 상품 수량 업데이트
   const updateProductCount = (id: number, delta: number) => {
     setSelectedProducts(prev =>
       prev
@@ -70,29 +93,27 @@ const Info = ({ travelId, travel }: InfoProps) => {
     );
   };
 
-  // 선택된 상품 삭제
   const removeProduct = (id: number) => {
     setSelectedProducts(prev => prev.filter(p => p.id !== id));
   };
 
-  // 리뷰 개수 및 평균 평점 계산
   const reviewCount = reviews.length;
   const averageRate =
     reviewCount === 0
       ? 0
       : reviews.reduce((sum, r) => sum + r.reviewRate, 0) / reviewCount;
 
-  // 총 수량 및 총 가격 계산
   const totalCount =
     peopleCount + selectedProducts.reduce((sum, item) => sum + item.count, 0);
-
   const totalPrice =
     peopleCount * travel.travelPrice +
     selectedProducts.reduce((sum, item) => sum + item.count * item.price, 0);
 
-  const navigate = useNavigate();
+  const checkIfAlreadyInCart = async (memberId: string, travelId: number) => {
+    const basketList = await fetchBasketList(memberId);
+    return basketList.some(item => item.travelId === travelId);
+  };
 
-  // 장바구니 버튼 클릭 시 처리
   const handleCartClick = async () => {
     if (!isLoggedIn()) {
       alert("로그인이 필요합니다.");
@@ -107,6 +128,20 @@ const Info = ({ travelId, travel }: InfoProps) => {
     }
 
     try {
+      if (fromCart) {
+        await deleteFromBasket({ travelId: travel.travelId, memberId });
+      } else {
+        const alreadyExists = await checkIfAlreadyInCart(
+          memberId,
+          travel.travelId,
+        );
+        if (alreadyExists) {
+          alert("이미 장바구니에 담겨 있습니다.");
+          navigate("/cart");
+          return;
+        }
+      }
+
       await addToBasket({
         memberId,
         travelId: travel.travelId,
@@ -118,13 +153,13 @@ const Info = ({ travelId, travel }: InfoProps) => {
       });
 
       alert("장바구니에 담았습니다!");
+      navigate("/cart");
     } catch (error) {
       console.error("장바구니 담기 실패:", error);
       alert("장바구니 담기에 실패했습니다.");
     }
   };
 
-  // 예약하기 버튼 클릭 시 처리
   const handleReserveClick = async () => {
     if (!isLoggedIn()) {
       alert("로그인이 필요합니다.");
@@ -135,6 +170,13 @@ const Info = ({ travelId, travel }: InfoProps) => {
     const memberId = getCurrentMemberId();
     if (!memberId) {
       alert("회원 정보를 확인할 수 없습니다.");
+      return;
+    }
+
+    const alreadyExists = await checkIfAlreadyInCart(memberId, travel.travelId);
+    if (alreadyExists) {
+      alert("이미 장바구니에 담겨 있습니다. 장바구니에서 결제해주세요.");
+      navigate("/cart");
       return;
     }
 
@@ -186,12 +228,11 @@ const Info = ({ travelId, travel }: InfoProps) => {
       <p className={styles.title}>{travel.travelName}</p>
 
       <div className={styles.infoBadge}>
-        {travel.travelLabel &&
-          travel.travelLabel.split(",").map((label, idx) => (
-            <span key={idx} className={styles.badge}>
-              #{label.trim()}
-            </span>
-          ))}
+        {travel.travelLabel?.split(",").map((label: string, idx: number) => (
+          <span key={idx} className={styles.badge}>
+            #{label.trim()}
+          </span>
+        ))}
       </div>
 
       <div className={styles.rate}>
@@ -260,7 +301,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
               onIncrease={() => updateProductCount(item.id, 1)}
             />
             <span className={styles.productPrice}>
-              {Number(item.count * item.price || 0).toLocaleString()}원
+              {(item.count * item.price).toLocaleString()}원
             </span>
             <button
               className={styles.removeButton}
