@@ -20,4 +20,5 @@ public class HomeTravelDto {
     private Double rate;
     private Integer reviewCount;
     private Integer reservedCount;
+    private Integer travelAmount;
 }
