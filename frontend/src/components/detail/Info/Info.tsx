@@ -14,6 +14,7 @@ import {
   deleteFromBasket,
   fetchBasketList,
 } from "../../../api/basket/basketApi";
+import { BasketProductDto } from "../../../types/basket/basket";
 
 interface InfoProps {
   travelId: number;
@@ -27,6 +28,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
   const [selectedProducts, setSelectedProducts] = useState<
     { id: number; label: string; price: number; count: number }[]
   >([]);
+  const [selectedProductId, setSelectedProductId] = useState("");
 
   const location = useLocation();
   const fromCart = location.state?.fromCart;
@@ -39,7 +41,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
     if (fromCart && basket) {
       setPeopleCount(basket.basketTravelAmount);
       setSelectedProducts(
-        basket.basketProducts.map(p => ({
+        basket.basketProducts.map((p: BasketProductDto) => ({
           id: p.productId,
           label: p.productName ?? "",
           price: p.productPrice ?? 0,
@@ -66,6 +68,8 @@ const Info = ({ travelId, travel }: InfoProps) => {
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const productId = Number(e.target.value);
+    setSelectedProductId("");
+
     const found = productList.find(p => p.productId === productId);
     if (!found) return;
 
@@ -263,7 +267,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
               </span>
             </div>
             <p className={styles.minPeopleCount}>
-              최소 출발 인원 : {travel.minPeople ?? 0}명
+              최소 출발 인원 : {travel.minPeople ?? 10}명
             </p>
           </div>
         </div>
@@ -273,8 +277,8 @@ const Info = ({ travelId, travel }: InfoProps) => {
         <p className={styles.subProductTitle}>추가 구매 상품</p>
         <select
           className={styles.productSelect}
+          value={selectedProductId}
           onChange={handleSelect}
-          defaultValue=""
         >
           <option value="" disabled>
             상품을 선택하세요
