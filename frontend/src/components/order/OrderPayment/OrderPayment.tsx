@@ -5,7 +5,11 @@ import { useEffect, useState } from "react";
 import AddCard from "../AddCard/AddCard";
 import { useNavigate } from "react-router-dom";
 import { getCurrentMemberId } from "../../../utils/auth";
-import { fetchCardList, addOrder } from "../../../api/order/orderApi";
+import {
+  fetchCardList,
+  addOrder,
+  fetchOrderMemberInfo,
+} from "../../../api/order/orderApi";
 import { PaymentCardDto, OrderAddDto } from "../../../types/order/order";
 import { BasketListDto } from "../../../types/basket/basket";
 import { deleteFromBasket } from "../../../api/basket/basketApi";
@@ -37,6 +41,7 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<FormData>();
 
   const [cardList, setCardList] = useState<PaymentCardDto[]>([]);
@@ -159,6 +164,56 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
     }
   };
 
+  const getCardStyleClass = (cardNum: string): string => {
+    const prefix = cardNum.slice(0, 4);
+    switch (prefix) {
+      case "1111":
+        return styles.kakao;
+      case "2222":
+        return styles.kb;
+      case "3333":
+        return styles.nh;
+      case "4444":
+        return styles.samsung;
+      case "5555":
+        return styles.shinhan;
+      default:
+        return styles.defaultCard;
+    }
+  };
+
+  useEffect(() => {
+    const loadOrderMemberInfo = async () => {
+      if (!memberId) return;
+
+      try {
+        const info = await fetchOrderMemberInfo(memberId);
+        console.log("불러온 유저 정보:", info);
+
+        // 이름
+        setValue("name", info.memberName);
+
+        // 생일 → YYYYMMDD or YYYY-MM-DD 형식 대응
+        const birth = info.memberBirth.replaceAll("-", "");
+        setValue("birthYear", birth.slice(0, 4));
+        setValue("birthMonth", birth.slice(4, 6));
+        setValue("birthDate", birth.slice(6, 8));
+
+        // 연락처
+        setValue("phone", info.memberPhone);
+
+        // 이메일 → "abc@naver.com" => ["abc", "naver.com"]
+        const [emailId, emailDomain] = info.memberEmail.split("@");
+        setValue("emailId", emailId);
+        setValue("emailDomain", emailDomain);
+      } catch (err) {
+        console.error("주문자 정보 조회 실패:", err);
+      }
+    };
+
+    loadOrderMemberInfo();
+  }, [memberId, setValue]);
+
   return (
     <div className={styles.paymentWrapper}>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.infoSection}>
@@ -240,11 +295,10 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
         {cardList.map(card => (
           <div
             key={card.paymentId}
-            className={`${styles.savedCard} ${
+            className={`${styles.savedCard} ${getCardStyleClass(card.paymentNum)} ${
               selectedCardId === card.paymentId ? styles.active : ""
             }`}
             onClick={() => {
-              console.log("clicked:", card.paymentId);
               handleCardSelect(Number(card.paymentId));
             }}
           >

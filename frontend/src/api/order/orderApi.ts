@@ -3,6 +3,7 @@ import {
   OrderAddDto,
   PaymentCardAddDto,
   PaymentCardDto,
+  OrderMemberDto,
 } from "../../types/order/order";
 
 // 주문 생성 API
@@ -23,13 +24,7 @@ export const fetchCardList = async (
   memberId: string,
 ): Promise<PaymentCardDto[]> => {
   try {
-    const response = await api.post(
-      "/payment/card-info",
-      JSON.stringify(memberId),
-      {
-        headers: { "Content-Type": "application/json" },
-      },
-    );
+    const response = await api.post("/payment/card-info", { memberId });
     return response.data;
   } catch (error) {
     console.error("카드 목록 조회 실패:", error);
@@ -48,4 +43,12 @@ export const addCard = async (
     console.error("카드 등록 실패:", error);
     return "FAILED";
   }
+};
+
+// 주문자 정보 조회 API
+export const fetchOrderMemberInfo = async (
+  memberId: string,
+): Promise<OrderMemberDto> => {
+  const res = await api.post("/payment/member-info", { memberId });
+  return res.data;
 };

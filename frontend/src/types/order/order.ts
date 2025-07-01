@@ -31,3 +31,14 @@ export interface PaymentCardDto {
   paymentCardImg: string;
   paymentId: number;
 }
+
+export interface MemberDto {
+  memberId: string;
+}
+
+export interface OrderMemberDto {
+  memberName: string;
+  memberBirth: string;
+  memberPhone: string;
+  memberEmail: string;
+}
