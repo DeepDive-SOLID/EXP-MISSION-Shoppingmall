@@ -345,8 +345,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
             onDecrease={() => setPeopleCount(prev => Math.max(1, prev - 1))}
             onIncrease={() =>
               setPeopleCount(prev => {
-                const maxCount =
-                  (travel.travelAmount ?? 0) - (travel.reservedCount ?? 0);
+                const maxCount = travel.travelAmount ?? 0;
                 return prev < maxCount ? prev + 1 : prev;
               })
             }
