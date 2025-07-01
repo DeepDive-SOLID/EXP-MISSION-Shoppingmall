@@ -44,6 +44,20 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
   const navigate = useNavigate();
   const memberId = getCurrentMemberId();
 
+  const [items, setItems] = useState<
+    (BasketListDto & { personCount: number; extraCount: number })[]
+  >([]);
+
+  useEffect(() => {
+    const initialized = selectedItems.map(item => ({
+      ...item,
+      personCount: item.basketTravelAmount,
+      extraCount: item.basketProductAmount,
+      basketProducts: item.basketProducts ?? [],
+    }));
+    setItems(initialized);
+  }, [selectedItems]);
+
   // 카드 목록 불러오기
   const fetchCardListData = async () => {
     if (!memberId) return;
@@ -77,10 +91,7 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
     if (!isAgreed) return alert("약관에 동의해야 합니다.");
 
     try {
-      // 여행 정보는 selectedItems 중 첫 번째 기준
-      const travelItem = selectedItems[0];
-
-      for (const item of selectedItems) {
+      for (const item of items) {
         const products = item.basketProducts.map(product => ({
           productId: product.productId,
           orderProductAmount: product.basketProductAmount,
@@ -100,7 +111,7 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
         if (result !== "SUCCESS") throw new Error("결제 실패");
       }
 
-      const travelTotal = travelItem.personCount * travelItem.travelPrice;
+      const travelTotal = items[0].personCount * items[0].travelPrice;
       const extraTotal = selectedItems.reduce((sum, item) => {
         return (
           sum +
@@ -117,7 +128,7 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
       navigate("/order/payresult/success", {
         state: {
           memberName: form.name,
-          items: selectedItems.map(item => ({
+          items: items.map(item => ({
             travelName: item.travelName,
             travelStartDt: item.travelStartDt,
             travelEndDt: item.travelEndDt,

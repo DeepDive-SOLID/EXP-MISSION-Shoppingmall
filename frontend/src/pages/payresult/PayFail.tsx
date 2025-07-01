@@ -28,7 +28,7 @@ const PayFail = () => {
 
         <button
           className={styles.retryButton}
-          onClick={() => navigate("/order")}
+          onClick={() => navigate("/cart")}
         >
           결제하러 가기
         </button>
