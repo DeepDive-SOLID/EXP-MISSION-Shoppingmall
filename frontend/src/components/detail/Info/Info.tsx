@@ -107,15 +107,15 @@ const Info = ({ travelId, travel }: InfoProps) => {
     }
 
     try {
-      for (const item of selectedProducts) {
-        await addToBasket({
-          memberId,
-          travelId: travel.travelId,
+      await addToBasket({
+        memberId,
+        travelId: travel.travelId,
+        basketTravelAmount: peopleCount,
+        products: selectedProducts.map(item => ({
           productId: item.id,
-          basketTravelAmount: peopleCount,
           basketProductAmount: item.count,
-        });
-      }
+        })),
+      });
 
       alert("장바구니에 담았습니다!");
     } catch (error) {
@@ -138,37 +138,47 @@ const Info = ({ travelId, travel }: InfoProps) => {
       return;
     }
 
-    navigate("/order", {
-      state: {
-        selectedItems: [
-          {
-            basketId: -1,
-            travelName: travel.travelName,
-            travelImg: travel.travelImg,
-            travelStartDt: travel.travelStartDt,
-            travelEndDt: travel.travelEndDt,
-            productName: "미선택",
-            productPrice: 0,
-            travelPrice: travel.travelPrice,
-            basketTravelAmount: peopleCount,
-            basketProductAmount: 0,
-          },
+    try {
+      await addToBasket({
+        memberId,
+        travelId: travel.travelId,
+        basketTravelAmount: peopleCount,
+        products: selectedProducts.map(item => ({
+          productId: item.id,
+          basketProductAmount: item.count,
+        })),
+      });
 
-          ...selectedProducts.map(item => ({
-            basketId: item.id,
-            travelName: travel.travelName,
-            travelImg: travel.travelImg,
-            travelStartDt: travel.travelStartDt,
-            travelEndDt: travel.travelEndDt,
-            productName: item.label,
-            productPrice: item.price,
-            travelPrice: travel.travelPrice,
-            basketTravelAmount: peopleCount,
-            basketProductAmount: item.count,
-          })),
-        ],
-      },
-    });
+      navigate("/order", {
+        state: {
+          selectedItems: [
+            {
+              basketId: -1,
+              travelId: travel.travelId,
+              travelName: travel.travelName,
+              travelImg: travel.travelImg,
+              travelStartDt: travel.travelStartDt,
+              travelEndDt: travel.travelEndDt,
+              travelPrice: travel.travelPrice,
+              basketTravelAmount: peopleCount,
+              basketProductAmount: selectedProducts.reduce(
+                (sum, p) => sum + p.count,
+                0,
+              ),
+              basketProducts: selectedProducts.map(p => ({
+                productId: p.id,
+                productName: p.label,
+                productPrice: p.price,
+                basketProductAmount: p.count,
+              })),
+            },
+          ],
+        },
+      });
+    } catch (error) {
+      console.error("예약 중 장바구니 추가 실패:", error);
+      alert("예약 처리 중 오류가 발생했습니다.");
+    }
   };
 
   return (

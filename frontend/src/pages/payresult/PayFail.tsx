@@ -2,10 +2,12 @@ import Header from "../../components/common/Header/Header";
 import { FaTimesCircle } from "react-icons/fa";
 import styles from "./payResult.module.scss";
 import { home_banner } from "../../assets";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const PayFail = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { memberName } = location.state || { memberName: "고객" };
   return (
     <div className={styles.wrapper}>
       <Header />
@@ -13,8 +15,7 @@ const PayFail = () => {
       <div className={styles.resultBox}>
         <FaTimesCircle className={styles.failIcon} />
         <p className={styles.username}>
-          <span>이나영</span>
-          님의
+          <span>{memberName}</span> 님의
         </p>
 
         <p className={styles.resultFailText}>결제를 실패하였습니다.</p>

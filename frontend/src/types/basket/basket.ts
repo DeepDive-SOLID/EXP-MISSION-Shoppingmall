@@ -1,13 +1,13 @@
 export interface BasketAddDto {
   memberId: string;
   travelId: number;
-  productId: number;
   basketTravelAmount: number;
-  basketProductAmount: number;
+  products: BasketProductDto[];
 }
 
 export interface BasketDeleteDto {
-  basketId: number;
+  travelId: number;
+  memberId: string;
 }
 
 export interface BasketListDto {
@@ -22,7 +22,14 @@ export interface BasketListDto {
   basketTravelAmount: number;
   basketProductAmount: number;
   travelId: number;
+  basketProducts: BasketProductDto[];
+}
+
+export interface BasketProductDto {
   productId: number;
+  productName?: string;
+  productPrice?: number;
+  basketProductAmount: number;
 }
 
 export interface BasketMemberDto {

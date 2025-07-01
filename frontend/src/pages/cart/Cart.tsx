@@ -50,27 +50,47 @@ const Cart = () => {
   };
 
   // 수량 변경
-  const handleQuantityChange = (basketId: number, delta: number) => {
-    setItems(
-      items.map(item =>
-        item.basketId === basketId
-          ? {
-              ...item,
-              basketProductAmount: Math.max(
-                1,
-                item.basketProductAmount + delta,
-              ),
-            }
-          : item,
-      ),
+  const handleQuantityChange = (
+    basketId: number,
+    productId: number,
+    delta: number,
+  ) => {
+    setItems(prev =>
+      prev.map(item => {
+        if (item.basketId !== basketId) return item;
+
+        const updatedProducts = item.basketProducts.map(product =>
+          product.productId === productId
+            ? {
+                ...product,
+                basketProductAmount: Math.max(
+                  1,
+                  product.basketProductAmount + delta,
+                ),
+              }
+            : product,
+        );
+
+        return {
+          ...item,
+          basketProducts: updatedProducts,
+        };
+      }),
     );
   };
 
   // 장바구니에서 항목 삭제
-  const handleRemove = async (basketId: number) => {
+  const handleRemove = async (travelId: number) => {
     try {
-      await deleteFromBasket({ basketId });
-      setItems(prev => prev.filter(item => item.basketId !== basketId));
+      const memberId = getCurrentMemberId();
+      if (!memberId) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+
+      await deleteFromBasket({ travelId, memberId });
+
+      setItems(prev => prev.filter(item => item.travelId !== travelId));
     } catch (err) {
       console.error("삭제 실패:", err);
       alert("장바구니 삭제에 실패했습니다.");
@@ -83,10 +103,17 @@ const Cart = () => {
     (sum, item) => sum + item.travelPrice * item.basketTravelAmount,
     0,
   );
-  const totalExtra = selectedItems.reduce(
-    (sum, item) => sum + item.productPrice * item.basketProductAmount,
-    0,
-  );
+  const totalExtra = selectedItems.reduce((sum, item) => {
+    return (
+      sum +
+      (item.basketProducts?.reduce(
+        (subSum, product) =>
+          subSum + (product.productPrice ?? 0) * product.basketProductAmount,
+        0,
+      ) ?? 0)
+    );
+  }, 0);
+
   const total = totalBase + totalExtra;
 
   return (
@@ -111,7 +138,7 @@ const Cart = () => {
               <div key={item.basketId} className={styles.productSection}>
                 <button
                   className={styles.removeButton}
-                  onClick={() => handleRemove(item.basketId)}
+                  onClick={() => handleRemove(item.travelId)}
                 >
                   x
                 </button>
@@ -148,19 +175,33 @@ const Cart = () => {
                   <div className={styles.extraAndPrice}>
                     <div className={styles.extra}>
                       <p className={styles.extraTitle}>추가 구매 내역</p>
-                      <div className={styles.extraItem}>
-                        <CounterBox
-                          label={item.productName}
-                          count={item.basketProductAmount}
-                          price={item.productPrice}
-                          onDecrease={() =>
-                            handleQuantityChange(item.basketId, -1)
-                          }
-                          onIncrease={() =>
-                            handleQuantityChange(item.basketId, 1)
-                          }
-                        />
-                      </div>
+                      {item.basketProducts && item.basketProducts.length > 0 ? (
+                        item.basketProducts.map((product, index) => (
+                          <div key={index} className={styles.extraItem}>
+                            <CounterBox
+                              label={product.productName ?? ""}
+                              count={product.basketProductAmount ?? 1}
+                              price={product.productPrice ?? 0}
+                              onDecrease={() =>
+                                handleQuantityChange(
+                                  item.basketId,
+                                  product.productId,
+                                  -1,
+                                )
+                              }
+                              onIncrease={() =>
+                                handleQuantityChange(
+                                  item.basketId,
+                                  product.productId,
+                                  1,
+                                )
+                              }
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <p className={styles.noExtra}>추가 구매 없음</p>
+                      )}
                     </div>
 
                     <div className={styles.summary}>
@@ -168,7 +209,13 @@ const Cart = () => {
                       <span className={styles.totalPrice}>
                         {(
                           item.travelPrice * item.basketTravelAmount +
-                          item.productPrice * item.basketProductAmount
+                          item.basketProducts.reduce(
+                            (sum, product) =>
+                              sum +
+                              (product.productPrice ?? 0) *
+                                product.basketProductAmount,
+                            0,
+                          )
                         ).toLocaleString()}
                         원
                       </span>

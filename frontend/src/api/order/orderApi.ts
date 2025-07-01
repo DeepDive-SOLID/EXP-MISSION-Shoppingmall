@@ -5,6 +5,7 @@ import {
   PaymentCardDto,
 } from "../../types/order/order";
 
+// 주문 생성 API
 export const addOrder = async (
   data: OrderAddDto,
 ): Promise<"SUCCESS" | "FAILED"> => {
@@ -17,13 +18,18 @@ export const addOrder = async (
   }
 };
 
+// 결제 카드 목록 조회 API
 export const fetchCardList = async (
   memberId: string,
 ): Promise<PaymentCardDto[]> => {
   try {
-    const response = await api.post("/payment/card-info", memberId, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await api.post(
+      "/payment/card-info",
+      JSON.stringify(memberId),
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
     return response.data;
   } catch (error) {
     console.error("카드 목록 조회 실패:", error);
@@ -31,6 +37,7 @@ export const fetchCardList = async (
   }
 };
 
+// 결제 카드 등록 API
 export const addCard = async (
   data: PaymentCardAddDto,
 ): Promise<"SUCCESS" | "FAILED"> => {

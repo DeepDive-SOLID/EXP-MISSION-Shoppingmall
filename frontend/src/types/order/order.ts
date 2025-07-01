@@ -2,11 +2,15 @@ export interface OrderAddDto {
   orderAddr: string;
   orderAddrDetail: string;
   orderTravelAmount: number;
-  orderProductAmount: number;
-  travelId: number;
-  productId: number;
   paymentId: number;
   memberId: string;
+  travelId: number;
+  products: OrderProductDto[];
+}
+
+export interface OrderProductDto {
+  productId: number;
+  orderProductAmount: number;
 }
 
 export interface PaymentCardAddDto {

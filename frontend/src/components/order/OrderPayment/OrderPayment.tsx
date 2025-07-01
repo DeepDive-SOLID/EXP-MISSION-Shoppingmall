@@ -77,24 +77,68 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
     if (!isAgreed) return alert("약관에 동의해야 합니다.");
 
     try {
+      // 여행 정보는 selectedItems 중 첫 번째 기준
+      const travelItem = selectedItems[0];
+
       for (const item of selectedItems) {
+        const products = item.basketProducts.map(product => ({
+          productId: product.productId,
+          orderProductAmount: product.basketProductAmount,
+        }));
+
         const order: OrderAddDto = {
           orderAddr: form.address,
           orderAddrDetail: form.detailAddress,
           orderTravelAmount: item.personCount,
-          orderProductAmount: item.extraCount,
           travelId: item.travelId,
-          productId: item.productName ? (item.productId ?? 0) : 0,
           paymentId: selectedCardId,
           memberId,
-          ...(item.productId && { productId: item.productId }),
+          products,
         };
 
         const result = await addOrder(order);
         if (result !== "SUCCESS") throw new Error("결제 실패");
       }
 
-      navigate("/order/payresult/success");
+      const travelTotal = travelItem.personCount * travelItem.travelPrice;
+      const extraTotal = selectedItems.reduce((sum, item) => {
+        return (
+          sum +
+          item.basketProducts.reduce(
+            (subSum, p) =>
+              subSum + (p.productPrice ?? 0) * p.basketProductAmount,
+            0,
+          )
+        );
+      }, 0);
+
+      const totalPrice = travelTotal + extraTotal;
+
+      navigate("/order/payresult/success", {
+        state: {
+          memberName: form.name,
+          items: selectedItems.map(item => ({
+            travelName: item.travelName,
+            travelStartDt: item.travelStartDt,
+            travelEndDt: item.travelEndDt,
+            personCount: item.personCount,
+            travelPrice: item.travelPrice,
+            productDetails: item.basketProducts.map(p => ({
+              productName: p.productName,
+              productCount: p.basketProductAmount,
+              productPrice: p.productPrice,
+              total: (p.productPrice ?? 0) * p.basketProductAmount,
+            })),
+            total:
+              item.personCount * item.travelPrice +
+              item.basketProducts.reduce(
+                (sum, p) => sum + (p.productPrice ?? 0) * p.basketProductAmount,
+                0,
+              ),
+          })),
+          totalPrice,
+        },
+      });
     } catch (error) {
       console.error("결제 오류:", error);
       navigate("/order/payresult/fail");

@@ -28,7 +28,7 @@ const CounterBox = ({
       <span>{count}</span>
       <button onClick={onIncrease}>+</button>
 
-      {!hidePrice && <span>{price.toLocaleString()}원</span>}
+      {!hidePrice && <span>{(price ?? 0).toLocaleString()}원</span>}
     </div>
   );
 };

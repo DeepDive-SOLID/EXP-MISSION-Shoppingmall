@@ -11,34 +11,16 @@ const OrderProduct = ({ selectedItems }: OrderProductProps) => {
     (BasketListDto & { personCount: number; extraCount: number })[]
   >([]);
 
+  // 초기값 설정: 장바구니 항목에 수량 정보 추가
   useEffect(() => {
     const initialized = selectedItems.map(item => ({
       ...item,
       personCount: item.basketTravelAmount,
       extraCount: item.basketProductAmount,
+      basketProducts: item.basketProducts ?? [],
     }));
     setItems(initialized);
   }, [selectedItems]);
-
-  const handlePersonChange = (id: number, delta: number) => {
-    setItems(prev =>
-      prev.map(item =>
-        item.basketId === id
-          ? { ...item, personCount: Math.max(1, item.personCount + delta) }
-          : item,
-      ),
-    );
-  };
-
-  const handleExtraChange = (id: number, delta: number) => {
-    setItems(prev =>
-      prev.map(item =>
-        item.basketId === id
-          ? { ...item, extraCount: Math.max(0, item.extraCount + delta) }
-          : item,
-      ),
-    );
-  };
 
   return (
     <div className={styles.cartContentWrapper}>
@@ -47,7 +29,12 @@ const OrderProduct = ({ selectedItems }: OrderProductProps) => {
       <div className={styles.productList}>
         {items.map(item => {
           const baseTotal = item.travelPrice * item.personCount;
-          const extraTotal = item.productPrice * item.extraCount;
+          const extraTotal = item.basketProducts.reduce(
+            (sum, product) =>
+              sum + (product.productPrice ?? 0) * product.basketProductAmount,
+            0,
+          );
+
           const total = baseTotal + extraTotal;
 
           return (
@@ -68,23 +55,18 @@ const OrderProduct = ({ selectedItems }: OrderProductProps) => {
 
                   <div className={styles.extra}>
                     <p className={styles.extraTitle}>추가 구매 내역</p>
-                    <div className={styles.extraItem}>
-                      <span>{item.productName}</span>
-                      <div className={styles.amount}>
-                        <button
-                          onClick={() => handleExtraChange(item.basketId, -1)}
-                        >
-                          -
-                        </button>
-                        <span>{item.extraCount}</span>
-                        <button
-                          onClick={() => handleExtraChange(item.basketId, 1)}
-                        >
-                          +
-                        </button>
-                      </div>
-                      <span className={styles.unit}>{item.extraCount}개</span>
-                    </div>
+                    {item.basketProducts.length > 0 ? (
+                      item.basketProducts.map((product, index) => (
+                        <div key={index} className={styles.extraItem}>
+                          <span>{product.productName}</span>
+                          <span className={styles.unit}>
+                            {product.basketProductAmount}개
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className={styles.noExtra}>추가 구매 없음</p>
+                    )}
                   </div>
                 </div>
 
@@ -94,19 +76,6 @@ const OrderProduct = ({ selectedItems }: OrderProductProps) => {
                   <p className={styles.price}>
                     {(item.travelPrice * item.personCount).toLocaleString()}원
                   </p>
-                  <div className={styles.amount}>
-                    <button
-                      onClick={() => handlePersonChange(item.basketId, -1)}
-                    >
-                      -
-                    </button>
-                    <span>{item.personCount}</span>
-                    <button
-                      onClick={() => handlePersonChange(item.basketId, 1)}
-                    >
-                      +
-                    </button>
-                  </div>
                 </div>
 
                 <div className={styles.summary}>
