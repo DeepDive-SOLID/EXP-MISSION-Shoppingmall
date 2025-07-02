@@ -1,6 +1,8 @@
 // 로그인 상태 확인 유틸리티 함수들
 
 // JWT 토큰 페이로드 타입 정의
+import { authApi } from "../api/login/authApi";
+
 interface TokenPayload {
   memberId: string;
   authId: string;
@@ -22,7 +24,6 @@ export const isLoggedIn = (): boolean => {
   if (decoded.exp) {
     const currentTime = Math.floor(Date.now() / 1000);
     if (currentTime >= decoded.exp) {
-      localStorage.removeItem("token"); // 만료된 토큰 제거
       return false;
     }
   }
@@ -105,4 +106,21 @@ export const getCurrentUserInfo = (): {
     memberId: decoded.memberId,
     authId: decoded.authId,
   };
+};
+
+// 토큰 유효성 체크 후, 필요 시 재발급
+export const refreshNewToken = async (): Promise<string | null> => {
+  const currentUserInfo = getCurrentUserInfo();
+
+  // 사용자 정보가 없는 경우에는 재발급하지 않음
+  if (!currentUserInfo) return null;
+
+  try {
+    const newToken = await authApi.refreshToken();
+    localStorage.setItem("token", newToken);
+    return newToken;
+  } catch {
+    localStorage.removeItem("token");
+    return null;
+  }
 };

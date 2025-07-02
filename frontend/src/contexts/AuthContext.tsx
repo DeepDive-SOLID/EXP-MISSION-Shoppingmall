@@ -8,7 +8,7 @@ import React, {
 import {
   isLoggedIn as checkIsLoggedIn,
   logout as logoutUser,
-  getCurrentUserInfo,
+  getCurrentUserInfo, refreshNewToken,
 } from "../utils/auth";
 
 // AuthContext에서 제공할 데이터의 타입 정의
@@ -56,22 +56,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // 컴포넌트가 처음 마운트될 때 실행되는 useEffect
   useEffect(() => {
-    // localStorage에 저장된 토큰을 확인하여 로그인 상태 초기화
-    const loggedIn = checkIsLoggedIn();
+    const initializeAuth = async () => {
+      // 토큰이 유효한지 체크
+      const loggedIn = checkIsLoggedIn();
 
-    if (loggedIn) {
-      // 토큰이 유효한 경우 사용자 정보 가져오기
-      const currentUserInfo = getCurrentUserInfo();
-      setUserInfo(currentUserInfo);
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-      setUserInfo(null);
-    }
+      // 토큰이 유효한 경우
+      if (loggedIn) {
+        // 로그인한 사용자 정보 가져오기
+        const currentUserInfo = getCurrentUserInfo();
+        setUserInfo(currentUserInfo);
+        setIsLoggedIn(true);
 
-    // 초기화 완료
-    setIsLoading(false);
-  }, []); // 빈 배열이므로 컴포넌트 마운트 시에만 실행
+      // 유효한 토큰이 아닌 경우
+      } else {
+        const newToken = await refreshNewToken();
+
+        // 사용자 정보가 있을 때
+        if (newToken) {
+          const currentUserInfo = getCurrentUserInfo();
+          setUserInfo(currentUserInfo);
+          setIsLoggedIn(true);
+
+        // 사용자 정보가 없을 때
+        } else {
+          setIsLoggedIn(false);
+          setUserInfo(null);
+        }
+      }
+
+      // 초기화 완료
+      setIsLoading(false);
+    };
+
+    initializeAuth();
+  }, []);
 
   // 로그인 함수: Context의 로그인 상태를 true로 변경
   const login = () => {
