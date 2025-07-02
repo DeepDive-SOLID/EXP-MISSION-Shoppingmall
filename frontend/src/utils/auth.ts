@@ -31,9 +31,15 @@ export const isLoggedIn = (): boolean => {
 };
 
 // 토큰을 제거하여 로그아웃 처리
-export const logout = (): void => {
-  localStorage.removeItem("token");
-  window.location.href = "/";
+export const logout = async (): Promise<void> => {
+  try {
+    await authApi.logout();
+  } catch (e) {
+    console.error("token logout error", e);
+  } finally {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  }
 };
 
 // 토큰 가져오기
