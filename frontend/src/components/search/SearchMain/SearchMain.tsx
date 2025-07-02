@@ -52,7 +52,7 @@ const SearchMain = () => {
             >
               <option value="popular">인기순</option>
               <option value="recent">최신순</option>
-              <option value="rating">평점순</option>
+              <option value="rating">리뷰순</option>
             </select>
           </div>
         </div>
