@@ -24,7 +24,7 @@ export const fetchCardList = async (
   memberId: string,
 ): Promise<PaymentCardDto[]> => {
   try {
-    const response = await api.post("/payment/card-info", { memberId });
+    const response = await api.post("/payment/cardInfo", { memberId });
     return response.data;
   } catch (error) {
     console.error("카드 목록 조회 실패:", error);
@@ -37,7 +37,7 @@ export const addCard = async (
   data: PaymentCardAddDto,
 ): Promise<"SUCCESS" | "FAILED"> => {
   try {
-    const response = await api.post("/payment/add-card", data);
+    const response = await api.post("/payment/addCard", data);
     return response.data;
   } catch (error) {
     console.error("카드 등록 실패:", error);
@@ -49,6 +49,6 @@ export const addCard = async (
 export const fetchOrderMemberInfo = async (
   memberId: string,
 ): Promise<OrderMemberDto> => {
-  const res = await api.post("/payment/member-info", { memberId });
+  const res = await api.post("/payment/memberInfo", { memberId });
   return res.data;
 };
