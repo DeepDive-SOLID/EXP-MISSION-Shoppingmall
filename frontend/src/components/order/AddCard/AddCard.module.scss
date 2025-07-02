@@ -1,0 +1,110 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  position: relative;
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  width: 500px;
+  max-width: 80%;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #666;
+  cursor: pointer;
+
+  &:hover {
+    color: #000;
+  }
+}
+
+.cardImage {
+  display: block;
+  max-width: 300px;
+  height: auto;
+  margin: 0 auto 24px auto;
+  border-radius: 10px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 10px;
+  color: #202020;
+}
+
+input {
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cardNumberGroup {
+  display: flex;
+  gap: 12px;
+
+  input {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.expiryGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  input {
+    width: 50%;
+    text-align: center;
+  }
+
+  span {
+    font-size: 18px;
+    color: #333;
+  }
+}
+
+button[type="submit"] {
+  margin-top: 16px;
+  background: #0085ff;
+  border: none;
+  padding: 14px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #006fd3;
+  }
+}

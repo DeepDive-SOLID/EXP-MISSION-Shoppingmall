@@ -23,8 +23,10 @@ const HomeBanner = () => {
   const [destination, setDestination] = useState("");
   const [date, setDate] = useState("");
   const [people, setPeople] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
 
+  // 검색 버튼 클릭 시 이동
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -38,8 +40,7 @@ const HomeBanner = () => {
     });
   };
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-
+  // 배너 자동 전환
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex(prev => (prev + 1) % banners.length);

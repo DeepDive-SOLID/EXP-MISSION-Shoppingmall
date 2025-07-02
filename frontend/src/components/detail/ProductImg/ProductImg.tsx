@@ -20,6 +20,7 @@ const ProductImg = ({ travelId, travelImg }: ProductImgProps) => {
   const nextRef = useRef<HTMLDivElement | null>(null);
   const swiperRef = useRef<SwiperType | null>(null);
 
+  // 물품 이미지 불러오기
   useEffect(() => {
     const loadSubImages = async () => {
       try {
@@ -30,13 +31,14 @@ const ProductImg = ({ travelId, travelImg }: ProductImgProps) => {
 
         setSubItems(filtered);
       } catch (err) {
-        console.error("서브 이미지 불러오기 실패:", err);
+        console.error("물품 이미지 불러오기 실패:", err);
       }
     };
 
     loadSubImages();
   }, [travelId]);
 
+  // 커스텀 swiper 네비게이션 설정
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (

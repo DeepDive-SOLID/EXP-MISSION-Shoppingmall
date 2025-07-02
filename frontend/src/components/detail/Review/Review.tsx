@@ -12,6 +12,7 @@ interface ReviewProps {
 const Review = ({ travelId }: ReviewProps) => {
   const [reviews, setReviews] = useState<ReviewDto[]>([]);
 
+  // 리뷰 데이터 불러오기
   useEffect(() => {
     const fetchData = async () => {
       try {

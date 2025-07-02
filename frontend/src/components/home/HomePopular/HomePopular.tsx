@@ -18,6 +18,7 @@ const HomePopular = () => {
   const nextRef = useRef<HTMLDivElement | null>(null);
   const swiperRef = useRef<SwiperType | null>(null);
 
+  // 인기 상품 불러오기
   useEffect(() => {
     const loadPopulars = async () => {
       try {
@@ -30,6 +31,7 @@ const HomePopular = () => {
     loadPopulars();
   }, []);
 
+  // 커스텀 swiper 네비게이션 설정
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (

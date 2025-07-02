@@ -7,8 +7,14 @@ import { HomeTravelDto } from "../../../types/home/homeTravel";
 import { ProductDto } from "../../../types/home/homeProduct";
 import { ReviewDto } from "../../../types/home/review";
 import { fetchProducts, fetchReviews } from "../../../api/home/homeApi";
-import { useNavigate } from "react-router-dom";
-import { isLoggedIn } from "../../../utils/auth";
+import { useNavigate, useLocation } from "react-router-dom";
+import { isLoggedIn, getCurrentMemberId } from "../../../utils/auth";
+import {
+  addToBasket,
+  deleteFromBasket,
+  fetchBasketList,
+} from "../../../api/basket/basketApi";
+import { BasketProductDto } from "../../../types/basket/basket";
 
 interface InfoProps {
   travelId: number;
@@ -22,7 +28,30 @@ const Info = ({ travelId, travel }: InfoProps) => {
   const [selectedProducts, setSelectedProducts] = useState<
     { id: number; label: string; price: number; count: number }[]
   >([]);
+  const [selectedProductId, setSelectedProductId] = useState("");
 
+  const location = useLocation();
+  const fromCart = location.state?.fromCart;
+  const basket = location.state?.basket;
+
+  const navigate = useNavigate();
+
+  // fromCart일 경우 초기화
+  useEffect(() => {
+    if (fromCart && basket) {
+      setPeopleCount(basket.basketTravelAmount);
+      setSelectedProducts(
+        basket.basketProducts.map((p: BasketProductDto) => ({
+          id: p.productId,
+          label: p.productName ?? "",
+          price: p.productPrice ?? 0,
+          count: p.basketProductAmount,
+        })),
+      );
+    }
+  }, [fromCart, basket]);
+
+  // 상품 및 리뷰 불러오기
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -39,6 +68,8 @@ const Info = ({ travelId, travel }: InfoProps) => {
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const productId = Number(e.target.value);
+    setSelectedProductId("");
+
     const found = productList.find(p => p.productId === productId);
     if (!found) return;
 
@@ -54,16 +85,6 @@ const Info = ({ travelId, travel }: InfoProps) => {
         count: 1,
       },
     ]);
-  };
-
-  const updateProductCount = (id: number, delta: number) => {
-    setSelectedProducts(prev =>
-      prev
-        .map(p =>
-          p.id === id ? { ...p, count: Math.max(0, p.count + delta) } : p,
-        )
-        .filter(p => p.count > 0),
-    );
   };
 
   const removeProduct = (id: number) => {
@@ -82,26 +103,133 @@ const Info = ({ travelId, travel }: InfoProps) => {
     peopleCount * travel.travelPrice +
     selectedProducts.reduce((sum, item) => sum + item.count * item.price, 0);
 
-  const navigate = useNavigate();
-
-  const handleCartClick = () => {
-    if (!isLoggedIn()) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
-      return;
-    }
-
-    alert("장바구니에 담았습니다!");
+  const checkIfAlreadyInCart = async (memberId: string, travelId: number) => {
+    const basketList = await fetchBasketList(memberId);
+    return basketList.some(item => item.travelId === travelId);
   };
 
-  const handleReserveClick = () => {
+  const handleCartClick = async () => {
     if (!isLoggedIn()) {
       alert("로그인이 필요합니다.");
       navigate("/login");
       return;
     }
 
-    navigate("/order");
+    const memberId = getCurrentMemberId();
+    if (!memberId) {
+      alert("회원 정보를 확인할 수 없습니다.");
+      return;
+    }
+
+    try {
+      if (fromCart) {
+        await deleteFromBasket({ travelId: travel.travelId, memberId });
+      } else {
+        const alreadyExists = await checkIfAlreadyInCart(
+          memberId,
+          travel.travelId,
+        );
+        if (alreadyExists) {
+          alert("이미 장바구니에 담겨 있습니다.");
+          navigate("/cart");
+          return;
+        }
+      }
+
+      console.log("장바구니에 담을 selectedProducts:", selectedProducts);
+      console.log(
+        "변환된 products 배열:",
+        selectedProducts.map(item => ({
+          productId: item.id,
+          basketProductAmount: item.count,
+        })),
+      );
+
+      await addToBasket({
+        memberId,
+        travelId: travel.travelId,
+        basketTravelAmount: peopleCount,
+        products:
+          selectedProducts && selectedProducts.length > 0
+            ? selectedProducts.map(item => ({
+                productId: item.id,
+                basketProductAmount: item.count,
+              }))
+            : [],
+      });
+
+      alert("장바구니에 담았습니다!");
+      navigate("/cart");
+    } catch (error) {
+      console.error("장바구니 담기 실패:", error);
+      alert("장바구니 담기에 실패했습니다.");
+    }
+  };
+
+  const handleReserveClick = async () => {
+    if (!isLoggedIn()) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    const memberId = getCurrentMemberId();
+    if (!memberId) {
+      alert("회원 정보를 확인할 수 없습니다.");
+      return;
+    }
+
+    const alreadyExists = await checkIfAlreadyInCart(memberId, travel.travelId);
+    if (alreadyExists) {
+      alert("이미 장바구니에 담겨 있습니다. 장바구니에서 결제해주세요.");
+      navigate("/cart");
+      return;
+    }
+
+    try {
+      await addToBasket({
+        memberId,
+        travelId: travel.travelId,
+        basketTravelAmount: peopleCount,
+        products:
+          selectedProducts.length > 0
+            ? selectedProducts.map(item => ({
+                productId: item.id,
+                basketProductAmount: item.count,
+              }))
+            : [],
+      });
+
+      navigate("/order", {
+        state: {
+          selectedItems: [
+            {
+              basketId: -1,
+              travelId: travel.travelId,
+              travelName: travel.travelName,
+              travelImg: travel.travelImg,
+              travelStartDt: travel.travelStartDt,
+              travelEndDt: travel.travelEndDt,
+              travelPrice: travel.travelPrice,
+              basketTravelAmount: peopleCount,
+              basketProductAmount: selectedProducts.reduce(
+                (sum, p) => sum + p.count,
+                0,
+              ),
+              basketProducts: selectedProducts.map(p => ({
+                productId: p.id,
+                productName: p.label,
+                productPrice: p.price,
+                basketProductAmount: p.count,
+              })),
+            },
+          ],
+        },
+      });
+    } catch (error) {
+      console.error("예약 중 장바구니 추가 실패:", error);
+      alert("예약 처리 중 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -109,7 +237,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
       <p className={styles.title}>{travel.travelName}</p>
 
       <div className={styles.infoBadge}>
-        {travel.travelLabel.split(",").map((label, idx) => (
+        {travel.travelLabel?.split(",").map((label: string, idx: number) => (
           <span key={idx} className={styles.badge}>
             #{label.trim()}
           </span>
@@ -136,16 +264,12 @@ const Info = ({ travelId, travel }: InfoProps) => {
           <div className={styles.personText}>
             <div className={styles.personTop}>
               <span className={styles.personCount}>
-                예약 인원 {travel.reservedCount ?? 0}명
+                잔여 개수 {travel.travelAmount}개
               </span>
-              <span className={styles.personCount}>
-                (잔여 개수{" "}
-                {(travel.maxPeople ?? 0) - (travel.reservedCount ?? 0)}개)
+              <span className={styles.minPeopleCount}>
+                (현재 예약 인원 {travel.reservedCount ?? 0}명)
               </span>
             </div>
-            <p className={styles.minPeopleCount}>
-              최소 출발 인원 : {travel.minPeople ?? 0}명
-            </p>
           </div>
         </div>
       </div>
@@ -154,8 +278,8 @@ const Info = ({ travelId, travel }: InfoProps) => {
         <p className={styles.subProductTitle}>추가 구매 상품</p>
         <select
           className={styles.productSelect}
+          value={selectedProductId}
           onChange={handleSelect}
-          defaultValue=""
         >
           <option value="" disabled>
             상품을 선택하세요
@@ -169,31 +293,46 @@ const Info = ({ travelId, travel }: InfoProps) => {
         </select>
       </div>
 
-      {selectedProducts.map(item => (
-        <div className={styles.productItem} key={item.id}>
-          <span className={styles.productLabel}>{item.label}</span>
-          <div className={styles.productControl}>
-            <CounterBox
-              label=""
-              count={item.count}
-              price={item.price}
-              hidePrice={true}
-              onDecrease={() => updateProductCount(item.id, -1)}
-              onIncrease={() => updateProductCount(item.id, 1)}
-            />
-            <span className={styles.productPrice}>
-              {Number(item.count * item.price || 0).toLocaleString()}원
-            </span>
-            <button
-              className={styles.removeButton}
-              onClick={() => removeProduct(item.id)}
-              aria-label={`${item.label} 삭제`}
-            >
-              x
-            </button>
+      {selectedProducts.length > 0 &&
+        selectedProducts.map(item => (
+          <div className={styles.productItem} key={item.id}>
+            <span className={styles.productLabel}>{item.label}</span>
+            <div className={styles.productControl}>
+              <CounterBox
+                label=""
+                count={item.count}
+                price={item.price}
+                hidePrice={true}
+                onDecrease={() =>
+                  setSelectedProducts(prev =>
+                    prev.map(p =>
+                      p.id === item.id
+                        ? { ...p, count: Math.max(1, p.count - 1) }
+                        : p,
+                    ),
+                  )
+                }
+                onIncrease={() =>
+                  setSelectedProducts(prev =>
+                    prev.map(p =>
+                      p.id === item.id ? { ...p, count: p.count + 1 } : p,
+                    ),
+                  )
+                }
+              />
+              <span className={styles.productPrice}>
+                {(item.count * item.price).toLocaleString()}원
+              </span>
+              <button
+                className={styles.removeButton}
+                onClick={() => removeProduct(item.id)}
+                aria-label={`${item.label} 삭제`}
+              >
+                x
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
 
       <div className={styles.personItem}>
         <span className={styles.productLabel}>인원</span>
@@ -204,8 +343,14 @@ const Info = ({ travelId, travel }: InfoProps) => {
             price={travel.travelPrice}
             hidePrice={true}
             onDecrease={() => setPeopleCount(prev => Math.max(1, prev - 1))}
-            onIncrease={() => setPeopleCount(prev => prev + 1)}
+            onIncrease={() =>
+              setPeopleCount(prev => {
+                const maxCount = travel.travelAmount ?? 0;
+                return prev < maxCount ? prev + 1 : prev;
+              })
+            }
           />
+
           <span className={styles.productPrice}>
             {(peopleCount * travel.travelPrice).toLocaleString()}원
           </span>
@@ -218,12 +363,21 @@ const Info = ({ travelId, travel }: InfoProps) => {
       </div>
 
       <div className={styles.buttonSection}>
-        <button className={styles.cartButton} onClick={handleCartClick}>
-          장바구니
-        </button>
-        <button className={styles.reserveButton} onClick={handleReserveClick}>
-          예약하기
-        </button>
+        {travel.travelSold ? (
+          <p className={styles.soldOutMessage}>품절된 상품입니다.</p>
+        ) : (
+          <>
+            <button className={styles.cartButton} onClick={handleCartClick}>
+              장바구니
+            </button>
+            <button
+              className={styles.reserveButton}
+              onClick={handleReserveClick}
+            >
+              예약하기
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

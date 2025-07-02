@@ -14,6 +14,7 @@ const SearchMain = () => {
   const baseParams = useMemo(() => location.state || {}, [location.state]);
   const navigate = useNavigate();
 
+  // 검색 결과 불러오기
   useEffect(() => {
     const fetch = async () => {
       try {

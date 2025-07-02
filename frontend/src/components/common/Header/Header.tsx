@@ -73,7 +73,7 @@ const Header = () => {
 
               {!isManager && (
                 // 일반 사용자만 장바구니 표시
-                <div className={styles.menu}>
+                <div className={styles.menu} onClick={() => navigate("/cart")}>
                   <img
                     src={shopping_cart}
                     alt="shopping_cart"

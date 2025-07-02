@@ -1,0 +1,288 @@
+.cartContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+.checklist {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  font-size: 18px;
+
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.cartContentWrapper {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.productList {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.productSection {
+  display: flex;
+  position: relative;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  align-items: flex-start;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.removeButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #e00;
+  }
+}
+
+.productCheckbox {
+  margin-top: 10px;
+  width: 20px;
+  height: 20px;
+}
+
+.leftSection {
+  width: 140px;
+  height: 140px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+}
+
+.rightSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.travelInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  .title {
+    font-weight: 700;
+    font-size: 18px;
+    margin: 1px;
+  }
+
+  .days,
+  .date {
+    font-size: 14px;
+    color: #555;
+    margin: 2px;
+  }
+
+  .changeButton {
+    margin-top: 20px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    background-color: #0085ff;
+    color: white;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #006fe0;
+    }
+  }
+}
+
+.extraAndPrice {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 12px;
+  border-top: 1px solid #ddd;
+}
+
+.extra {
+  .extraTitle {
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .extraItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    .amount {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      button {
+        width: 24px;
+        height: 24px;
+        border: 1px solid #ddd;
+        background-color: #f6f6f6;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #202020;
+
+        &:hover {
+          background-color: #e0e0e0;
+        }
+      }
+
+      span {
+        min-width: 24px;
+        text-align: center;
+        font-size: 15px;
+      }
+    }
+  }
+}
+
+.summary {
+  text-align: right;
+
+  .totalPrice {
+    font-weight: bold;
+    color: #cd2e3a;
+    font-size: 18px;
+  }
+}
+
+.totalPriceSection {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #fff;
+  padding: 20px;
+  min-width: 240px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  .summaryTitle {
+    font-weight: bold;
+    margin-bottom: 12px;
+    font-size: 18px;
+  }
+
+  .priceRow,
+  .finalRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+  }
+
+  .finalRow {
+    border-top: 1px solid #ddd;
+    padding-top: 12px;
+    margin-top: 10px;
+  }
+
+  .finalPrice {
+    font-size: 20px;
+    font-weight: bold;
+    color: #cd2e3a;
+  }
+
+  .payButton {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    background-color: #0085ff;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #006fe0;
+    }
+  }
+}
+
+.emptyState {
+  width: 100%;
+  padding: 60px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.emptyImage {
+  width: 350px;
+}
+
+.emptyText {
+  font-size: 36px;
+  font-weight: 800;
+  color: #555;
+}
+
+.emptySubText {
+  font-size: 16px;
+  color: #888;
+}
+
+.shopButton {
+  margin-top: 12px;
+  padding: 12px 24px;
+  background-color: #0085ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+
+  &:hover {
+    background-color: #0070e0;
+  }
+}

@@ -18,6 +18,7 @@ const HomeRecommend = () => {
   const nextRef = useRef<HTMLDivElement | null>(null);
   const swiperRef = useRef<SwiperType | null>(null);
 
+  // 추천 상품 불러오기
   useEffect(() => {
     const load = async () => {
       try {
@@ -30,6 +31,7 @@ const HomeRecommend = () => {
     load();
   }, []);
 
+  // 커스텀 swiper 네비게이션 설정
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (
