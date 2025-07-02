@@ -8,7 +8,12 @@ import { ProductDto } from "../../../types/home/homeProduct";
 import { ReviewDto } from "../../../types/home/review";
 import { fetchProducts, fetchReviews } from "../../../api/home/homeApi";
 import { useNavigate, useLocation } from "react-router-dom";
-import { isLoggedIn, getCurrentMemberId, refreshNewToken } from "../../../utils/auth";
+import {
+  isLoggedIn,
+  getCurrentMemberId,
+  refreshNewToken,
+  isAdmin,
+} from "../../../utils/auth";
 import {
   addToBasket,
   deleteFromBasket,
@@ -34,6 +39,8 @@ const Info = ({ travelId, travel }: InfoProps) => {
   const basket = location.state?.basket;
 
   const navigate = useNavigate();
+
+  const isAdminUser = isAdmin();
 
   // fromCart일 경우 초기화
   useEffect(() => {
@@ -370,7 +377,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
       <div className={styles.buttonSection}>
         {travel.travelSold ? (
           <p className={styles.soldOutMessage}>품절된 상품입니다.</p>
-        ) : (
+        ) : !isAdminUser ? (
           <>
             <button className={styles.cartButton} onClick={handleCartClick}>
               장바구니
@@ -382,7 +389,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
               예약하기
             </button>
           </>
-        )}
+        ) : null}
       </div>
     </div>
   );
