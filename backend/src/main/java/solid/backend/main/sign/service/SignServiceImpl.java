@@ -1,6 +1,8 @@
 package solid.backend.main.sign.service;
 
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -57,12 +59,23 @@ public class SignServiceImpl implements SignService {
     }
 
     /**
+     * 설명: 회원가입 이메일 중복 확인
+     * @param memberEmail
+     * @return Boolean (중복이면 true, 아니면 false)
+     */
+    @Override
+    public Boolean isDuplicatedEmail(String memberEmail) {
+        return signRepository.findByMemberEmail(memberEmail).isPresent();
+    }
+
+    /**
      * 설명: 로그인 시 토큰 발급
      * @param signInDto
+     * @param request
      * @return token
      */
     @Override
-    public String login(SignInDto signInDto) {
+    public String login(SignInDto signInDto, HttpServletRequest request) {
         // 1. 사용자 조회
         Optional<Member> optionalMember = signRepository.findById(signInDto.getMemberId());
         if (optionalMember.isEmpty()) {
@@ -87,6 +100,14 @@ public class SignServiceImpl implements SignService {
 
         // refreshToken은 백엔드에서 저장 필요.
         String refreshToken = jwtUtil.createRefreshToken(dto);
+
+        System.out.println("accessToken: " + accessToken);
+        System.out.println("refreshToken: " + refreshToken);
+
+
+        // 세션에 refreshToken 저장
+        HttpSession session = request.getSession(true);
+        session.setAttribute("refreshToken", refreshToken);
 
         // 5. access token 반환
         return accessToken;

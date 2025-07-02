@@ -10,6 +10,10 @@ src/main/java/solid/backend
   - orders : 주문 관리
   - member : 사용자 관리
   - travel : 여행 상품 관리
+- mypage : 회원 페이지
+  - member : 회원 관리
+  - orders : 주문 내역 관리
+  - payment : 결제수단 관리
 - entity : 엔티티
   - Auth : 권한
   - Member : 회원
@@ -309,3 +313,136 @@ return : List< DashboardWeeklySalesAmtDto >
 - HTTP request URL : /admin/travel/search
 - param : TravelSearchDto
 - return : TravelListDto(List)
+
+---
+
+### 주문 내역 관리 : mypage/orders
+- controller(컨트롤러)
+  - MypageOrdersController.java
+- dto(객체정보)
+  - MypageOrdersListDto.java
+  - MypageOrdersReviewAddDto.java
+  - MypageOrdersReviewDto.java
+  - MyPageOrdersReviewIdDto.java
+  - MypageOrdersReviewUpdDto.java
+  - MypageOrdersUpdDto.java
+- repository(jpa)
+  - MypageOrdersQueryRepository.java
+- service(비즈니스 로직)
+  - MypageOrdersService.java
+  - MypageOrdersServiceImpl.java
+
+### 주문 내역 API 목록
+[주문 내역 리스트 조회]  
+HTTP method : POST  
+HTTP request URL : /mypage/orders/getOrdersList    
+param : memberId(String)  
+return : MypageOrdersListDto(List)
+
+[예약 취소]  
+HTTP method : PUT  
+HTTP request URL : /mypage/orders/updOrdersCancel  
+param : MypageOrdersUpdDto(ordersDto)  
+return : ResponseEntity(String)
+
+[리뷰 정보 추가]  
+HTTP method : POST  
+HTTP request URL : /mypage/orders/addOrdersReviewDto  
+param : MypageOrdersReviewDto(reviewDto)  
+return : ResponseEntity(String)
+
+[리뷰 정보 조회]  
+HTTP method : POST  
+HTTP request URL : /mypage/orders/getOrdersReviewDto  
+param : MypageOrdersReviewIdDto(reviewIds)  
+return : MypageOrdersReviewDto
+
+[리뷰 정보 수정]  
+HTTP method : PUT  
+HTTP request URL : /mypage/orders/updOrdersReviewDto  
+param : MypageOrdersReviewUpdDto(reviewDto)  
+return : ResponseEntity(String)
+---
+
+### 회원 정보 관리 : mypage/member
+- controller(컨트롤러)
+  - MypageMemberController.java
+- dto(객체정보)
+  - MypageMemberProfileDto.java
+  - MypageMemberDto.java
+  - MypageMemberUpdDto.java
+- repository(jpa)
+- service(비즈니스 로직)
+  - MypageMemberService.java
+  - MypageMemberServiceImpl.java
+
+### 회원 정보 API 목록
+[회원 정보 조회]  
+HTTP method : POST  
+HTTP request URL : /mypage/member/getProfileDto    
+param : memberId(String)  
+return : MypageMemberProfileDto
+
+[회원 정보 조회]  
+HTTP method : POST  
+HTTP request URL : /mypage/member/getMemberDto  
+param : memberId(String)  
+return : MypageMemberDto  
+
+[회원 정보 수정]  
+HTTP method : PUT  
+HTTP request URL : /mypage/member/updateMemberDto    
+param : memberDto(MypageMemberUpdDto)  
+return : ResponseEntity(String)  
+
+[회원 정보 이메일 중복 체크]
+HTTP method : POST  
+HTTP request URL : /mypage/member/checkEmail    
+param : memberEmail(String)  
+return : ResponseEntity(Boolean)
+
+[회원 정보 삭제]  
+HTTP method : DELETE  
+HTTP request URL : /mypage/member/deleteMemberDto  
+param : memberId(String)
+return : ResponseEntity(String)
+---
+
+### 결제 수단 관리 : mypage/payment
+- controller(컨트롤러)
+  - PaymentController.java
+- dto(객체정보)
+  - PaymentAddDto.java
+  - PaymentListDto.java
+  - MypageMemberUpdDto.java
+- repository(jpa)
+  - PaymentQueryRepository.java
+- service(비즈니스 로직)
+  - PaymentService.java
+  - PaymentServiceImpl.java
+
+### 결제 수단 정보 API 목록
+[조회]  
+HTTP method : POST  
+HTTP request URL : /mypage/payment/getPaymentList    
+param : memberId(String)  
+return : PaymentListDto(List)
+
+[카드 이미지 조회]  
+HTTP method : POST  
+HTTP request URL : /mypage/payment/getCardImg  
+param : cardId(Integer)  
+return : String  
+
+[등록]  
+HTTP method : POST  
+HTTP request URL : /mypage/member/addPaymentDto    
+param : paymentDto(PaymentAddDto)  
+return : ResponseEntity(String)
+
+[삭제]  
+HTTP method : DELETE  
+HTTP request URL : /mypage/member/deletePaymentDto  
+param : paymentId(Integer)  
+return : ResponseEntity(String)
+---

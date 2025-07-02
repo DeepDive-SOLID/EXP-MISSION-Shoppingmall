@@ -48,11 +48,11 @@ public class Orders {
     @Comment("회원 ID")
     private Member member;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<OrderTravel> orderTravels = new ArrayList<>();
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<OrderProduct> orderProducts = new ArrayList<>();
 }

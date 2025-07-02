@@ -35,6 +35,10 @@ public class Member {
     @Comment("회원 생년월일")
     private LocalDate memberBirth;
 
+    @Column(name = "member_img", length = 500)
+    @Comment("회원 이미지")
+    private String memberImg;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_id", nullable = false)
     @Comment("권한 코드")

@@ -1,5 +1,6 @@
 package solid.backend.main.sign.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,14 +47,26 @@ public class SignController {
     }
 
     /**
+     * 설명: 회원가입 이메일 중복 확인
+     * @param signInCheckEmailDto
+     * @return ResponseEntity<Boolean> (이메일이 있으면 true, 없으면 false)
+     */
+    @PostMapping("/checkEmail")
+    @ResponseBody
+    public ResponseEntity<Boolean> checkEmail(@RequestBody SignUpCheckEmailDto signInCheckEmailDto) {
+        boolean isDuplicate = signService.isDuplicatedEmail(signInCheckEmailDto.getMemberEmail());
+        return ResponseEntity.ok(isDuplicate);
+    }
+
+    /**
      * 설명: 로그인 시 토큰 발급
      * @param signInDto
      * @return ResponseEntity<String>
      */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody SignInDto signInDto) {
+    public ResponseEntity<String> login(@RequestBody SignInDto signInDto, HttpServletRequest request) {
         try {
-            String token = signService.login(signInDto);
+            String token = signService.login(signInDto, request);
             return ResponseEntity.ok(token);
         } catch (UsernameNotFoundException | BadCredentialsException e) {
             return ResponseEntity

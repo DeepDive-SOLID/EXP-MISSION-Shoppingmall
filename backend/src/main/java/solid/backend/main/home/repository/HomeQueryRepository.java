@@ -6,9 +6,8 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import solid.backend.entity.QReview;
-import solid.backend.entity.QTravel;
-import solid.backend.entity.Review;
+import solid.backend.entity.*;
+import solid.backend.main.home.dto.HomeProductDto;
 import solid.backend.main.home.dto.HomeReviewDto;
 import solid.backend.main.home.dto.HomeSearchDto;
 import solid.backend.main.home.dto.HomeTravelDto;
@@ -24,6 +23,8 @@ public class HomeQueryRepository {
 
     QTravel travel = QTravel.travel;
     QReview review = QReview.review;
+    QProduct product = QProduct.product;
+    QOrderTravel orderTravel = QOrderTravel.orderTravel;
 
     /**
      * @param homeSearchDto
@@ -40,9 +41,11 @@ public class HomeQueryRepository {
                         travel.travelPrice,
                         travel.travelImg,
                         review.reviewRate.avg().doubleValue(),
-                        review.count().intValue()
+                        review.count().intValue(),
+                        orderTravel.id.travelId.count().intValue()
                 ))
                 .from(travel)
+                .leftJoin(orderTravel).on(travel.travelId.eq(orderTravel.id.travelId))
                 .leftJoin(review).on(travel.travelId.eq(review.travel.travelId))
                 .where(
                         containsTravelName(homeSearchDto.getName()),
@@ -55,7 +58,32 @@ public class HomeQueryRepository {
     }
 
     /**
+     * 설명: 홈 화면에 나오는 데이터
+     * @return List<HomeTravelDto>
+     */
+    public List<HomeTravelDto> travelList() {
+        return queryFactory.select(Projections.constructor(HomeTravelDto.class,
+                        travel.travelId,
+                        travel.travelName,
+                        travel.travelStartDt,
+                        travel.travelEndDt,
+                        travel.travelLabel,
+                        travel.travelPrice,
+                        travel.travelImg,
+                        review.reviewRate.avg().doubleValue(),
+                        review.count().intValue(),
+                        orderTravel.id.travelId.count().intValue()
+                ))
+                .from(travel)
+                .leftJoin(orderTravel).on(travel.travelId.eq(orderTravel.id.travelId))
+                .leftJoin(review).on(travel.travelId.eq(review.travel.travelId))
+                .groupBy(travel.travelId)
+                .fetch();
+    }
+
+    /**
      * 설명: 해당하는 상품에 대한 리뷰 리스트
+     *
      * @param travelId
      * @return List<HomeReviewDto>
      */
@@ -67,6 +95,18 @@ public class HomeQueryRepository {
                 ))
                 .from(review)
                 .where(review.travel.travelId.eq(travelId))
+                .fetch();
+    }
+
+    public List<HomeProductDto> getTravelProductList() {
+        return queryFactory.select(Projections.constructor(HomeProductDto.class,
+                product.productId,
+                product.productName,
+                product.productPrice,
+                product.productImg,
+                product.productSold
+        ))
+                .from(product)
                 .fetch();
     }
 

@@ -10,7 +10,7 @@ import org.hibernate.annotations.Comment;
 public class OrderProduct {
 
     @EmbeddedId
-    private CompoundKey id;
+    private OrderProductId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false, updatable = false, insertable = false)
