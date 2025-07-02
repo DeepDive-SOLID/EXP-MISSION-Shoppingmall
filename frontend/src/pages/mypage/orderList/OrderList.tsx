@@ -347,7 +347,7 @@ const OrderList = () => {
                       </div>
                       <div className={styles.priceInfo}>
                         <span className={styles.price}>
-                          {order.totalPrice.toLocaleString()}원
+                          {(order.totalPrice ?? 0).toLocaleString()}원
                         </span>
                       </div>
                     </div>

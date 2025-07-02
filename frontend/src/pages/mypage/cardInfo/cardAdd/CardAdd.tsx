@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./CardAdd.module.scss";
 import Header from "../../../../components/common/Header/Header";
 import Sidebar from "../../../../components/common/Sidebar_mypage/Sidebar";
-import kbCard from "../../../../assets/images/kb.jpg";
+import kbCard from "../../../../assets/images/kakao.jpg";
 import { addCard, getCardImage } from "../../../../api/mypage/cardApi";
 import { useAuth } from "../../../../contexts/AuthContext";
 

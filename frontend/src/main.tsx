@@ -15,7 +15,12 @@ import SignIn from "./pages/login/signIn/SignIn";
 import FindId from "./pages/login/findPw/FindId";
 import FindPw from "./pages/login/findPw/FindPw";
 import SignInFromPayment from "./pages/login/signIn/SignInFromPayment";
-
+import OrderList from "./pages/mypage/orderList/OrderList";
+import EditProfile from "./pages/mypage/editProfile/EditProfile";
+import CardInfo from "./pages/mypage/cardInfo/cardInfo/CardInfo";
+import CardAdd from "./pages/mypage/cardInfo/cardAdd/CardAdd";
+import AddComplete from "./pages/mypage/cardInfo/addComplete/AddComplete";
+import AddFail from "./pages/mypage/cardInfo/addFail/AddFail";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import Cart from "./pages/cart/Cart";
 import Order from "./pages/order/order";
@@ -88,6 +93,55 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requireAuth={true} requireManager={false}>
             <PayFail />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mypage/order-list",
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <OrderList />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mypage/edit-profile",
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <EditProfile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mypage/card-info",
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <CardInfo />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mypage/card-add",
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <CardAdd />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mypage/card-add/complete",
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <AddComplete />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mypage/card-add/fail",
+        element: (
+          <ProtectedRoute requireAuth={true} requireManager={false}>
+            <AddFail />
+            Add commentMore actions
           </ProtectedRoute>
         ),
       },

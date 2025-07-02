@@ -1,0 +1,114 @@
+.addCompletePage {
+  min-height: 100vh;
+}
+
+.mainContent {
+  display: flex;
+  align-items: flex-start;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  padding-top: 70px;
+}
+
+.addCompleteContainer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+  padding: 24px;
+}
+
+.addCompleteBox {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  padding: 48px;
+  max-width: 1082px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.icon {
+  color: #10b981; // Emerald-500
+  width: 80px;
+  height: 80px;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 24px 0;
+
+  .highlight {
+    color: #3b82f6;
+  }
+}
+
+.completeImage {
+  width: 350px;
+  height: auto;
+  margin-bottom: 32px;
+}
+
+.message {
+  color: #64748b;
+  font-size: 1rem;
+  margin-bottom: 32px;
+  max-width: 400px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 320px;
+
+  button {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .primaryButton {
+    background-color: #3b82f6;
+    color: white;
+
+    &:hover {
+      background-color: #2563eb;
+    }
+  }
+
+  .secondaryButton {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+
+    &:hover {
+      background-color: #e2e8f0;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .addCompleteContainer {
+    align-items: flex-start;
+    padding: 16px;
+  }
+  .addCompleteBox {
+    padding: 32px 24px;
+  }
+  .title {
+    font-size: 1.5rem;
+  }
+}
