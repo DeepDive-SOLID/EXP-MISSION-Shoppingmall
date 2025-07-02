@@ -46,7 +46,6 @@ const AddCard = ({ onClose }: AddCardModalProps) => {
       };
       setPaymentName(cardBins[card1] || "");
 
-      // 카드 이미지 불러오기
       getCardImage(card1)
         .then(url => setCardImgUrl(url))
         .catch(() => setCardImgUrl(null));
@@ -92,118 +91,126 @@ const AddCard = ({ onClose }: AddCardModalProps) => {
           x
         </button>
         <div className={styles.cardPreview}>
-          {cardImgUrl ? (
-            <img
-              src={cardImgUrl}
-              alt="카드 이미지"
-              className={styles.cardImage}
-            />
-          ) : (
-            <img
-              src={kakao_card}
-              alt="기본 카드"
-              className={styles.cardImage}
-            />
-          )}
+          <img
+            src={cardImgUrl ?? kakao_card}
+            alt="카드 이미지"
+            className={styles.cardImage}
+          />
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label>카드 번호</label>
+          <label>카드번호</label>
           <div className={styles.cardNumberGroup}>
+            {["card1", "card2", "card3", "card4"].map(field => (
+              <div key={field} className={styles.inputBlock}>
+                <input
+                  {...register(field as keyof CardFormData, {
+                    required: "필수 입력입니다",
+                    pattern: {
+                      value: /^\d{4}$/,
+                      message: "숫자 4자리를 입력해주세요",
+                    },
+                  })}
+                  maxLength={4}
+                  inputMode="numeric"
+                  onInput={e =>
+                    (e.currentTarget.value = e.currentTarget.value.replace(
+                      /\D/g,
+                      "",
+                    ))
+                  }
+                />
+                {errors[field as keyof CardFormData] && (
+                  <p className={styles.errorText}>
+                    {errors[field as keyof CardFormData]?.message}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.inputBlock}>
+            <label>만료일</label>
+            <div className={styles.expiryGroup}>
+              <div className={styles.inputBlock}>
+                <input
+                  {...register("expMonth", {
+                    required: "필수 입력입니다",
+                    pattern: {
+                      value: /^(0[1-9]|1[0-2])$/,
+                      message: "01~12 사이의 숫자 입력",
+                    },
+                  })}
+                  placeholder="MM"
+                  maxLength={2}
+                  inputMode="numeric"
+                  onInput={e =>
+                    (e.currentTarget.value = e.currentTarget.value.replace(
+                      /\D/g,
+                      "",
+                    ))
+                  }
+                />
+                {errors.expMonth && (
+                  <p className={styles.errorText}>{errors.expMonth.message}</p>
+                )}
+              </div>
+
+              <div className={styles.inputBlock}>
+                <input
+                  {...register("expYear", {
+                    required: "필수 입력입니다",
+                    pattern: {
+                      value: /^\d{2}$/,
+                      message: "2자리 숫자 입력",
+                    },
+                  })}
+                  placeholder="YY"
+                  maxLength={2}
+                  inputMode="numeric"
+                  onInput={e =>
+                    (e.currentTarget.value = e.currentTarget.value.replace(
+                      /\D/g,
+                      "",
+                    ))
+                  }
+                />
+                {errors.expYear && (
+                  <p className={styles.errorText}>{errors.expYear.message}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.inputBlock}>
+            <label>카드 소유자 이름</label>
             <input
-              {...register("card1", {
+              {...register("cardOwner", {
                 required: "필수 입력입니다",
-                pattern: {
-                  value: /^\d{4}$/,
-                  message: "숫자 4자리를 입력해주세요",
+                minLength: {
+                  value: 2,
+                  message: "이름은 2자 이상 입력해주세요",
                 },
               })}
-              maxLength={4}
-              inputMode="numeric"
-              onInput={e =>
-                (e.currentTarget.value = e.currentTarget.value.replace(
-                  /\D/g,
-                  "",
-                ))
-              }
+              placeholder="카드 소유자 이름"
             />
-            {errors.card1 && (
-              <p className={styles.error}>{errors.card1.message}</p>
-            )}
-            <input
-              {...register("card2", {
-                required: "필수 입력입니다",
-                pattern: {
-                  value: /^\d{4}$/,
-                  message: "숫자 4자리를 입력해주세요",
-                },
-              })}
-              maxLength={4}
-              inputMode="numeric"
-              onInput={e =>
-                (e.currentTarget.value = e.currentTarget.value.replace(
-                  /\D/g,
-                  "",
-                ))
-              }
-            />
-            {errors.card2 && (
-              <p className={styles.error}>{errors.card2.message}</p>
-            )}
-            <input
-              {...register("card3", {
-                required: "필수 입력입니다",
-                pattern: {
-                  value: /^\d{4}$/,
-                  message: "숫자 4자리를 입력해주세요",
-                },
-              })}
-              maxLength={4}
-              inputMode="numeric"
-              onInput={e =>
-                (e.currentTarget.value = e.currentTarget.value.replace(
-                  /\D/g,
-                  "",
-                ))
-              }
-            />
-            {errors.card3 && (
-              <p className={styles.error}>{errors.card3.message}</p>
-            )}
-            <input
-              {...register("card4", {
-                required: "필수 입력입니다",
-                pattern: {
-                  value: /^\d{4}$/,
-                  message: "숫자 4자리를 입력해주세요",
-                },
-              })}
-              maxLength={4}
-              inputMode="numeric"
-              onInput={e =>
-                (e.currentTarget.value = e.currentTarget.value.replace(
-                  /\D/g,
-                  "",
-                ))
-              }
-            />
-            {errors.card4 && (
-              <p className={styles.error}>{errors.card4.message}</p>
+            {errors.cardOwner && (
+              <p className={styles.errorText}>{errors.cardOwner.message}</p>
             )}
           </div>
 
-          <label>만료일</label>
-          <div className={styles.expiryGroup}>
+          <div className={styles.inputBlock}>
+            <label>보안 코드 (CVC)</label>
             <input
-              {...register("expMonth", {
+              {...register("cvc", {
                 required: "필수 입력입니다",
                 pattern: {
-                  value: /^(0[1-9]|1[0-2])$/,
-                  message: "01~12 사이의 숫자 입력",
+                  value: /^\d{3}$/,
+                  message: "3자리 숫자를 입력해주세요",
                 },
               })}
-              placeholder="MM"
-              maxLength={2}
+              maxLength={3}
+              placeholder="3자리 숫자"
               inputMode="numeric"
               onInput={e =>
                 (e.currentTarget.value = e.currentTarget.value.replace(
@@ -212,87 +219,35 @@ const AddCard = ({ onClose }: AddCardModalProps) => {
                 ))
               }
             />
-            {errors.expMonth && (
-              <p className={styles.error}>{errors.expMonth.message}</p>
-            )}
-
-            <span>/</span>
-
-            <input
-              {...register("expYear", {
-                required: "필수 입력입니다",
-                pattern: {
-                  value: /^\d{2}$/,
-                  message: "2자리 숫자 입력",
-                },
-              })}
-              placeholder="YY"
-              maxLength={2}
-              inputMode="numeric"
-              onInput={e =>
-                (e.currentTarget.value = e.currentTarget.value.replace(
-                  /\D/g,
-                  "",
-                ))
-              }
-            />
-            {errors.expYear && (
-              <p className={styles.error}>{errors.expYear.message}</p>
+            {errors.cvc && (
+              <p className={styles.errorText}>{errors.cvc.message}</p>
             )}
           </div>
 
-          <label>카드 소유자 이름</label>
-          <input
-            {...register("cardOwner", {
-              required: "필수 입력입니다",
-              minLength: {
-                value: 2,
-                message: "이름은 2자 이상 입력해주세요",
-              },
-            })}
-            placeholder="카드 소유자 이름"
-          />
-          {errors.cardOwner && (
-            <p className={styles.error}>{errors.cardOwner.message}</p>
-          )}
-
-          <label>보안 코드 (CVC)</label>
-          <input
-            {...register("cvc", {
-              required: "필수 입력입니다",
-              pattern: {
-                value: /^\d{3}$/,
-                message: "3자리 숫자를 입력해주세요",
-              },
-            })}
-            maxLength={3}
-            placeholder="3자리 숫자"
-            inputMode="numeric"
-            onInput={e =>
-              (e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""))
-            }
-          />
-          {errors.cvc && <p className={styles.error}>{errors.cvc.message}</p>}
-
-          <label>카드 비밀번호</label>
-          <input
-            {...register("cardPassword", {
-              required: "필수 입력입니다",
-              pattern: {
-                value: /^\d{4}$/,
-                message: "4자리 숫자를 입력해주세요",
-              },
-            })}
-            maxLength={4}
-            placeholder="4자리 숫자"
-            inputMode="numeric"
-            onInput={e =>
-              (e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""))
-            }
-          />
-          {errors.cardPassword && (
-            <p className={styles.error}>{errors.cardPassword.message}</p>
-          )}
+          <div className={styles.inputBlock}>
+            <label>카드 비밀번호</label>
+            <input
+              {...register("cardPassword", {
+                required: "필수 입력입니다",
+                pattern: {
+                  value: /^\d{4}$/,
+                  message: "4자리 숫자를 입력해주세요",
+                },
+              })}
+              maxLength={4}
+              placeholder="4자리 숫자"
+              inputMode="numeric"
+              onInput={e =>
+                (e.currentTarget.value = e.currentTarget.value.replace(
+                  /\D/g,
+                  "",
+                ))
+              }
+            />
+            {errors.cardPassword && (
+              <p className={styles.errorText}>{errors.cardPassword.message}</p>
+            )}
+          </div>
 
           <button type="submit" disabled={!isValid}>
             카드 등록하기
