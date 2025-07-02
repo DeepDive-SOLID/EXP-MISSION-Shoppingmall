@@ -37,7 +37,7 @@ public class BasketQueryRepository {
      */
     public BasketListDto getBasketOne(Integer basketId) {
         return jpaQueryFactory
-                .select(Projections.constructor(BasketListDto.class,
+                .select(Projections.fields(BasketListDto.class,
                         basket.basketId,
                         basket.travel.travelId,
                         basket.product.productId,
