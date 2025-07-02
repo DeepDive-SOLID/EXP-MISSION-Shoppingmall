@@ -47,7 +47,7 @@ public class PaymentOrderController {
      * @return List<PaymentCardDto>
      */
     @ResponseBody
-    @PostMapping(value = "/card-info")
+    @PostMapping(value = "/cardInfo")
     public List<PaymentCardDto> getPaymentCardInfo(@RequestBody MemberDto memberDto) {
         return paymentOrderService.getPaymentCardInfo(memberDto);
     }
@@ -58,7 +58,7 @@ public class PaymentOrderController {
      * @return ResponseEntity<String>
      */
     @ResponseBody
-    @PostMapping("/add-card")
+    @PostMapping("/addCard")
     public ResponseEntity<String> addPaymentCard(@RequestBody PaymentCardAddDto paymentCardAddDto) {
         try {
             paymentOrderService.addPaymentCard(paymentCardAddDto);
@@ -75,7 +75,7 @@ public class PaymentOrderController {
      * @return OrderMemberDto
      */
     @ResponseBody
-    @PostMapping("/member-info")
+    @PostMapping("/memberInfo")
     public OrderMemberDto getOrderMemberInfo(@RequestBody MemberDto memberDto) {
         return paymentOrderService.getOrderMemberInfo(memberDto);
     }

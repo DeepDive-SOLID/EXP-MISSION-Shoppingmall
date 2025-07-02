@@ -81,10 +81,11 @@ public class BasketServiceImpl implements BasketService {
         return basket;
     }
 
+
     /**
      * 설명: 장바구니 삭제
-     *
      * @param travelId
+     * @param memberId
      */
     @Transactional
     @Override

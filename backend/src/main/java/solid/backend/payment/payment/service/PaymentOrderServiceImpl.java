@@ -36,6 +36,7 @@ public class PaymentOrderServiceImpl implements PaymentOrderService {
      * @param orderAddDto
      * @return Orders
      */
+    @Transactional
     @Override
     public Orders saveOrders(OrderAddDto orderAddDto) {
         Orders orders = new Orders();
@@ -57,6 +58,7 @@ public class PaymentOrderServiceImpl implements PaymentOrderService {
      * @param orderAddDto
      * @param orders
      */
+    @Transactional
     @Override
     public void saveOrdersTravel(OrderAddDto orderAddDto, Orders orders) {
         OrderTravel orderTravel = new OrderTravel();
@@ -110,6 +112,7 @@ public class PaymentOrderServiceImpl implements PaymentOrderService {
      *
      * @param paymentCardAddDto
      */
+    @Transactional
     @Override
     public void addPaymentCard(PaymentCardAddDto paymentCardAddDto) {
         Member member = memberRepository.findById(paymentCardAddDto.getMemberId()).orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다."));
@@ -169,6 +172,7 @@ public class PaymentOrderServiceImpl implements PaymentOrderService {
      * @param travelId
      * @param travelAmount
      */
+    @Transactional
     @Override
     public void updateTravelAmount(Integer travelId, Integer travelAmount) {
         Travel travel = travelRepository.findById(travelId).orElseThrow(() -> new IllegalArgumentException("해당하는 상품이 없습니다."));

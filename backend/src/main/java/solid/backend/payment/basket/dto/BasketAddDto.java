@@ -8,8 +8,6 @@ import java.util.List;
 public class BasketAddDto {
     private String memberId;
     private Integer travelId;
-//    private Integer productId;
     private Integer basketTravelAmount;
-//    private Integer basketProductAmount;
     private List<BasketProductDto> products;
 }

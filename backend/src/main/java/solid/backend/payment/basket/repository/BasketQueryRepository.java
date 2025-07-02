@@ -33,7 +33,7 @@ public class BasketQueryRepository {
      * 설명: 장바구니에서 바로 결제하기로 넘어갔을 때 넘겨줄 데이터
      *
      * @param basketId
-     * @return
+     * @return BasketListDto
      */
     public BasketListDto getBasketOne(Integer basketId) {
         return jpaQueryFactory
@@ -112,6 +112,11 @@ public class BasketQueryRepository {
                 .fetch();
     }
 
+    /**
+     * 설명: 예약한 인원 합치는 쿼리
+     * @param travelId
+     * @return Integer
+     */
     public Integer getOrderTravelAmount(Integer travelId) {
         return jpaQueryFactory.select(
                         orderTravel.orderTravelAmount.sum().intValue()
