@@ -99,35 +99,38 @@ const AddCard = ({ onClose }: AddCardModalProps) => {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label>카드번호</label>
-          <div className={styles.cardNumberGroup}>
-            {["card1", "card2", "card3", "card4"].map(field => (
-              <div key={field} className={styles.inputBlock}>
-                <input
-                  {...register(field as keyof CardFormData, {
-                    required: "필수 입력입니다",
-                    pattern: {
-                      value: /^\d{4}$/,
-                      message: "숫자 4자리를 입력해주세요",
-                    },
-                  })}
-                  maxLength={4}
-                  inputMode="numeric"
-                  onInput={e =>
-                    (e.currentTarget.value = e.currentTarget.value.replace(
-                      /\D/g,
-                      "",
-                    ))
-                  }
-                />
-                {errors[field as keyof CardFormData] && (
-                  <p className={styles.errorText}>
-                    {errors[field as keyof CardFormData]?.message}
-                  </p>
-                )}
-              </div>
-            ))}
+          <div className={styles.inputBlock}>
+            <label>카드번호</label>
+            <div className={styles.cardNumberGroup}>
+              {["card1", "card2", "card3", "card4"].map(field => (
+                <div key={field} className={styles.inputBlock}>
+                  <input
+                    {...register(field as keyof CardFormData, {
+                      required: true,
+                      pattern: /^\d{4}$/,
+                    })}
+                    maxLength={4}
+                    inputMode="numeric"
+                    onInput={e =>
+                      (e.currentTarget.value = e.currentTarget.value.replace(
+                        /\D/g,
+                        "",
+                      ))
+                    }
+                    className={
+                      errors[field as keyof CardFormData] ? "error" : ""
+                    }
+                  />
+                </div>
+              ))}
+            </div>
           </div>
+
+          {(errors.card1 || errors.card2 || errors.card3 || errors.card4) && (
+            <p className={styles.errorText}>
+              카드번호는 숫자 4자리씩 모두 입력해주세요
+            </p>
+          )}
 
           <div className={styles.inputBlock}>
             <label>만료일</label>
