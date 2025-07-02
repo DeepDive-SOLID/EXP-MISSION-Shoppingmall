@@ -337,12 +337,20 @@ const OrderList = () => {
                             {order.orderTravelName}
                           </h3>
                           <p className={styles.travelMeta}>
-                            인원: {order.orderTravelAmount}명
-                          </p>
-                          <p className={styles.travelMeta}>
                             여행기간: {order.travelStartDt} ~{" "}
                             {order.travelEndDt}
                           </p>
+                          <p className={styles.travelMeta}>
+                            인원: {order.orderTravelAmount}명
+                          </p>
+                          {order.orderProducts?.length > 0 && (
+                            <p className={styles.travelMeta}>
+                              추가 구매 상품 :{" "}
+                              {order.orderProducts
+                                .map(p => `${p.productName} (${p.orderProductAmount})`)
+                                .join(", ")}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className={styles.priceInfo}>
