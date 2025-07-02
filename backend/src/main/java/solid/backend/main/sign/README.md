@@ -5,7 +5,7 @@
   - SignCheckIdEmailDto.java
   - SignFindIdDto.java
   - SignInDto.java
-  - SignMemberInfoDto.java
+  - SignUpCheckEmailDto.java
   - SignUpCheckIdDto.java
   - SignUpdPwDto.java
   - SignUpDto.java
@@ -26,6 +26,12 @@
 - HTTP method : POST
 - HTTP request URL : /main/sign/checkId
 - param : signInCheckIdDto
+- return : ResponseEntity<Boolean> (아이디가 있으면 true, 없으면 false)
+
+[회원가입 이메일 중복 확인]
+- HTTP method : POST
+- HTTP request URL : /main/sign/checkEmail
+- param : signInCheckEmailDto
 - return : ResponseEntity<Boolean> (아이디가 있으면 true, 없으면 false)
 
 [로그인]
@@ -50,4 +56,10 @@
 - HTTP method : POST
 - HTTP request URL : /main/sign/updPw
 - param : signUpdPwDto
+- return : ResponseEntity<String>
+
+[로그아웃]
+- HTTP method : POST
+- HTTP request URL : /main/sign/logout
+- param : request
 - return : ResponseEntity<String>

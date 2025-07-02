@@ -25,6 +25,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/member/travel/**", "/admin/member/product/**").hasAuthority("MANAGER")
                         .requestMatchers("/token/refresh").permitAll() // 토큰 재발급 api
                         .requestMatchers("/solid/**").permitAll() // 상품 이미지 파일 경로도 허용해줘야됨.
+                        .requestMatchers("mypage/**").hasAuthority("USER")
                         //.requestMatchers("/main/mypage/member").hasAuthority("USER") // 사용자 권한 예시
                         .anyRequest().authenticated()
                 )
