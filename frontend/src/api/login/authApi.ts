@@ -16,6 +16,7 @@ import {
   CheckEmailResponse,
 } from "../../types/login/auth";
 
+
 export const authApi = {
   // 회원가입
   signUp: async (signUpDto: SignUpDto): Promise<SignUpResponse> => {
@@ -90,6 +91,14 @@ export const authApi = {
     const response = await api.post<CheckEmailResponse>(
       "/main/sign/checkEmail",
       signUpCheckEmailDto,
+    );
+    return response.data;
+  },
+
+  // 로그아웃
+  logout: async () => {
+    const response = await api.post<SignUpResponse>(
+      "/main/sign/logout"
     );
     return response.data;
   },
