@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import styles from "./AddCard.module.scss";
 import { addCard } from "../../../api/order/orderApi";
 import { getCurrentMemberId } from "../../../utils/auth";
+import { useEffect, useState } from "react";
 
 // 카드 폼 데이터 타입
 interface CardFormData {
@@ -22,7 +23,24 @@ interface AddCardModalProps {
 }
 
 const AddCard = ({ onClose }: AddCardModalProps) => {
-  const { register, handleSubmit } = useForm<CardFormData>();
+  const { register, handleSubmit, watch } = useForm<CardFormData>();
+  const card1 = watch("card1");
+  const [paymentName, setPaymentName] = useState("");
+
+  useEffect(() => {
+    if (card1?.length === 4) {
+      const cardBins: { [key: string]: string } = {
+        "1111": "카카오카드",
+        "2222": "국민카드",
+        "3333": "농협카드",
+        "4444": "삼성카드",
+        "5555": "신한카드",
+      };
+      setPaymentName(cardBins[card1] || "");
+    } else {
+      setPaymentName("");
+    }
+  }, [card1]);
 
   const onSubmit = async (data: CardFormData) => {
     const memberId = getCurrentMemberId();
@@ -36,7 +54,7 @@ const AddCard = ({ onClose }: AddCardModalProps) => {
 
     const cardData = {
       memberId,
-      paymentName: data.cardOwner,
+      paymentName,
       paymentNum: cardNum,
       paymentEndDt,
       paymentOwner: data.cardOwner,
