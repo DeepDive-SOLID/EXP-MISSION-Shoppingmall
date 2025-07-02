@@ -26,7 +26,7 @@ public class Basket {
     private Travel travel;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id")
     @Comment("물품 코드")
     private Product product;
 
