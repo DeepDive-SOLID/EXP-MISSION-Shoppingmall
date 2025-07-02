@@ -130,14 +130,3 @@ export const refreshNewToken = async (): Promise<string | null> => {
     return null;
   }
 };
-
-// 관리자 권한인지 여부
-export const isAdmin = (): boolean => {
-  const token = getToken();
-  if (!token) return false;
-
-  const decoded = decodeToken(token);
-  if (!decoded?.authId) return false;
-
-  return decoded.authId === "ADMIN";
-};

@@ -12,8 +12,8 @@ import {
   isLoggedIn,
   getCurrentMemberId,
   refreshNewToken,
-  isAdmin,
 } from "../../../utils/auth";
+import { useAuth } from "../../../contexts/AuthContext";
 import {
   addToBasket,
   deleteFromBasket,
@@ -40,7 +40,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
 
   const navigate = useNavigate();
 
-  const isAdminUser = isAdmin();
+  const { isAdmin } = useAuth();
 
   // fromCart일 경우 초기화
   useEffect(() => {
@@ -377,7 +377,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
       <div className={styles.buttonSection}>
         {travel.travelSold ? (
           <p className={styles.soldOutMessage}>품절된 상품입니다.</p>
-        ) : !isAdminUser ? (
+        ) : !isAdmin ? (
           <>
             <button className={styles.cartButton} onClick={handleCartClick}>
               장바구니
