@@ -32,7 +32,7 @@ const Review = ({ travelId }: ReviewProps) => {
         <div className={styles.reviewContainer} key={idx}>
           <div className={styles.reviewHeader}>
             <img
-              src={profile_img}
+              src={review.memberImg || profile_img}
               alt="Profile"
               className={styles.profileImage}
             />

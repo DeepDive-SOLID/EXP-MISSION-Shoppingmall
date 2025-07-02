@@ -10,7 +10,7 @@ export const fetchPopularTravels = async (): Promise<HomeTravelDto[]> => {
   return res.data;
 };
 
-// 추천 여행 상품
+// 추천 여행 상품(리뷰순)
 export const fetchRecommendedTravels = async (): Promise<HomeTravelDto[]> => {
   const res = await api.post("/home/search", { sorted: 3 });
   return res.data;
