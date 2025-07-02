@@ -3,11 +3,17 @@ import { FaTimesCircle } from "react-icons/fa";
 import styles from "./payResult.module.scss";
 import { home_banner } from "../../assets";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 const PayFail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { memberName } = location.state || { memberName: "고객" };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className={styles.wrapper}>
       <Header />
@@ -21,9 +27,9 @@ const PayFail = () => {
         <p className={styles.resultFailText}>결제를 실패하였습니다.</p>
 
         <div className={styles.failMessage}>
-          잔액이 부족합니다.
+          결제 과정에서 문제가 발생했습니다.
           <br />
-          다른 결제 수단을 이용해 주세요.
+          잠시 후 다시 시도해 주세요.
         </div>
 
         <button
