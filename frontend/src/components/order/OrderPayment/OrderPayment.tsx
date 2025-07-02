@@ -121,6 +121,7 @@ const OrderPayment = ({ selectedItems, isAgreed }: OrderPaymentProps) => {
           orderTravelAmount: item.personCount,
           travelId: item.travelId,
           paymentId: selectedCardId,
+          travelPrice: item.travelPrice,
           memberId,
           products,
         };

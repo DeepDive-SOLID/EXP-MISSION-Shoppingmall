@@ -5,6 +5,7 @@ export interface OrderAddDto {
   paymentId: number;
   memberId: string;
   travelId: number;
+  travelPrice: number;
   products: OrderProductDto[];
 }
 
