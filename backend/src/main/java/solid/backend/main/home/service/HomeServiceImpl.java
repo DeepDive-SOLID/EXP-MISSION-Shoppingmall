@@ -3,18 +3,10 @@ package solid.backend.main.home.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import solid.backend.admin.travel.repository.TravelQueryRepository;
 import solid.backend.common.FileManager;
-import solid.backend.entity.Product;
-import solid.backend.entity.Travel;
-import solid.backend.jpaRepository.ProductRepository;
-import solid.backend.jpaRepository.ReviewRepository;
-import solid.backend.jpaRepository.TravelRepository;
 import solid.backend.main.home.dto.*;
 import solid.backend.main.home.repository.HomeQueryRepository;
 
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -62,7 +54,9 @@ public class HomeServiceImpl implements HomeService {
      */
     @Override
     public List<HomeReviewDto> getTravelDetailPageReviews(Integer travelId) {
-        return homeQueryRepository.getTravelReviewList(travelId);
+        List<HomeReviewDto> list = homeQueryRepository.getTravelReviewList(travelId);
+        list.forEach(items -> items.setMemberImg(fileManager.getFileUrl(items.getMemberImg())));
+        return list;
     }
 
     /**

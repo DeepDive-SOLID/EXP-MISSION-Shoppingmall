@@ -42,7 +42,7 @@ public class HomeController {
      * @return List<HomeReviewDto>
      */
     @ResponseBody
-    @GetMapping("/detail-page-reviews")
+    @GetMapping("/detailPageReviews")
     public List<HomeReviewDto> getTravelDetailPageReviews(@RequestParam("travelId") Integer travelId) {
         return homeService.getTravelDetailPageReviews(travelId);
     }
@@ -51,7 +51,7 @@ public class HomeController {
      * @return List<HomeProductDto>
      */
     @ResponseBody
-    @GetMapping("/detail-page-products")
+    @GetMapping("/detailPageProducts")
     public List<HomeProductDto> getTravelDetailPageProduct() {
         return homeService.getTravelDetailPageProduct();
     }

@@ -12,5 +12,6 @@ public class HomeProductDto {
     private String productName;
     private Integer productPrice;
     private String productImg;
+    private Integer productAmount;
     private Boolean productSold;
 }
