@@ -1,10 +1,13 @@
 package solid.backend.mypage.orders.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import solid.backend.admin.orders.dto.OrderProductDto;
+import solid.backend.admin.orders.dto.OrderTravelDto;
 import solid.backend.entity.*;
 import solid.backend.mypage.orders.dto.*;
 
@@ -19,6 +22,7 @@ public class MypageOrdersQueryRepository {
 
     /**
      * 설명 : 주문 내역 리스트 조회
+     *
      * @param memberId
      * @return List<MypageOrdersListDto>
      */
@@ -49,7 +53,13 @@ public class MypageOrdersQueryRepository {
                         travel.travelPrice.multiply(orderTravel.orderTravelAmount).castToNum(Long.class)
                                 .add(
                                         JPAExpressions
-                                                .select(orderProduct.orderProductAmount.multiply(product.productPrice).sum())
+                                                .select(
+                                                        Expressions.numberTemplate(
+                                                                Long.class,
+                                                                "COALESCE(SUM({0}), 0)",
+                                                                orderProduct.orderProductAmount.multiply(product.productPrice)
+                                                        )
+                                                )
                                                 .from(orderProduct)
                                                 .join(product).on(orderProduct.product.productId.eq(product.productId))
                                                 .where(orderProduct.order.ordersId.eq(orders.ordersId))
@@ -134,5 +144,43 @@ public class MypageOrdersQueryRepository {
                 .from(review)
                 .where(review.travel.travelId.eq(reviewIds.getTravelId()).and(review.member.memberId.eq(reviewIds.getMemberId())))
                 .fetchOne();
+    }
+
+    /**
+     * 설명: 해당 주문이 취소되면 주문했던 상품 갯수 리턴
+     * @param orderId
+     * @return MypageTravelDto
+     */
+    public MypageTravelDto findOrderTravelById(Integer orderId) {
+        QOrders orders = QOrders.orders;
+        QOrderTravel orderTravel = QOrderTravel.orderTravel;
+
+        return query.select(Projections.constructor(MypageTravelDto.class,
+                        orderTravel.travel.travelId,
+                        orderTravel.orderTravelAmount
+                ))
+                .from(orders)
+                .leftJoin(orders.orderTravels, orderTravel)
+                .where(orderTravel.order.ordersId.eq(orderId))
+                .fetchOne();
+    }
+
+    /**
+     * 설명: 해당 주문이 취소되면 주문했던 제품 갯수 리턴
+     * @param orderId
+     * @return List<MypageProductDto>
+     */
+    public List<MypageProductDto> findOrderProductById(Integer orderId) {
+        QOrders orders = QOrders.orders;
+        QOrderProduct orderProduct = QOrderProduct.orderProduct;
+
+        return query.select(Projections.constructor(MypageProductDto.class,
+                        orderProduct.product.productId,
+                        orderProduct.orderProductAmount
+                ))
+                .from(orders)
+                .leftJoin(orders.orderProducts, orderProduct)
+                .where(orderProduct.order.ordersId.eq(orderId))
+                .fetch();
     }
 }

@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.util.StringUtils;
+import solid.backend.admin.orders.dto.OrderProductDto;
+import solid.backend.admin.orders.dto.OrderTravelDto;
 import solid.backend.admin.orders.dto.OrdersManagementDto;
 import solid.backend.admin.orders.dto.OrdersSearchDto;
 import solid.backend.entity.*;
@@ -22,7 +24,7 @@ public class OrdersQueryRepository {
 
     private final JPAQueryFactory queryFactory;
     /**
-     *  설명: entity 에 해당하는 Q클래스 초기화
+     * 설명: entity 에 해당하는 Q클래스 초기화
      */
     QOrders orders = QOrders.orders;
     QOrderProduct orderProduct = QOrderProduct.orderProduct;
@@ -54,8 +56,10 @@ public class OrdersQueryRepository {
                 .leftJoin(orderProduct.product, product)
                 .fetch();
     }
+
     /**
-     *  설명: 검색 기능
+     * 설명: 검색 기능
+     *
      * @return List<OrdersManagementDto>
      */
     public List<OrdersManagementDto> findSearchOrdersList(OrdersSearchDto search) {
@@ -89,7 +93,40 @@ public class OrdersQueryRepository {
     }
 
     /**
+     * 설명: 해당 주문이 취소되면 주문했던 상품 갯수 리턴
+     * @param orderId
+     * @return OrderTravelDto
+     */
+    public OrderTravelDto findOrderTravelById(Integer orderId) {
+        return queryFactory.select(Projections.constructor(OrderTravelDto.class,
+                        orderTravel.travel.travelId,
+                        orderTravel.orderTravelAmount
+                ))
+                .from(orders)
+                .leftJoin(orders.orderTravels, orderTravel)
+                .where(orderTravel.order.ordersId.eq(orderId))
+                .fetchOne();
+    }
+
+    /**
+     * 설명: 해당 주문이 취소되면 주문했던 제품 갯수 리턴
+     * @param orderId
+     * @return List<OrderProductDto>
+     */
+    public List<OrderProductDto> findOrderProductById(Integer orderId) {
+        return queryFactory.select(Projections.constructor(OrderProductDto.class,
+                        orderProduct.product.productId,
+                        orderProduct.orderProductAmount
+                ))
+                .from(orders)
+                .leftJoin(orders.orderProducts, orderProduct)
+                .where(orderProduct.order.ordersId.eq(orderId))
+                .fetch();
+    }
+
+    /**
      * 설명 : 주문 Id 검색
+     *
      * @param ordersId
      * @return BooleanExpression
      */
@@ -99,6 +136,7 @@ public class OrdersQueryRepository {
 
     /**
      * 설명 : 물품 이름 검색
+     *
      * @param productName
      * @return BooleanExpression
      */
@@ -108,14 +146,17 @@ public class OrdersQueryRepository {
 
     /**
      * 설명 : 유저 아이디 검색
+     *
      * @param memberId
      * @return BooleanExpression
      */
     private BooleanExpression eqMemberId(String memberId) {
         return (memberId != null) ? QOrders.orders.member.memberId.eq(memberId) : null;
     }
+
     /**
      * 설명 : 결제 수단 검색
+     *
      * @param paymentName
      * @return BooleanExpression
      */
@@ -125,6 +166,7 @@ public class OrdersQueryRepository {
 
     /**
      * 설명 : 주문 날짜 검색
+     *
      * @param orderDt
      * @return BooleanExpression
      */
@@ -134,10 +176,11 @@ public class OrdersQueryRepository {
 
     /**
      * 설명 : 주문 상태 검색
+     *
      * @param orderState
      * @return BooleanExpression
      */
-    private BooleanExpression eqOrderState (Integer orderState) {
+    private BooleanExpression eqOrderState(Integer orderState) {
         return (orderState != null) ? QOrders.orders.orderState.eq(orderState) : null;
     }
 
