@@ -20,6 +20,7 @@ public class PaymentOrderController {
 
     /**
      * 설명: 주문(결제완료) 저장
+     *
      * @param orderAddDto
      * @return ResponseEntity<String>
      */
@@ -27,12 +28,20 @@ public class PaymentOrderController {
     @PostMapping("/save")
     public ResponseEntity<String> addOrder(@RequestBody OrderAddDto orderAddDto) {
         try {
+            if (!paymentOrderService.checkPaymentCard(orderAddDto.getPaymentId())) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("FAILED");
+            }
+            if (paymentOrderService.checkTravelDt(orderAddDto.getTravelId())) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("FAILED");
+            }
+
             Orders orders = paymentOrderService.saveOrders(orderAddDto);
             paymentOrderService.saveOrdersTravel(orderAddDto, orders);
 
             if (!orderAddDto.getProducts().isEmpty()) {
                 paymentOrderService.saveOrdersProduct(orderAddDto, orders);
             }
+
             paymentOrderService.updateTravelAmount(orderAddDto.getTravelId(), orderAddDto.getOrderTravelAmount());
             return ResponseEntity.ok("SUCCESS");
         } catch (Exception e) {
@@ -43,6 +52,7 @@ public class PaymentOrderController {
 
     /**
      * 설명: 해당 유저의 카드 정보 리스트
+     *
      * @param memberDto
      * @return List<PaymentCardDto>
      */
@@ -54,6 +64,7 @@ public class PaymentOrderController {
 
     /**
      * 설명: 결제 수단(카드) 저장
+     *
      * @param paymentCardAddDto
      * @return ResponseEntity<String>
      */
@@ -61,6 +72,9 @@ public class PaymentOrderController {
     @PostMapping("/addCard")
     public ResponseEntity<String> addPaymentCard(@RequestBody PaymentCardAddDto paymentCardAddDto) {
         try {
+            if (!paymentOrderService.checkPaymentCard(paymentCardAddDto.getPaymentEndDt())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("FAILED");
+            }
             paymentOrderService.addPaymentCard(paymentCardAddDto);
             return ResponseEntity.ok("SUCCESS");
         } catch (Exception e) {
@@ -71,6 +85,7 @@ public class PaymentOrderController {
 
     /**
      * 설명: 로그인 유저 정보 조회
+     *
      * @param memberDto
      * @return OrderMemberDto
      */
