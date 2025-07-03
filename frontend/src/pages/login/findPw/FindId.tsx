@@ -5,6 +5,11 @@ import { logo } from "../../../assets";
 import backIcon from "../../../assets/icons/back.svg";
 import { authApi } from "../../../api/login/authApi";
 
+// 한글 제거 함수
+function removeKorean(text: string) {
+  return text.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, "");
+}
+
 const FindId: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -42,8 +47,8 @@ const FindId: React.FC = () => {
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // spacebar 방지: 이메일 필드에서 공백 제거
-    const processedValue = e.target.value.replace(/\s/g, "");
+    // spacebar, 한글 방지: 이메일 필드에서 공백 및 한글 제거
+    const processedValue = removeKorean(e.target.value.replace(/\s/g, ""));
     setEmail(processedValue);
     setFoundId("");
     setError("");
