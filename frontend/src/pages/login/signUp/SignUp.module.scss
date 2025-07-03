@@ -137,22 +137,28 @@
   }
 }
 
+.agreeGroup {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  width: auto;
+}
+
 .agreeLabel {
   display: flex;
   align-items: center;
   font-size: 0.92rem;
   color: #374151;
+  white-space: nowrap;
 }
 
 .agreeLabel input[type="checkbox"] {
   position: relative;
   top: 1.9px;
   margin-right: 0.5rem;
-}
-
-.agreeGroup {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
 }
 
 .inputGroup:last-of-type {
