@@ -10,6 +10,10 @@ export interface MypageOrdersListDto {
   travelImg: string;
   totalPrice: number;
   reviewCheck: boolean;
+  travelPrice: number;
+  travelLabel : string;
+  travelSold: boolean;
+  travelAmount: number;
   orderProducts: MypageOrdersProductDto[];
 }
 
