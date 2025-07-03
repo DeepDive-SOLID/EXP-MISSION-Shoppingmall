@@ -321,10 +321,12 @@ return : List< DashboardWeeklySalesAmtDto >
   - MypageOrdersController.java
 - dto(객체정보)
   - MypageOrdersListDto.java
+  - MypageOrdersProductListDto.java
   - MypageOrdersReviewAddDto.java
   - MypageOrdersReviewDto.java
   - MyPageOrdersReviewIdDto.java
   - MypageOrdersReviewUpdDto.java
+  - MypageOrdersTravelListDto.java
   - MypageOrdersUpdDto.java
 - repository(jpa)
   - MypageOrdersQueryRepository.java

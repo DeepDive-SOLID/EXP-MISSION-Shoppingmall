@@ -1,17 +1,14 @@
 package solid.backend.mypage.orders.dto;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import solid.backend.entity.Product;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MypageOrdersListDto {
+public class MypageOrdersTravelListDto {
 
     private Integer orderId;
     private LocalDate orderDt;
@@ -24,5 +21,4 @@ public class MypageOrdersListDto {
     private String travelImg;
     private Long totalPrice;
     private Boolean reviewCheck;
-    private List<MypageOrdersProductListDto> orderProducts;
 }

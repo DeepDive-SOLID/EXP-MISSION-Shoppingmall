@@ -6,11 +6,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import solid.backend.entity.*;
-import solid.backend.mypage.orders.dto.MypageOrdersListDto;
-import solid.backend.mypage.orders.dto.MypageOrdersReviewDto;
-import solid.backend.mypage.orders.dto.MypageOrdersReviewIdDto;
+import solid.backend.mypage.orders.dto.*;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,8 +30,9 @@ public class MypageOrdersQueryRepository {
         QOrderProduct orderProduct = QOrderProduct.orderProduct;
         QReview review = QReview.review;
 
-        return query
-                .select(Projections.constructor(MypageOrdersListDto.class,
+        // 1. 주문 내역 리스트 조회
+        List<MypageOrdersTravelListDto> travelOrderList = query
+                .select(Projections.constructor(MypageOrdersTravelListDto.class,
                         orders.ordersId,
                         orders.orderDt,
                         orders.orderState,
@@ -60,6 +60,53 @@ public class MypageOrdersQueryRepository {
                 .join(travel).on(orderTravel.travel.travelId.eq(travel.travelId))
                 .where(orders.member.memberId.eq(memberId))
                 .fetch();
+
+        if (travelOrderList.isEmpty()) return Collections.emptyList();
+
+        // 2. 주문 ID 추출
+        List<Integer> orderIds = travelOrderList.stream()
+                .map(MypageOrdersTravelListDto::getOrderId)
+                .collect(Collectors.toList());
+
+        // 3. 주문 ID별 상품 리스트 조회
+        Map<Integer, List<MypageOrdersProductListDto>> productMap = query
+                .select(orderProduct.order.ordersId,
+                        product.productName,
+                        orderProduct.orderProductAmount)
+                .from(orderProduct)
+                .join(product).on(orderProduct.product.productId.eq(product.productId))
+                .where(orderProduct.order.ordersId.in(orderIds))
+                .fetch()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        tuple -> Optional.ofNullable(tuple.get(orderProduct.order.ordersId)).orElse(-1),
+                        Collectors.mapping(tuple ->
+                                new MypageOrdersProductListDto(
+                                        tuple.get(product.productName),
+                                        tuple.get(orderProduct.orderProductAmount)
+                                ),
+                                Collectors.toList())
+                ));
+
+        // 4. 최종 변환: MypageOrdersListDto
+        return travelOrderList.stream()
+                .map(travelDto -> {
+                    MypageOrdersListDto dto = new MypageOrdersListDto();
+                    dto.setOrderId(travelDto.getOrderId());
+                    dto.setOrderDt(travelDto.getOrderDt());
+                    dto.setOrderStatus(travelDto.getOrderStatus());
+                    dto.setOrderTravelId(travelDto.getOrderTravelId());
+                    dto.setOrderTravelName(travelDto.getOrderTravelName());
+                    dto.setOrderTravelAmount(travelDto.getOrderTravelAmount());
+                    dto.setTravelStartDt(travelDto.getTravelStartDt());
+                    dto.setTravelEndDt(travelDto.getTravelEndDt());
+                    dto.setTravelImg(travelDto.getTravelImg());
+                    dto.setTotalPrice(travelDto.getTotalPrice());
+                    dto.setReviewCheck(travelDto.getReviewCheck());
+                    dto.setOrderProducts(productMap.getOrDefault(travelDto.getOrderId(), new ArrayList<>()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     /**
