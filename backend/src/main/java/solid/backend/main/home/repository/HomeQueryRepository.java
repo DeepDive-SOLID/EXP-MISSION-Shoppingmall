@@ -118,6 +118,7 @@ public class HomeQueryRepository {
                 product.productName,
                 product.productPrice,
                 product.productImg,
+                product.productAmount,
                 product.productSold
         ))
                 .from(product)
