@@ -3,6 +3,7 @@ package solid.backend.main.home.repository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -20,6 +21,7 @@ import java.util.List;
 public class HomeQueryRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory jpaQueryFactory;
 
     QTravel travel = QTravel.travel;
     QReview review = QReview.review;
@@ -42,12 +44,15 @@ public class HomeQueryRepository {
                         travel.travelImg,
                         review.reviewRate.avg().doubleValue(),
                         review.count().intValue(),
-                        orderTravel.orderTravelAmount.sum().intValue(),
+                        JPAExpressions
+                                .select(orderTravel.orderTravelAmount.sum())
+                                .from(orderTravel)
+                                .where(orderTravel.id.travelId.eq(travel.travelId)
+                                        .and(orderTravel.order.orderState.ne(1))),
                         travel.travelAmount,
                         travel.travelSold
                 ))
                 .from(travel)
-                .leftJoin(orderTravel).on(travel.travelId.eq(orderTravel.id.travelId))
                 .leftJoin(review).on(travel.travelId.eq(review.travel.travelId))
                 .where(
                         containsTravelName(homeSearchDto.getName()),
@@ -74,7 +79,11 @@ public class HomeQueryRepository {
                         travel.travelImg,
                         review.reviewRate.avg().doubleValue(),
                         review.count().intValue(),
-                        orderTravel.orderTravelAmount.sum().intValue(),
+                        JPAExpressions
+                                .select(orderTravel.orderTravelAmount.sum())
+                                .from(orderTravel)
+                                .where(orderTravel.id.travelId.eq(travel.travelId)
+                                        .and(orderTravel.order.orderState.ne(1))),
                         travel.travelAmount,
                         travel.travelSold
                 ))
@@ -122,7 +131,7 @@ public class HomeQueryRepository {
      * @return
      */
     public List<HomeTravelDto> searchTravelSortedNew(HomeSearchDto homeSearchDto) {
-        return searchTravelCommon(homeSearchDto, travel.travelStartDt.desc(), review.reviewRate.avg().doubleValue().desc());
+        return searchTravelCommon(homeSearchDto, travel.travelStartDt.asc(), review.reviewRate.avg().doubleValue().desc());
     }
 
     /**
