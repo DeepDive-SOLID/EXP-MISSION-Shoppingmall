@@ -31,10 +31,13 @@ api.interceptors.response.use(
     return response;
   },
   async error => {
-    // 로그인, 회원가입 요청은 토큰 재발급 로직에서 제외
+    // 로그인, 회원가입, 아이디/비밀번호 찾기 요청은 토큰 재발급 로직에서 제외
     const isLoginRequest =
       error.config.url?.includes("/main/sign/login") ||
-      error.config.url?.includes("/main/sign/signUp");
+      error.config.url?.includes("/main/sign/signUp") ||
+      error.config.url?.includes("/main/sign/findId") ||
+      error.config.url?.includes("/main/sign/checkIdEmail") ||
+      error.config.url?.includes("/main/sign/updPw");
 
     // 토큰이 존재하는지 여부와 만료시간 체크하고 토큰 재발급을 시도하지 않은 요청인 경우
     if (!isLoggedIn() && !error.config._retry && !isLoginRequest) {
