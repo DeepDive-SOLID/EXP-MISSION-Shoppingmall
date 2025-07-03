@@ -137,8 +137,9 @@ public class SignServiceImpl implements SignService {
         Member member = signRepository.findById(signCheckIIdEmailDto.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
 
-        member = signRepository.findByMemberEmail(signCheckIIdEmailDto.getMemberEmail())
-                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+        if (!member.getMemberEmail().equals(signCheckIIdEmailDto.getMemberEmail())) {
+            throw new IllegalArgumentException("아이디와 이메일이 일치하지 않습니다.");
+        }
     }
 
     /**
