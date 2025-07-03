@@ -11,5 +11,4 @@ public class HomeReviewDto {
     private Integer reviewRate;
     private String reviewComment;
     private String memberName;
-    private String memberImg;
 }
