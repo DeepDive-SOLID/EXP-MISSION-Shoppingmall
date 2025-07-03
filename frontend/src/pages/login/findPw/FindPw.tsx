@@ -46,6 +46,11 @@ const EyeIcon = ({ visible }: { visible: boolean }) =>
     </svg>
   );
 
+// 한글 제거 함수
+function removeKorean(text: string) {
+  return text.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, "");
+}
+
 const FindPw: React.FC = () => {
   const navigate = useNavigate();
   const [tab, setTab] = useState(1);
@@ -191,8 +196,9 @@ const FindPw: React.FC = () => {
                 placeholder="아이디를 입력하세요"
                 value={id}
                 onChange={e => {
-                  // spacebar 방지: 아이디 필드에서 공백 제거
-                  const processedValue = e.target.value.replace(/\s/g, "");
+                  const processedValue = removeKorean(
+                    e.target.value.replace(/\s/g, ""),
+                  );
                   setId(processedValue);
                   setVerificationError("");
                 }}
@@ -206,8 +212,9 @@ const FindPw: React.FC = () => {
                 placeholder="이메일을 입력하세요"
                 value={email}
                 onChange={e => {
-                  // spacebar 방지: 이메일 필드에서 공백 제거
-                  const processedValue = e.target.value.replace(/\s/g, "");
+                  const processedValue = removeKorean(
+                    e.target.value.replace(/\s/g, ""),
+                  );
                   setEmail(processedValue);
                   setVerificationError("");
                 }}
@@ -236,8 +243,9 @@ const FindPw: React.FC = () => {
                   placeholder="새 비밀번호 (8자 이상, 숫자, 특수문자 포함)"
                   value={newPassword}
                   onChange={e => {
-                    // spacebar 방지: 새 비밀번호 필드에서 공백 제거
-                    const processedValue = e.target.value.replace(/\s/g, "");
+                    const processedValue = removeKorean(
+                      e.target.value.replace(/\s/g, ""),
+                    );
                     setNewPassword(processedValue);
                     setPasswordError("");
                   }}
