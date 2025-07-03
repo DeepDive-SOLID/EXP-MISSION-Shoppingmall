@@ -10,6 +10,12 @@ export interface MypageOrdersListDto {
   travelImg: string;
   totalPrice: number;
   reviewCheck: boolean;
+  orderProducts: MypageOrdersProductDto[];
+}
+
+export interface MypageOrdersProductDto {
+  productName: string;
+  orderProductAmount: number;
 }
 
 export interface MypageOrdersReviewDto {
