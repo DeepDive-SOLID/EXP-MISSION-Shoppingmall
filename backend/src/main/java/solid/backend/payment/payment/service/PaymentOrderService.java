@@ -61,4 +61,25 @@ public interface PaymentOrderService {
      * @param travelAmount
      */
     void updateTravelAmount(Integer travelId, Integer travelAmount);
+
+    /**
+     * 설명: 카드 유효기간 체크 로직
+     * @param paymentId
+     * @return Boolean
+     */
+    Boolean checkPaymentCard(Integer paymentId);
+
+    /**
+     * 설명: 카드 유효기간 체크 로직
+     * @param paymentEndDt
+     * @return Boolean
+     */
+    Boolean checkPaymentCard(String paymentEndDt);
+
+    /**
+     * 설명: 상품 출발기간 체크 로직
+     * @param travelId
+     * @return Boolean
+     */
+    Boolean checkTravelDt(Integer travelId);
 }

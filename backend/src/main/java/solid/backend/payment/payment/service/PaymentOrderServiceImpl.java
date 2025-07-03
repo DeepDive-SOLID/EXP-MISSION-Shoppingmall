@@ -182,4 +182,43 @@ public class PaymentOrderServiceImpl implements PaymentOrderService {
         }
         travelRepository.save(travel);
     }
+
+    /**
+     * 설명: 카드 유효기간 체크 로직
+     * @param paymentId
+     * @return Boolean
+     */
+    @Override
+    public Boolean checkPaymentCard(Integer paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 카드가 없습니다."));
+        return checkPaymentCard(payment.getPaymentEndDt());
+    }
+
+    /**
+     * 설명: 카드 유효기간 체크 로직
+     * @param paymentEndDt
+     * @return Boolean
+     */
+    @Override
+    public Boolean checkPaymentCard(String paymentEndDt) {
+        String cardEntDt = paymentEndDt.substring(3, 5);
+        int year = LocalDate.now().getYear() % 100;
+        int card = Integer.parseInt(cardEntDt);
+        return year < card;
+    }
+
+    /**
+     * 설명: 상품 출발기간 체크 로직
+     * @param travelId
+     * @return Boolean
+     */
+    @Override
+    public Boolean checkTravelDt(Integer travelId) {
+        Travel travel = travelRepository.findById(travelId).orElseThrow(() -> new IllegalArgumentException("해당하는 상품이 없습니다."));
+        LocalDate now = LocalDate.now();
+        LocalDate travelEndDt = travel.getTravelStartDt();
+
+        return now.isAfter(travelEndDt);
+    }
 }
