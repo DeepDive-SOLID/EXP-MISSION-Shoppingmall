@@ -54,7 +54,9 @@ public class HomeServiceImpl implements HomeService {
      */
     @Override
     public List<HomeReviewDto> getTravelDetailPageReviews(Integer travelId) {
-        return homeQueryRepository.getTravelReviewList(travelId);
+        List<HomeReviewDto> list = homeQueryRepository.getTravelReviewList(travelId);
+        list.forEach(items -> items.setMemberImg(fileManager.getFileUrl(items.getMemberImg())));
+        return list;
     }
 
     /**
