@@ -153,6 +153,10 @@ const SignUp: React.FC = () => {
         setIdChecked(true);
         setIdError("");
         setIdSuccess(true);
+        setFieldErrors(prev => ({
+          ...prev,
+          memberId: "",
+        }));
       }
     } catch (error) {
       console.error("아이디 중복 확인 오류:", error);
@@ -185,6 +189,10 @@ const SignUp: React.FC = () => {
         setEmailChecked(true);
         setEmailError("");
         setEmailSuccess(true);
+        setFieldErrors(prev => ({
+          ...prev,
+          memberEmail: "",
+        }));
       }
     } catch (error) {
       console.error("이메일 중복 확인 오류:", error);
