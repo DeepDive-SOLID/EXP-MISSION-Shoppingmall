@@ -378,7 +378,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
         {!isAdmin ? (
           travel.travelSold ? (
             <p className={styles.soldOutMessage}>품절된 상품입니다.</p>
-          ) : new Date(travel.travelEndDt) <= new Date() ? (
+          ) : new Date(travel.travelStartDt) <= new Date() ? (
             <p className={styles.soldOutMessage}>예약이 마감된 상품입니다.</p>
           ) : (
             <>
