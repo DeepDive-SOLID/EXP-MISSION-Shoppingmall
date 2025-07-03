@@ -3,6 +3,7 @@ import { home_banner } from "../../assets";
 import { FaCheckCircle } from "react-icons/fa";
 import styles from "./payResult.module.scss";
 import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 const PaySuccess = () => {
   const location = useLocation();
@@ -23,6 +24,10 @@ const PaySuccess = () => {
       }[];
     }[];
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const totalPrice = items.reduce((sum, item) => sum + item.total, 0);
 
