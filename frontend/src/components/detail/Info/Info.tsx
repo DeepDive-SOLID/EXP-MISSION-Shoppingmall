@@ -56,7 +56,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
   const timeDiff = reservationDeadline.getTime() - today.getTime();
   const dDay = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // 밀리초 → 일
   const dDayText =
-    dDay > 0 ? `예약 마감 D-${dDay}` : dDay === 0 ? "예약 마감" : "예약 마감";
+    dDay > 0 ? `예약 마감 D-${dDay}` : dDay <= 0 ? "예약 마감" : "";
 
   // fromCart일 경우 초기화
   useEffect(() => {
@@ -264,7 +264,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
     <div className={styles.rightSection}>
       <p className={styles.title}>
         {travel.travelName}
-        {dDay >= 0 && <span className={styles.dDayBadge}>{dDayText}</span>}
+        {dDayText && <span className={styles.dDayBadge}>{dDayText}</span>}
       </p>
 
       <div className={styles.infoBadge}>

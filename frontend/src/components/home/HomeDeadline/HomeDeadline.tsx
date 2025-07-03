@@ -83,31 +83,60 @@ const HomeDeadline = () => {
           }}
           className={styles.slider}
         >
-          {deadlineTravels.map(item => (
-            <SwiperSlide key={item.travelId}>
-              <div
-                className={styles.card}
-                onClick={() =>
-                  navigate(`/detail/${item.travelId}`, {
-                    state: { travel: item },
-                  })
-                }
-              >
-                <div className={styles.imgWrapper}>
-                  <img src={item.travelImg} alt={item.travelName} />
-                </div>
-                <div className={styles.info}>
-                  <p className={styles.name}>{item.travelName}</p>
-                  <p className={styles.date}>
-                    {item.travelStartDt} ~ {item.travelEndDt}
-                  </p>
-                  <p className={styles.price}>
-                    {item.travelPrice.toLocaleString()}원
-                  </p>
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
+          {deadlineTravels
+            .filter(item => {
+              const travelStartDate = new Date(item.travelStartDt);
+              const reservationDeadline = new Date(travelStartDate);
+              reservationDeadline.setDate(travelStartDate.getDate() - 8);
+
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+
+              return today <= reservationDeadline;
+            })
+            .map(item => {
+              const travelStartDate = new Date(item.travelStartDt);
+              const reservationDeadline = new Date(travelStartDate);
+              reservationDeadline.setDate(travelStartDate.getDate() - 7);
+
+              const today = new Date();
+              const timeDiff = reservationDeadline.getTime() - today.getTime();
+              const dDay = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+              const dDayText =
+                dDay > 0 ? `예약 마감 D-${dDay}` : dDay <= 0 ? "예약 마감" : "";
+
+              return (
+                <SwiperSlide key={item.travelId}>
+                  <div
+                    className={styles.card}
+                    onClick={() =>
+                      navigate(`/detail/${item.travelId}`, {
+                        state: { travel: item },
+                      })
+                    }
+                  >
+                    <div className={styles.imgWrapper}>
+                      <img src={item.travelImg} alt={item.travelName} />
+                    </div>
+                    <div className={styles.info}>
+                      <p className={styles.name}>
+                        {item.travelName}
+                        {dDayText && (
+                          <span className={styles.dDayBadge}>{dDayText}</span>
+                        )}
+                      </p>
+
+                      <p className={styles.date}>
+                        {item.travelStartDt} ~ {item.travelEndDt}
+                      </p>
+                      <p className={styles.price}>
+                        {item.travelPrice.toLocaleString()}원
+                      </p>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              );
+            })}
         </Swiper>
 
         <div
