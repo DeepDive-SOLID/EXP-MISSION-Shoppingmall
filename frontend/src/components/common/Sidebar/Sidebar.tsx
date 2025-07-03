@@ -8,8 +8,10 @@ import {
   FiDatabase,
 } from "react-icons/fi";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const Sidebar = () => {
+  const { isAdmin } = useAuth();
   const location = useLocation();
 
   // 현재 경로가 물품관리나 여행상품관리 페이지인지 확인
@@ -42,17 +44,19 @@ const Sidebar = () => {
           </Link>
         </li>
 
-        <li className={styles.item}>
-          <Link
-            to="/manage-user"
-            className={
-              location.pathname === "/manage-user" ? styles.active : ""
-            }
-          >
-            <FiUsers />
-            <span>사용자관리</span>
-          </Link>
-        </li>
+        {isAdmin && (
+          <li className={styles.item}>
+            <Link
+              to="/manage-user"
+              className={
+                location.pathname === "/manage-user" ? styles.active : ""
+              }
+            >
+              <FiUsers />
+              <span>사용자관리</span>
+            </Link>
+          </li>
+        )}
 
         <li
           className={`${styles.item} ${styles.productMenu} ${isProductPage ? styles.activeParent : ""}`}
