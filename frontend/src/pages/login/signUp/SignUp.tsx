@@ -60,6 +60,11 @@ function isValidBirthDate(birth: string) {
   return selectedDate <= today;
 }
 
+// 한글 제거 함수
+function removeKorean(text: string) {
+  return text.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, "");
+}
+
 const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
     memberName: "",
@@ -98,13 +103,13 @@ const SignUp: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    // spacebar 방지: 아이디, 비밀번호, 이메일, 전화번호 필드에서 공백 제거
+    // spacebar, 한글 방지: 아이디, 비밀번호, 이메일, 전화번호 필드에서 공백 및 한글 제거
     const processedValue =
       name === "memberId" ||
       name === "memberPw" ||
       name === "memberEmail" ||
       name === "memberPhone"
-        ? value.replace(/\s/g, "")
+        ? removeKorean(value.replace(/\s/g, ""))
         : value;
 
     setFormData(prev => ({
@@ -153,6 +158,10 @@ const SignUp: React.FC = () => {
         setIdChecked(true);
         setIdError("");
         setIdSuccess(true);
+        setFieldErrors(prev => ({
+          ...prev,
+          memberId: "",
+        }));
       }
     } catch (error) {
       console.error("아이디 중복 확인 오류:", error);
@@ -185,6 +194,10 @@ const SignUp: React.FC = () => {
         setEmailChecked(true);
         setEmailError("");
         setEmailSuccess(true);
+        setFieldErrors(prev => ({
+          ...prev,
+          memberEmail: "",
+        }));
       }
     } catch (error) {
       console.error("이메일 중복 확인 오류:", error);
@@ -331,7 +344,7 @@ const SignUp: React.FC = () => {
                 {isCheckingId ? "확인중..." : "중복확인"}
               </button>
             </div>
-            {fieldErrors.memberId && (
+            {fieldErrors.memberId && !idError && (
               <div className={styles.fieldError}>{fieldErrors.memberId}</div>
             )}
             {idError && <div className={styles.idError}>{idError}</div>}
@@ -360,7 +373,7 @@ const SignUp: React.FC = () => {
                 {isCheckingEmail ? "확인중..." : "중복확인"}
               </button>
             </div>
-            {fieldErrors.memberEmail && (
+            {fieldErrors.memberEmail && !emailError && (
               <div className={styles.fieldError}>{fieldErrors.memberEmail}</div>
             )}
             {emailError && (

@@ -38,6 +38,11 @@ const EyeIcon = ({ visible }: { visible: boolean }) =>
     </svg>
   );
 
+// 한글 제거 함수
+function removeKorean(text: string) {
+  return text.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, "");
+}
+
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -54,10 +59,10 @@ const SignIn: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    // spacebar 방지: 아이디와 비밀번호 필드에서 공백 제거
+    // spacebar, 한글 방지: 아이디와 비밀번호 필드에서 공백 및 한글 제거
     const processedValue =
       name === "memberId" || name === "memberPw"
-        ? value.replace(/\s/g, "")
+        ? removeKorean(value.replace(/\s/g, ""))
         : value;
 
     setFormData(prev => ({ ...prev, [name]: processedValue }));

@@ -31,6 +31,7 @@ api.interceptors.response.use(
     return response;
   },
   async error => {
+
     // 서버에서 토큰 만료된 경우
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
@@ -39,8 +40,16 @@ api.interceptors.response.use(
       return;
     }
 
+    // 로그인, 회원가입, 아이디/비밀번호 찾기 요청은 토큰 재발급 로직에서 제외
+    const isLoginRequest =
+      error.config.url?.includes("/main/sign/login") ||
+      error.config.url?.includes("/main/sign/signUp") ||
+      error.config.url?.includes("/main/sign/findId") ||
+      error.config.url?.includes("/main/sign/checkIdEmail") ||
+      error.config.url?.includes("/main/sign/updPw");
+
     // 프론트에서 토큰 만료라고 판단될 경우
-    if (!isLoggedIn() && !error.config._retry) {
+    if (!isLoggedIn() && !error.config._retry && !isLoginRequest) {
       error.config._retry = true;
       const newToken = await refreshNewToken();
       if (newToken) {

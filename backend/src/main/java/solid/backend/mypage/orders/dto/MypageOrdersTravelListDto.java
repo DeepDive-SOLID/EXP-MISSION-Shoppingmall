@@ -16,6 +16,10 @@ public class MypageOrdersTravelListDto {
     private Integer orderTravelId;
     private String orderTravelName;
     private Integer orderTravelAmount;
+    private Integer travelPrice;
+    private String travelLabel;
+    private Boolean travelSold;
+    private Integer travelAmount;
     private LocalDate travelStartDt;
     private LocalDate travelEndDt;
     private String travelImg;
