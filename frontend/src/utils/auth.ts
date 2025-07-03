@@ -125,8 +125,8 @@ export const refreshNewToken = async (): Promise<string | null> => {
     const newToken = await authApi.refreshToken();
     localStorage.setItem("token", newToken);
     return newToken;
-  } catch {
-    localStorage.removeItem("token");
+  } catch (error) {
+    console.error("토큰 재발급 실패", error);
     return null;
   }
 };
