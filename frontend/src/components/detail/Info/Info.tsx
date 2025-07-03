@@ -8,13 +8,19 @@ import { ProductDto } from "../../../types/home/homeProduct";
 import { ReviewDto } from "../../../types/home/review";
 import { fetchProducts, fetchReviews } from "../../../api/home/homeApi";
 import { useNavigate, useLocation } from "react-router-dom";
-import { isLoggedIn, getCurrentMemberId, refreshNewToken } from "../../../utils/auth";
+import {
+  isLoggedIn,
+  getCurrentMemberId,
+  refreshNewToken,
+} from "../../../utils/auth";
+import { useAuth } from "../../../contexts/AuthContext";
 import {
   addToBasket,
   deleteFromBasket,
   fetchBasketList,
 } from "../../../api/basket/basketApi";
 import { BasketProductDto } from "../../../types/basket/basket";
+
 interface InfoProps {
   travelId: number;
   travel: HomeTravelDto;
@@ -34,8 +40,24 @@ const Info = ({ travelId, travel }: InfoProps) => {
   const basket = location.state?.basket;
 
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
 
-  // fromCart일 경우 초기화
+  // 날짜 포맷 YYYY-MM-DD
+  const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
+  // 예약 마감일 계산 (출발일 기준 7일 전)
+  const travelStartDate = new Date(travel.travelStartDt);
+  const reservationDeadline = new Date(travelStartDate);
+  reservationDeadline.setDate(travelStartDate.getDate() - 7);
+
+  // D-Day 계산
+  const today = new Date();
+  const timeDiff = reservationDeadline.getTime() - today.getTime();
+  const dDay = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // 밀리초 → 일
+  const dDayText =
+    dDay > 0 ? `예약 마감 D-${dDay}` : dDay <= 0 ? "예약 마감" : "";
+
+  // 장바구니에서 들어온 경우 기존 수량/상품 선택값 세팅
   useEffect(() => {
     if (fromCart && basket) {
       setPeopleCount(basket.basketTravelAmount);
@@ -50,7 +72,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
     }
   }, [fromCart, basket]);
 
-  // 상품 및 리뷰 불러오기
+  // 상품 및 리뷰 데이터 로딩
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -65,6 +87,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
     fetchData();
   }, [travelId]);
 
+  // 추가상품 선택 핸들러
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const productId = Number(e.target.value);
     setSelectedProductId("");
@@ -86,27 +109,32 @@ const Info = ({ travelId, travel }: InfoProps) => {
     ]);
   };
 
+  // 상품 삭제
   const removeProduct = (id: number) => {
     setSelectedProducts(prev => prev.filter(p => p.id !== id));
   };
 
+  // 리뷰 평균 평점 계산
   const reviewCount = reviews.length;
   const averageRate =
     reviewCount === 0
       ? 0
       : reviews.reduce((sum, r) => sum + r.reviewRate, 0) / reviewCount;
 
+  // 총 수량 및 가격 계산
   const totalCount =
     peopleCount + selectedProducts.reduce((sum, item) => sum + item.count, 0);
   const totalPrice =
     peopleCount * travel.travelPrice +
     selectedProducts.reduce((sum, item) => sum + item.count * item.price, 0);
 
+  // 장바구니에 이미 담긴 상품인지 확인
   const checkIfAlreadyInCart = async (memberId: string, travelId: number) => {
     const basketList = await fetchBasketList(memberId);
     return basketList.some(item => item.travelId === travelId);
   };
 
+  // 장바구니 담기 버튼 클릭 핸들러
   const handleCartClick = async () => {
     if (!isLoggedIn()) {
       const newToken = await refreshNewToken();
@@ -168,6 +196,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
     }
   };
 
+  // 예약하기 버튼 클릭 핸들러
   const handleReserveClick = async () => {
     if (!isLoggedIn()) {
       const newToken = await refreshNewToken();
@@ -239,7 +268,10 @@ const Info = ({ travelId, travel }: InfoProps) => {
 
   return (
     <div className={styles.rightSection}>
-      <p className={styles.title}>{travel.travelName}</p>
+      <p className={styles.title}>
+        {travel.travelName}
+        {dDayText && <span className={styles.dDayBadge}>{dDayText}</span>}
+      </p>
 
       <div className={styles.infoBadge}>
         {travel.travelLabel?.split(",").map((label: string, idx: number) => (
@@ -260,7 +292,10 @@ const Info = ({ travelId, travel }: InfoProps) => {
         <div className={styles.dateInfo}>
           <FaRegCalendarCheck className={styles.calendarIcon} />
           <span className={styles.date}>
-            {travel.travelStartDt} ~ {travel.travelEndDt}
+            {travel.travelStartDt} ~ {travel.travelEndDt} <br />
+            <span className={styles.reservationDeadline}>
+              예약 마감 {formatDate(reservationDeadline)}
+            </span>
           </span>
         </div>
 
@@ -290,9 +325,19 @@ const Info = ({ travelId, travel }: InfoProps) => {
             상품을 선택하세요
           </option>
           {productList.map(product => (
-            <option key={product.productId} value={product.productId}>
-              {product.productName} (+
-              {(product.productPrice ?? 0).toLocaleString()}원)
+            <option
+              key={product.productId}
+              value={product.productId}
+              disabled={product.productSold}
+              style={{
+                textDecoration: product.productSold ? "line-through" : "none",
+                color: product.productSold ? "#999" : "#000",
+              }}
+            >
+              {product.productName}
+              {product.productSold
+                ? " (품절)"
+                : ` (+${(product.productPrice ?? 0).toLocaleString()}원 / 잔여 ${product.productAmount ?? 0}개)`}
             </option>
           ))}
         </select>
@@ -320,7 +365,17 @@ const Info = ({ travelId, travel }: InfoProps) => {
                 onIncrease={() =>
                   setSelectedProducts(prev =>
                     prev.map(p =>
-                      p.id === item.id ? { ...p, count: p.count + 1 } : p,
+                      p.id === item.id
+                        ? {
+                            ...p,
+                            count:
+                              p.count <
+                              (productList.find(prod => prod.productId === p.id)
+                                ?.productAmount ?? 1)
+                                ? p.count + 1
+                                : p.count,
+                          }
+                        : p,
                     ),
                   )
                 }
@@ -368,21 +423,25 @@ const Info = ({ travelId, travel }: InfoProps) => {
       </div>
 
       <div className={styles.buttonSection}>
-        {travel.travelSold ? (
-          <p className={styles.soldOutMessage}>품절된 상품입니다.</p>
-        ) : (
-          <>
-            <button className={styles.cartButton} onClick={handleCartClick}>
-              장바구니
-            </button>
-            <button
-              className={styles.reserveButton}
-              onClick={handleReserveClick}
-            >
-              예약하기
-            </button>
-          </>
-        )}
+        {!isAdmin ? (
+          travel.travelSold ? (
+            <p className={styles.soldOutMessage}>품절된 상품입니다.</p>
+          ) : dDay <= 0 ? (
+            <p className={styles.soldOutMessage}>예약이 마감된 상품입니다.</p>
+          ) : (
+            <>
+              <button className={styles.cartButton} onClick={handleCartClick}>
+                장바구니
+              </button>
+              <button
+                className={styles.reserveButton}
+                onClick={handleReserveClick}
+              >
+                예약하기
+              </button>
+            </>
+          )
+        ) : null}
       </div>
     </div>
   );

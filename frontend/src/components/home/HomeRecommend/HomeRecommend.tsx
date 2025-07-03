@@ -61,7 +61,7 @@ const HomeRecommend = () => {
     >
       <h2 className={styles.title}>추천 상품</h2>
       <p className={styles.subtitle}>
-        다녀온 사람들이 자신 있게 추천한 상품을 확인해보세요
+        많은 이용자가 남긴 리뷰를 바탕으로 추천했어요 !
       </p>
 
       <div className={styles.sliderWrapper}>

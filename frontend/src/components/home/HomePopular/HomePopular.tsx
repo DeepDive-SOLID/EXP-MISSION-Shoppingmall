@@ -61,7 +61,7 @@ const HomePopular = () => {
     >
       <h2 className={styles.title}>인기 상품</h2>
       <p className={styles.subtitle}>
-        가장 많은 여행객이 선택한 상품을 확인해보세요
+        여행객들이 가장 만족한 상품만 모았어요 !
       </p>
 
       <div className={styles.sliderWrapper}>

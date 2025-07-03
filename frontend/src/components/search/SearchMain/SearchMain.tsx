@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const SearchMain = () => {
   const [results, setResults] = useState<HomeTravelDto[]>([]);
-  const [sorted, setSorted] = useState<1 | 2 | 3>(1); // 1: 최신순, 2: 인기순, 3: 평점순
+  const [sorted, setSorted] = useState<1 | 2 | 3>(2); // 1: 최신순, 2: 인기순, 3: 평점순
   const location = useLocation();
   const baseParams = useMemo(() => location.state || {}, [location.state]);
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ const SearchMain = () => {
             >
               <option value="popular">인기순</option>
               <option value="recent">최신순</option>
-              <option value="rating">평점순</option>
+              <option value="rating">리뷰순</option>
             </select>
           </div>
         </div>

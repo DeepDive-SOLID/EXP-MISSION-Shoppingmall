@@ -14,6 +14,19 @@
   margin-bottom: -8px;
 }
 
+.dDayBadge {
+  background-color: #ff4d4f;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-left: 12px;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+}
+
 .infoBadge {
   display: flex;
   gap: 8px;
@@ -28,6 +41,11 @@
   padding: 4px 10px;
   border-radius: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.reservationDeadline {
+  font-size: 14px;
+  color: #888;
 }
 
 .rate {
