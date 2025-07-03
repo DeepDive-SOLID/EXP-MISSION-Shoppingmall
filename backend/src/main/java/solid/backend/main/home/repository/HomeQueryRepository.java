@@ -95,7 +95,8 @@ public class HomeQueryRepository {
         return queryFactory.select(Projections.constructor(HomeReviewDto.class,
                         review.reviewRate.intValue(),
                         review.reviewComment,
-                        review.member.memberName
+                        review.member.memberName,
+                        review.member.memberImg
                 ))
                 .from(review)
                 .where(review.travel.travelId.eq(travelId))
@@ -121,7 +122,7 @@ public class HomeQueryRepository {
      * @return
      */
     public List<HomeTravelDto> searchTravelSortedNew(HomeSearchDto homeSearchDto) {
-        return searchTravelCommon(homeSearchDto, travel.travelUploadDt.desc(), review.reviewRate.avg().doubleValue().desc());
+        return searchTravelCommon(homeSearchDto, travel.travelStartDt.desc(), review.reviewRate.avg().doubleValue().desc());
     }
 
     /**
