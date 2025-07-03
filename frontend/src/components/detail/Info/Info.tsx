@@ -375,20 +375,24 @@ const Info = ({ travelId, travel }: InfoProps) => {
       </div>
 
       <div className={styles.buttonSection}>
-        {travel.travelSold ? (
-          <p className={styles.soldOutMessage}>품절된 상품입니다.</p>
-        ) : !isAdmin ? (
-          <>
-            <button className={styles.cartButton} onClick={handleCartClick}>
-              장바구니
-            </button>
-            <button
-              className={styles.reserveButton}
-              onClick={handleReserveClick}
-            >
-              예약하기
-            </button>
-          </>
+        {!isAdmin ? (
+          travel.travelSold ? (
+            <p className={styles.soldOutMessage}>품절된 상품입니다.</p>
+          ) : new Date(travel.travelEndDt) < new Date() ? (
+            <p className={styles.soldOutMessage}>예약이 마감된 상품입니다.</p>
+          ) : (
+            <>
+              <button className={styles.cartButton} onClick={handleCartClick}>
+                장바구니
+              </button>
+              <button
+                className={styles.reserveButton}
+                onClick={handleReserveClick}
+              >
+                예약하기
+              </button>
+            </>
+          )
         ) : null}
       </div>
     </div>
