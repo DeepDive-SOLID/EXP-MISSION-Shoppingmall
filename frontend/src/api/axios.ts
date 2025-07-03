@@ -31,16 +31,25 @@ api.interceptors.response.use(
     return response;
   },
   async error => {
-    // 토큰이 존재하는지 여부와 만료시간 체크하고 토큰 재발급을 시도하지 않은 요청인 경우
+    // 서버에서 토큰 만료된 경우
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+      alert("세션이 만료되었습니다. 다시 로그인 해주세요.");
+      return;
+    }
+
+    // 프론트에서 토큰 만료라고 판단될 경우
     if (!isLoggedIn() && !error.config._retry) {
       error.config._retry = true;
-
       const newToken = await refreshNewToken();
       if (newToken) {
         error.config.headers["Authorization"] = `Bearer ${newToken}`;
         return api(error.config);
       } else {
+        localStorage.removeItem("token");
         window.location.href = "/login";
+        return;
       }
     }
     return Promise.reject(error);
