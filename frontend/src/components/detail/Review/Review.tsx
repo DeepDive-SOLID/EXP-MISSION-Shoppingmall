@@ -33,11 +33,7 @@ const Review = ({ travelId }: ReviewProps) => {
         <div className={styles.reviewContainer} key={idx}>
           <div className={styles.reviewHeader}>
             <img
-              src={
-                review.memberImg
-                  ? `http://localhost:8080/solid${review.memberImg}`
-                  : profile_img
-              }
+              src={review.memberImg || profile_img}
               alt="Profile"
               className={styles.profileImage}
             />
