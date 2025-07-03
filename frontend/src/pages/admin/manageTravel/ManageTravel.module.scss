@@ -533,41 +533,49 @@ textarea {
 
 .modalActions {
   display: flex;
+  align-items: center;
+  gap: 1rem;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
+  flex-wrap: nowrap;
+}
+
+.cancelButton,
+.submitButton {
+  width: auto !important;
+  display: inline-flex !important;
+  margin: 0 !important;
 }
 
 .cancelButton {
-  padding: 10px 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background-color: white;
-  color: #64748b;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
+  padding: 10px 16px !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  background-color: white !important;
+  color: #64748b !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
 
   &:hover {
-    background-color: #f8fafc;
-    border-color: #cbd5e1;
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
   }
 }
 
 .submitButton {
-  padding: 10px 24px;
-  border: none;
-  border-radius: 8px;
-  background-color: #4a6cf7;
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  padding: 10px 24px !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background-color: #4a6cf7 !important;
+  color: white !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s !important;
 
   &:hover {
-    background-color: #3a5ce5;
+    background-color: #3a5ce5 !important;
   }
 }
 

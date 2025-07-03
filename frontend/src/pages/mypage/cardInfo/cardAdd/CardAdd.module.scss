@@ -204,19 +204,26 @@
 }
 
 .formActions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  padding-top: 1.5rem;
+  display: flex !important;
+  gap: 1rem !important;
+  justify-content: flex-end !important;
+  padding-top: 0.5rem !important;
+  align-items: center !important;
 
-  button {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
+  .cancelButton,
+  .submitButton {
+    height: 45px !important;
+    padding: 0.75rem 1.5rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    border-radius: 0.5rem !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    line-height: normal !important;
+    margin: 0 !important;
+    vertical-align: middle !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s !important;
   }
 
   .cancelButton {
