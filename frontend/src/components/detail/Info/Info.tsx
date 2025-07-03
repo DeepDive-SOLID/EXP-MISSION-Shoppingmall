@@ -40,25 +40,24 @@ const Info = ({ travelId, travel }: InfoProps) => {
   const basket = location.state?.basket;
 
   const navigate = useNavigate();
-
   const { isAdmin } = useAuth();
 
-  // 출발일 기준 예약 마감일 계산
+  // 날짜 포맷 YYYY-MM-DD
+  const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
+  // 예약 마감일 계산 (출발일 기준 7일 전)
   const travelStartDate = new Date(travel.travelStartDt);
   const reservationDeadline = new Date(travelStartDate);
   reservationDeadline.setDate(travelStartDate.getDate() - 7);
 
-  // 마감일 YYYY-MM-DD 형식으로 표시
-  const formatDate = (date: Date) => date.toISOString().split("T")[0];
-
-  // 현재와 마감일 차이 (오늘 ~ 예약 마감일)
+  // D-Day 계산
   const today = new Date();
   const timeDiff = reservationDeadline.getTime() - today.getTime();
   const dDay = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // 밀리초 → 일
   const dDayText =
     dDay > 0 ? `예약 마감 D-${dDay}` : dDay <= 0 ? "예약 마감" : "";
 
-  // fromCart일 경우 초기화
+  // 장바구니에서 들어온 경우 기존 수량/상품 선택값 세팅
   useEffect(() => {
     if (fromCart && basket) {
       setPeopleCount(basket.basketTravelAmount);
@@ -73,7 +72,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
     }
   }, [fromCart, basket]);
 
-  // 상품 및 리뷰 불러오기
+  // 상품 및 리뷰 데이터 로딩
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -88,6 +87,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
     fetchData();
   }, [travelId]);
 
+  // 추가상품 선택 핸들러
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const productId = Number(e.target.value);
     setSelectedProductId("");
@@ -109,27 +109,32 @@ const Info = ({ travelId, travel }: InfoProps) => {
     ]);
   };
 
+  // 상품 삭제
   const removeProduct = (id: number) => {
     setSelectedProducts(prev => prev.filter(p => p.id !== id));
   };
 
+  // 리뷰 평균 평점 계산
   const reviewCount = reviews.length;
   const averageRate =
     reviewCount === 0
       ? 0
       : reviews.reduce((sum, r) => sum + r.reviewRate, 0) / reviewCount;
 
+  // 총 수량 및 가격 계산
   const totalCount =
     peopleCount + selectedProducts.reduce((sum, item) => sum + item.count, 0);
   const totalPrice =
     peopleCount * travel.travelPrice +
     selectedProducts.reduce((sum, item) => sum + item.count * item.price, 0);
 
+  // 장바구니에 이미 담긴 상품인지 확인
   const checkIfAlreadyInCart = async (memberId: string, travelId: number) => {
     const basketList = await fetchBasketList(memberId);
     return basketList.some(item => item.travelId === travelId);
   };
 
+  // 장바구니 담기 버튼 클릭 핸들러
   const handleCartClick = async () => {
     if (!isLoggedIn()) {
       const newToken = await refreshNewToken();
@@ -191,6 +196,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
     }
   };
 
+  // 예약하기 버튼 클릭 핸들러
   const handleReserveClick = async () => {
     if (!isLoggedIn()) {
       const newToken = await refreshNewToken();
