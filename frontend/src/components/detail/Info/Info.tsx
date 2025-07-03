@@ -359,7 +359,17 @@ const Info = ({ travelId, travel }: InfoProps) => {
                 onIncrease={() =>
                   setSelectedProducts(prev =>
                     prev.map(p =>
-                      p.id === item.id ? { ...p, count: p.count + 1 } : p,
+                      p.id === item.id
+                        ? {
+                            ...p,
+                            count:
+                              p.count <
+                              (productList.find(prod => prod.productId === p.id)
+                                ?.productAmount ?? 1)
+                                ? p.count + 1
+                                : p.count,
+                          }
+                        : p,
                     ),
                   )
                 }
