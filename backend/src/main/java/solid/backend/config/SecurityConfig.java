@@ -19,14 +19,20 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        //.requestMatchers("/**").permitAll()  // 테스트를 위해 admin, main 인증 없이 허용 (테스트 완료 후 제거)
+                        // 로그인 여부 & 권한과 상관없이 사용할 수 있는 api
                         .requestMatchers("/main/sign/**", "/home/**").permitAll() // 메인 홈, 로그인 관련 페이지는 모두 접근 허용
-                        .requestMatchers("/admin/member/**").hasAuthority("ADMIN") // 관리자 권한인 경우 admin api 호출가능
-                        .requestMatchers("/admin/member/travel/**", "/admin/member/product/**").hasAuthority("MANAGER")
                         .requestMatchers("/token/refresh").permitAll() // 토큰 재발급 api
-                        .requestMatchers("/solid/**").permitAll() // 상품 이미지 파일 경로도 허용해줘야됨.
-                        .requestMatchers("mypage/**").hasAuthority("USER")
-                        //.requestMatchers("/main/mypage/member").hasAuthority("USER") // 사용자 권한 예시
+                        .requestMatchers("/solid/**").permitAll() // 상품 이미지 파일 경로.
+
+                        // 관리자 권한일 때
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN") // ADMIN 권한일 때 모든 ADMIN api 호출 가능
+                        // 상품 관리자 권한일 때 (여행 상품 관리, 물품 관리, 주문 관리, 대시보드 api 호출 가능)
+                        .requestMatchers("/admin/member/travel/**", "/admin/member/product/**",
+                                         "/admin/dashboard/**", "/admin/orders/**").hasAuthority("MANAGER")
+
+                        // 일반 사용자 권한일 때 (/admin 접근 불가능)
+                        .requestMatchers("/mypage/**").hasAuthority("USER") // 마이페이지
+                        .requestMatchers("/payment/**").hasAuthority("USER") // 결제, 장바구니 기능
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFiler, UsernamePasswordAuthenticationFilter.class)
