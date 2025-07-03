@@ -4,4 +4,5 @@ export interface ProductDto {
   productPrice: number;
   productImg: string | null;
   productSold: boolean;
+  productAmount: number;
 }

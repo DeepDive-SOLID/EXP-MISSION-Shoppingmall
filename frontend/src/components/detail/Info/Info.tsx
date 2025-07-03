@@ -20,6 +20,7 @@ import {
   fetchBasketList,
 } from "../../../api/basket/basketApi";
 import { BasketProductDto } from "../../../types/basket/basket";
+
 interface InfoProps {
   travelId: number;
   travel: HomeTravelDto;
@@ -318,9 +319,19 @@ const Info = ({ travelId, travel }: InfoProps) => {
             상품을 선택하세요
           </option>
           {productList.map(product => (
-            <option key={product.productId} value={product.productId}>
-              {product.productName} (+
-              {(product.productPrice ?? 0).toLocaleString()}원)
+            <option
+              key={product.productId}
+              value={product.productId}
+              disabled={product.productSold}
+              style={{
+                textDecoration: product.productSold ? "line-through" : "none",
+                color: product.productSold ? "#999" : "#000",
+              }}
+            >
+              {product.productName}
+              {product.productSold
+                ? " (품절)"
+                : ` (+${(product.productPrice ?? 0).toLocaleString()}원 / 잔여 ${product.productAmount ?? 0}개)`}
             </option>
           ))}
         </select>
