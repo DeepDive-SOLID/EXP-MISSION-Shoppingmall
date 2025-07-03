@@ -32,13 +32,13 @@ export const searchTravels = async (
 
 // 상세 페이지 물품
 export const fetchProducts = async (): Promise<ProductDto[]> => {
-  const res = await api.get("/home/detail-page-products");
+  const res = await api.get("/home/detailPageProducts");
   return res.data;
 };
 
 // 상세 페이지 리뷰
 export const fetchReviews = async (travelId: number): Promise<ReviewDto[]> => {
-  const res = await api.get("/home/detail-page-reviews", {
+  const res = await api.get("/home/detailPageReviews", {
     params: { travelId },
   });
   return res.data;
