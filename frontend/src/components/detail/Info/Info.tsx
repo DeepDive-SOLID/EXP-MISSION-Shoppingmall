@@ -42,6 +42,21 @@ const Info = ({ travelId, travel }: InfoProps) => {
 
   const { isAdmin } = useAuth();
 
+  // 출발일 기준 예약 마감일 계산
+  const travelStartDate = new Date(travel.travelStartDt);
+  const reservationDeadline = new Date(travelStartDate);
+  reservationDeadline.setDate(travelStartDate.getDate() - 7);
+
+  // 마감일 YYYY-MM-DD 형식으로 표시
+  const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
+  // 현재와 마감일 차이 (오늘 ~ 예약 마감일)
+  const today = new Date();
+  const timeDiff = reservationDeadline.getTime() - today.getTime();
+  const dDay = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // 밀리초 → 일
+  const dDayText =
+    dDay > 0 ? `예약 마감 D-${dDay}` : dDay === 0 ? "예약 마감" : "예약 마감";
+
   // fromCart일 경우 초기화
   useEffect(() => {
     if (fromCart && basket) {
@@ -246,7 +261,10 @@ const Info = ({ travelId, travel }: InfoProps) => {
 
   return (
     <div className={styles.rightSection}>
-      <p className={styles.title}>{travel.travelName}</p>
+      <p className={styles.title}>
+        {travel.travelName}
+        {dDay >= 0 && <span className={styles.dDayBadge}>{dDayText}</span>}
+      </p>
 
       <div className={styles.infoBadge}>
         {travel.travelLabel?.split(",").map((label: string, idx: number) => (
@@ -267,7 +285,10 @@ const Info = ({ travelId, travel }: InfoProps) => {
         <div className={styles.dateInfo}>
           <FaRegCalendarCheck className={styles.calendarIcon} />
           <span className={styles.date}>
-            {travel.travelStartDt} ~ {travel.travelEndDt}
+            {travel.travelStartDt} ~ {travel.travelEndDt} <br />
+            <span className={styles.reservationDeadline}>
+              예약 마감 {formatDate(reservationDeadline)}
+            </span>
           </span>
         </div>
 
@@ -378,7 +399,7 @@ const Info = ({ travelId, travel }: InfoProps) => {
         {!isAdmin ? (
           travel.travelSold ? (
             <p className={styles.soldOutMessage}>품절된 상품입니다.</p>
-          ) : new Date(travel.travelStartDt) <= new Date() ? (
+          ) : dDay <= 0 ? (
             <p className={styles.soldOutMessage}>예약이 마감된 상품입니다.</p>
           ) : (
             <>
