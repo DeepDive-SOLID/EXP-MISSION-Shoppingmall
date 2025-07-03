@@ -39,6 +39,10 @@ public class MypageOrdersQueryRepository {
                         travel.travelId,
                         travel.travelName,
                         orderTravel.orderTravelAmount,
+                        travel.travelPrice,
+                        travel.travelLabel,
+                        travel.travelSold,
+                        travel.travelAmount,
                         travel.travelStartDt,
                         travel.travelEndDt,
                         travel.travelImg,
@@ -98,6 +102,10 @@ public class MypageOrdersQueryRepository {
                     dto.setOrderTravelId(travelDto.getOrderTravelId());
                     dto.setOrderTravelName(travelDto.getOrderTravelName());
                     dto.setOrderTravelAmount(travelDto.getOrderTravelAmount());
+                    dto.setTravelPrice(travelDto.getTravelPrice());
+                    dto.setTravelLabel(travelDto.getTravelLabel());
+                    dto.setTravelSold(travelDto.getTravelSold());
+                    dto.setTravelAmount(travelDto.getTravelAmount());
                     dto.setTravelStartDt(travelDto.getTravelStartDt());
                     dto.setTravelEndDt(travelDto.getTravelEndDt());
                     dto.setTravelImg(travelDto.getTravelImg());
