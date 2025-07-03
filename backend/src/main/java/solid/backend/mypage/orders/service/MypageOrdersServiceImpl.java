@@ -3,15 +3,11 @@ package solid.backend.mypage.orders.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import solid.backend.admin.orders.dto.OrderProductDto;
+import solid.backend.admin.orders.dto.OrderTravelDto;
 import solid.backend.common.FileManager;
-import solid.backend.entity.Member;
-import solid.backend.entity.Orders;
-import solid.backend.entity.Review;
-import solid.backend.entity.Travel;
-import solid.backend.jpaRepository.MemberRepository;
-import solid.backend.jpaRepository.OrdersRepository;
-import solid.backend.jpaRepository.ReviewRepository;
-import solid.backend.jpaRepository.TravelRepository;
+import solid.backend.entity.*;
+import solid.backend.jpaRepository.*;
 import solid.backend.mypage.orders.dto.*;
 import solid.backend.mypage.orders.repository.*;
 
@@ -28,6 +24,7 @@ public class MypageOrdersServiceImpl implements MypageOrdersService {
     private final MemberRepository memberRepository;
     private final MypageOrdersQueryRepository mypageOrdersQueryRepository;
     private final FileManager fileManager;
+    private final ProductRepository productRepository;
 
     /**
      * 설명 : 주문 내역 리스트 조회
@@ -56,6 +53,9 @@ public class MypageOrdersServiceImpl implements MypageOrdersService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다: id = " + ordersDto.getOrderId()));
         orders.setOrderState(ordersDto.getOrderStatus());
         ordersRepository.save(orders);
+
+        MypageTravelUpdate(ordersDto.getOrderId());
+        MypageProductUpdate(ordersDto.getOrderId());
     }
 
     /**
@@ -101,5 +101,35 @@ public class MypageOrdersServiceImpl implements MypageOrdersService {
         review.setReviewRate(reviewDto.getReviewRate());
         review.setReviewComment(reviewDto.getReviewComment());
         reviewRepository.save(review);
+    }
+
+    /**
+     * 설명: 관리자가 주문 취소 했을 시 travel 갯수 수정
+     * @param orderId
+     */
+    private void MypageTravelUpdate(Integer orderId) {
+        MypageTravelDto orderTravelDto = mypageOrdersQueryRepository.findOrderTravelById(orderId);
+        Travel travel = travelRepository.findById(orderTravelDto.getTravelId()).orElseThrow(() -> new IllegalArgumentException("해당하는 상품이 없습니다."));
+
+        int result = travel.getTravelAmount() + orderTravelDto.getOrderTravelAmount();
+        travel.setTravelAmount(result);
+
+        travelRepository.save(travel);
+    }
+
+    /**
+     * 설명: 관리자가 주문 취소 했을 시 product 갯수 수정
+     * @param orderId
+     */
+    private void MypageProductUpdate(Integer orderId) {
+        List<MypageProductDto> orderProductDto = mypageOrdersQueryRepository.findOrderProductById(orderId);
+
+        orderProductDto.forEach(items -> {
+            Product product = productRepository.findById(items.getProductId()).orElseThrow(() -> new IllegalArgumentException("해당하는 물품이 없습니다."));
+
+            int result = product.getProductAmount() + items.getOrderProductAmount();
+            product.setProductAmount(result);
+            productRepository.save(product);
+        });
     }
 }
