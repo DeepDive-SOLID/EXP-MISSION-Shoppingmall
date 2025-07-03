@@ -344,7 +344,7 @@ const SignUp: React.FC = () => {
                 {isCheckingId ? "확인중..." : "중복확인"}
               </button>
             </div>
-            {fieldErrors.memberId && (
+            {fieldErrors.memberId && !idError && (
               <div className={styles.fieldError}>{fieldErrors.memberId}</div>
             )}
             {idError && <div className={styles.idError}>{idError}</div>}
@@ -373,7 +373,7 @@ const SignUp: React.FC = () => {
                 {isCheckingEmail ? "확인중..." : "중복확인"}
               </button>
             </div>
-            {fieldErrors.memberEmail && (
+            {fieldErrors.memberEmail && !emailError && (
               <div className={styles.fieldError}>{fieldErrors.memberEmail}</div>
             )}
             {emailError && (
