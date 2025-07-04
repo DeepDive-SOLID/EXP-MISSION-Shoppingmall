@@ -190,7 +190,52 @@ npm run dev
 - vite.config.js → 프록시 설정 및 빌드 설정을 포함한 Vite 설정 파일
 
 ## 📺 화면 별 기능
+### 메인 화면
+| 로그인 전 | 로그인 후 | 하단 스크롤 |
+|--------|---------|---------|
+|![image](https://github.com/user-attachments/assets/ad6e8936-3f19-4dd7-9f5d-47531beec620)|![image](https://github.com/user-attachments/assets/cb8f36b7-d118-44ed-8b86-e8648655b440)|![image](https://github.com/user-attachments/assets/f897213c-9b3e-4c15-83f3-39e5721723b5)|
 
+### 상품 주문 화면
+![image](https://github.com/user-attachments/assets/19ce8684-6604-4e31-9634-503efe68f3ae)
+
+### 장바구니
+| 선택 전 | 선택 후 |
+|--------|---------|
+|![image](https://github.com/user-attachments/assets/edd446c4-5bb4-4b37-b409-8a0cc3af45a1)|![image](https://github.com/user-attachments/assets/ba637c79-2450-445d-b53b-f1abde39e1e5)|
+
+### 결제창
+| 상단 | 하단 | 카드 추가 |
+|--------|---------|---------|
+|![image](https://github.com/user-attachments/assets/978b830d-5312-452b-8264-4e73d38136bd)|![image](https://github.com/user-attachments/assets/7f37864a-4f56-4dc1-967a-62bd16eac26e)|![image](https://github.com/user-attachments/assets/670632c7-9dae-40af-8474-0750d9916a2b)|
+
+### 결제 완료
+| 성공 | 실패 |
+|--------|---------|
+|![image](https://github.com/user-attachments/assets/434fecc1-579a-4891-bf4e-daddb1c558fd)|![image](https://github.com/user-attachments/assets/58b0d8d3-06bd-4b1b-b31e-831ca77eeb07)|
+
+### 마이페이지
+## 주문 내역 조회
+![image](https://github.com/user-attachments/assets/9bec3348-05e3-486f-a13f-227aa5d2c16a)
+
+| 예약 취소 | 리뷰 작성 | 리뷰 수정 |
+|--------|---------|---------|
+|![image](https://github.com/user-attachments/assets/e7836fba-98b4-49da-ab79-850e70e09bca)|![image](https://github.com/user-attachments/assets/feec2d1a-a1e1-45f9-815a-7b4fa59f3f63)|![image](https://github.com/user-attachments/assets/724f1324-e4bd-4ab9-b8b1-7c4d8a0d52d7)|
+
+### 카드 정보 관리
+| 카드 관리 | 카드 추가 | 카드 삭제 |
+|--------|---------|---------|
+|![image](https://github.com/user-attachments/assets/1676b0dc-6093-4b8f-a7f8-6386f7d6fa70)|![image](https://github.com/user-attachments/assets/2497d536-947d-4493-9902-032a828c8c68)|![image](https://github.com/user-attachments/assets/358410b9-e30a-4559-8148-0d092a2f58ba)|
+
+| 카드 추가 성공 | 카드 추가 실패 |
+|--------|---------|
+|![image](https://github.com/user-attachments/assets/668b7b1d-6e61-4a00-819e-ddcde4a45e7d)|![image](https://github.com/user-attachments/assets/5102117e-e916-4b3b-a410-ef75b8fcfb0d)|
+
+### 회원 정보 수정
+| 정보 수정 | 회원 탈퇴 |
+|--------|---------|
+|![image](https://github.com/user-attachments/assets/b73a7c85-9c88-4d56-bfdf-af006dd4847f)|![image](https://github.com/user-attachments/assets/c0d3dec9-a540-4c0a-9b0b-94f27bb3ac4e)|
+
+## 관리자 페이지
 ### 대시보드
 
 ![image](https://github.com/user-attachments/assets/785437ff-439d-43df-9fee-408741b34283)
