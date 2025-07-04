@@ -306,27 +306,7 @@ const OrderList = () => {
                 </div>
               ) : (
                 orders.map(order => (
-                  <div key={order.orderId}
-                       className={styles.orderCard}
-                       onClick={() =>
-                         navigate(`/detail/${order.orderTravelId}`, {
-                           state: {
-                             travel: {
-                               travelId: order.orderTravelId,
-                               travelName: order.orderTravelName,
-                               travelStartDt: order.travelStartDt,
-                               travelEndDt: order.travelEndDt,
-                               travelImg: order.travelImg,
-                               travelPrice: order.travelPrice,
-                               travelAmount: order.travelAmount,
-                               reservedCount: order.orderTravelAmount,
-                               travelLabel: order.travelLabel,
-                               travelSold: order.travelSold,
-                             },
-                           },
-                         })
-                       }
-                  >
+                  <div key={order.orderId} className={styles.orderCard}>
                     <div className={styles.orderHeader}>
                       <div className={styles.orderInfo}>
                         <span className={styles.orderNumber}>
@@ -347,7 +327,25 @@ const OrderList = () => {
                       </div>
                     </div>
 
-                    <div className={styles.orderContent}>
+                    <div className={styles.orderContent}
+                         onClick={() =>
+                           navigate(`/detail/${order.orderTravelId}`, {
+                             state: {
+                               travel: {
+                                 travelId: order.orderTravelId,
+                                 travelName: order.orderTravelName,
+                                 travelStartDt: order.travelStartDt,
+                                 travelEndDt: order.travelEndDt,
+                                 travelImg: order.travelImg,
+                                 travelPrice: order.travelPrice,
+                                 travelAmount: order.travelAmount,
+                                 reservedCount: order.orderTravelAmount,
+                                 travelLabel: order.travelLabel,
+                                 travelSold: order.travelSold,
+                               },
+                             },
+                           })
+                         }>
                       <div className={styles.travelInfo}>
                         <img
                           src={order.travelImg}
