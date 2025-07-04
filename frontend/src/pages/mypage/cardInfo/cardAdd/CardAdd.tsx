@@ -245,8 +245,8 @@ const CardAdd = () => {
     // CVV 검증 (문자열 기반)
     if (!newCard.cvv) {
       newErrors.cvv = "보안 코드(CVV/CVC)를 입력해주세요.";
-    } else if (!/^\d{3,4}$/.test(newCard.cvv)) {
-      newErrors.cvv = "보안 코드(CVV/CVC)는 3-4자리 숫자입니다.";
+    } else if (!/^\d{3}$/.test(newCard.cvv)) {
+      newErrors.cvv = "보안 코드(CVV/CVC)는 3자리 숫자입니다.";
     }
 
     setErrors(newErrors);
@@ -263,15 +263,11 @@ const CardAdd = () => {
 
     if (validateForm()) {
       // PaymentAddDto 형태로 데이터 변환 (문자열로 전송)
-      const currentYear = new Date().getFullYear();
-      const inputYear = parseInt(newCard.expiryDate[1]);
-      const fullYear = currentYear - (currentYear % 100) + inputYear; // 2자리 연도를 4자리로 변환
-
       const paymentDto = {
         memberId: memberId,
         paymentName: paymentName,
         paymentNum: newCard.cardNumber.join(""), // 문자열로 전송
-        paymentEndDt: `${fullYear}-${newCard.expiryDate[0].padStart(2, "0")}`, // YYYY-MM 형식
+        paymentEndDt: `${newCard.expiryDate[0]}/${newCard.expiryDate[1]}`, // MM/YY 형식
         paymentOwner: newCard.cardOwner,
         paymentSecurity: newCard.cvv, // 문자열로 전송
         paymentPw: newCard.cardPassword, // 문자열로 전송
@@ -425,7 +421,7 @@ const CardAdd = () => {
                         )
                       }
                       placeholder="CVV/CVC"
-                      maxLength={4}
+                      maxLength={3}
                       className={errors.cvv ? styles.error : ""}
                     />
                     <button
