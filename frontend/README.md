@@ -266,4 +266,4 @@ npm run dev
 
 | 물품 추가                                                                                 | 여행 상품 추가                                                                            |
 | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| ![image](https://github.com/user-attachments/assets/a7bb3189-bcef-4396-be99-65c14011993a) | ![image](https://github.com/user-attachments/assets/3110ca35-d2b5-4580-83cd-9583a9d5811b) |
+| ![image](https://github.com/user-attachments/assets/6bc553be-1343-4e59-b5fd-1b03a3df34dd) | ![image](https://github.com/user-attachments/assets/e876b5eb-9e8d-4147-9e2a-00f24459c213) |
