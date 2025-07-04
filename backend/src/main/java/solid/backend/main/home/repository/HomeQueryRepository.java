@@ -21,7 +21,6 @@ import java.util.List;
 public class HomeQueryRepository {
 
     private final JPAQueryFactory queryFactory;
-    private final JPAQueryFactory jpaQueryFactory;
 
     QTravel travel = QTravel.travel;
     QReview review = QReview.review;
@@ -142,7 +141,7 @@ public class HomeQueryRepository {
      * @return
      */
     public List<HomeTravelDto> searchTravelSortedPopular(HomeSearchDto homeSearchDto) {
-        return searchTravelCommon(homeSearchDto, review.reviewRate.avg().doubleValue().desc(), travel.travelUploadDt.desc());
+        return searchTravelCommon(homeSearchDto, review.reviewRate.avg().doubleValue().desc(), travel.travelStartDt.asc());
     }
 
     /**
