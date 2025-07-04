@@ -202,10 +202,17 @@ public class PaymentOrderServiceImpl implements PaymentOrderService {
      */
     @Override
     public Boolean checkPaymentCard(String paymentEndDt) {
-        String cardEntDt = paymentEndDt.substring(3, 5);
+        String cardEntYear = paymentEndDt.substring(3, 5);
+        String cardEntMonth = paymentEndDt.substring(0, 2);
+
         int year = LocalDate.now().getYear() % 100;
-        int card = Integer.parseInt(cardEntDt);
-        return year < card;
+        int month = LocalDate.now().getMonthValue();
+        int cardYear = Integer.parseInt(cardEntYear);
+        int cardMonth = Integer.parseInt(cardEntMonth);
+
+        if (year < cardYear) {
+            return true;
+        } else return year == cardYear && month <= cardMonth;
     }
 
     /**
