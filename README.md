@@ -6,6 +6,36 @@
 
 <br>
 
+### 팀원
+<div align="center">
+    <table>
+    <tr>
+      <th>BE</td>
+      <th>FE</td>
+      <th>BE</td>
+      <th>FE</td>
+      <th>BE</td>
+    </tr>
+    <tr>
+      <td><p align="center"><img class="avatar avatar-user" src="https://avatars.githubusercontent.com/u/194752198?s=96&amp;v=4" width="48" height="48" alt="@w-jins"></td>
+      <td><p align="center"><img class="avatar avatar-user" src="https://avatars.githubusercontent.com/u/160034314?s=96&amp;v=4" width="48" height="48" alt="@lnylnylnylny"></td>
+      <td><p align="center"><img class="avatar avatar-user" src="https://avatars.githubusercontent.com/u/89690794?s=96&amp;v=4" width="48" height="48" alt="@koyulim"></td>
+      <td><p align="center"><img class="avatar avatar-user" src="https://avatars.githubusercontent.com/u/143973893?s=96&amp;v=4" width="48" height="48" alt="@dyoni2"></td>
+      <td><p align="center"><img class="avatar avatar-user" src="https://avatars.githubusercontent.com/u/57864253?s=96&amp;v=4" width="48" height="48" alt="@shinyyseon"></td>
+    </tr>
+    <tr>
+      <td>김우진<br>@w-jins</td>
+      <td>이나영<br>@lnylnylnylny</td>
+      <td>고유림<br>@koyulim</td>
+      <td>정지연<br>@dyoni2</td>
+      <td>신용선<br>@shinyyseon</td>
+  </table>
+</div>
+
+<br>
+
+---
+
 ### 기술 스택
 <table>
   <tr>
@@ -44,6 +74,8 @@
   </tr>
 </table>
 
+---
+
 ### 주요 기능
 1. 회원 관리
     - 회원가입 : 회원 정보 입력 후 DB 저장
@@ -74,31 +106,7 @@
     - 이미지 정보 추가 및 삭제 : 로컬 디렉토리에 있는 이미지 추가 및 삭제
     - 이미지 경로 커스텀 : 로컬 디렉토리 경로 핸들링
 
-### 팀원
-<div align="center">
-    <table>
-    <tr>
-      <th>BE</td>
-      <th>FE</td>
-      <th>BE</td>
-      <th>FE</td>
-      <th>BE</td>
-    </tr>
-    <tr>
-      <td><p align="center"><img class="avatar avatar-user" src="https://avatars.githubusercontent.com/u/194752198?s=96&amp;v=4" width="48" height="48" alt="@w-jins"></td>
-      <td><p align="center"><img class="avatar avatar-user" src="https://avatars.githubusercontent.com/u/160034314?s=96&amp;v=4" width="48" height="48" alt="@lnylnylnylny"></td>
-      <td><p align="center"><img class="avatar avatar-user" src="https://avatars.githubusercontent.com/u/89690794?s=96&amp;v=4" width="48" height="48" alt="@koyulim"></td>
-      <td><p align="center"><img class="avatar avatar-user" src="https://avatars.githubusercontent.com/u/143973893?s=96&amp;v=4" width="48" height="48" alt="@dyoni2"></td>
-      <td><p align="center"><img class="avatar avatar-user" src="https://avatars.githubusercontent.com/u/57864253?s=96&amp;v=4" width="48" height="48" alt="@shinyyseon"></td>
-    </tr>
-    <tr>
-      <td>김우진<br>@w-jins</td>
-      <td>이나영<br>@lnylnylnylny</td>
-      <td>고유림<br>@koyulim</td>
-      <td>정지연<br>@dyoni2</td>
-      <td>신용선<br>@shinyyseon</td>
-  </table>
-</div>
+---
 
 ### 사용 가이드
 - 메인 페이지는 로그인을 하지 않아도 사용 가능합니다. 단 상품 구매를 원하는 경우 로그인 또는 회원가입이 필요합니다.
