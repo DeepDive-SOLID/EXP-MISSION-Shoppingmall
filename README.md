@@ -32,47 +32,47 @@
   <tr>
     <td><strong>Tools</strong></td>
     <td>
+      <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
       <img src="https://img.shields.io/badge/intellij%20idea-000000.svg?&style=for-the-badge&logo=intellij%20idea&logoColor=white" />
       <img src="https://img.shields.io/badge/Visual%20Studio%20Code-007ACC.svg?&style=for-the-badge&logo=Visual%20Studio%20Code&logoColor=white"/>
       <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white">
       <img src="https://img.shields.io/badge/Drawio-F08705?style=for-the-badge&logo=diagramsdotnet&logoColor=white">
       <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=Figma&logoColor=white">
       <img src="https://img.shields.io/badge/discord-5865F2?style=for-the-badge&logo=discord&logoColor=white">
+      <img src="https://img.shields.io/badge/ERDCloud-000000?style=for-the-badge">
     </td>
   </tr>
 </table>
 
-
-
 ### 주요 기능
 1. 회원 관리
-    - 회원가입
-    - 로그인
-    - 아이디 찾기 & 비밀번호 재설정
+    - 회원가입 : 회원 정보 입력 후 DB 저장
+    - 로그인 : DB 데이터와 입력 데이터 비교 후 로그인
+    - 아이디 찾기 & 비밀번호 재설정 : DB 데이터와 입력 데이터 비교 후 아이디 조회, 비밀번호의 경우 재설정 페이지로 이동
 2. 관리자 페이지
-    - 대시보드
-    - 주문 관리
-    - 사용자 관리
-    - 상품 관리 (물품 관리, 여행 상품 관리)
+    - 대시보드 : 사용자가 구매한 상품 데이터를 기반으로 통계 자료로 표시
+    - 주문 관리 : 사용자가 구매한 상품의 정보 및 상태 표시
+    - 사용자 관리 : 가입한 사용자 목록 표시
+    - 상품 관리 (물품 관리, 여행 상품 관리) : 등록된 물품, 상품 표시
 3. 메인 페이지
     - 메인 (검색, 헤더)
-    - 상품 상세 페이지
+    - 상품 상세 페이지 : 원하는 상품 클릭 시 해당 상품의 상세 정보 표시
 4. 마이 페이지
-    - 주문내역 조회
-    - 카드 정보 관리
-    - 회원 정보 수정 및 회원 탈퇴
+    - 주문내역 조회 : 사용자가 구매한 상품의 내역 및 주문 상태 표시
+    - 카드 정보 관리 : 등록한 카드 정보 확인 및 카드 등록 가능
+    - 회원 정보 수정 및 회원 탈퇴 : 회원가입 시 등록한 정보 수정 가능 및 회원 탈퇴
 5. 결제 페이지
-    - 장바구니
-    - 주문
-    - 카드 등록
-    - 결제
+    - 장바구니 : 여행 상품 및 물품 장바구니
+    - 주문 : 여행 상품 구매
+    - 카드 등록 : 사용자의 카드 등록
+    - 결제 : 등록된 카드를 이용하여 결제 진행
 6. 사용자 인증 및 보안 기능
-    - JWT
-    - Spring Security
-    - AES
+    - JWT : 토큰 발급, 검증, 재발급
+    - Spring Security : 권한에 따라 접근할 수 있도록 설정, 암호화
+    - AES : AES 암호화, 복호화
 7. 이미지 첨부 기능
-    - 이미지 정보 추가 및 삭제
-    - 이미지 경로 커스텀
+    - 이미지 정보 추가 및 삭제 : 로컬 디렉토리에 있는 이미지 추가 및 삭제
+    - 이미지 경로 커스텀 : 로컬 디렉토리 경로 핸들링
 
 ### 팀원
 <div align="center">
@@ -155,6 +155,3 @@
     4) 사용자관리 : 서비스에 가입한 사용자 정보 확인 가능, 사용자 권한 변경 가능
     5) 상품관리 - 물품 관리 : 여행 상품 추가 물품 등록 및 정보 수정, 삭제 가능
     6) 상품관리 - 물품 관리 : 여행 상품 등록 및 정보 수정, 삭제 가능
-
-
-
