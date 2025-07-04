@@ -32,14 +32,6 @@ api.interceptors.response.use(
   },
   async error => {
 
-    // 서버에서 토큰 만료된 경우
-    if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-      alert("세션이 만료되었습니다. 다시 로그인 해주세요.");
-      return;
-    }
-
     // 로그인, 회원가입, 아이디/비밀번호 찾기 요청은 토큰 재발급 로직에서 제외
     const isLoginRequest =
       error.config.url?.includes("/main/sign/login") ||
@@ -47,6 +39,14 @@ api.interceptors.response.use(
       error.config.url?.includes("/main/sign/findId") ||
       error.config.url?.includes("/main/sign/checkIdEmail") ||
       error.config.url?.includes("/main/sign/updPw");
+
+    // 서버에서 토큰 만료된 경우
+    if (error.response?.status === 401 && !isLoginRequest) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+      alert("세션이 만료되었습니다. 다시 로그인 해주세요.");
+      return;
+    }
 
     // 프론트에서 토큰 만료라고 판단될 경우
     if (!isLoggedIn() && !error.config._retry && !isLoginRequest) {
