@@ -1,0 +1,297 @@
+.rightSection {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 24px;
+  margin-top: 30px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #202020;
+  margin-bottom: -8px;
+}
+
+.dDayBadge {
+  background-color: #ff4d4f;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-left: 12px;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.infoBadge {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  background-color: #0085ff;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.reservationDeadline {
+  font-size: 14px;
+  color: #888;
+}
+
+.rate {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #444;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.starIcon,
+.commentIcon {
+  font-size: 16px;
+  color: #ffb400;
+}
+
+.detailInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 15px;
+  color: #202020;
+}
+
+.dateInfo,
+.personInfo,
+.hotelInfo,
+.adventureInfo,
+.trafficInfo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.date,
+.personCount,
+.hotelDetails,
+.adventureDetails,
+.trafficDetails {
+  font-size: 15px;
+}
+
+.personInfo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.personText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.personTop {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.minPeopleCount {
+  font-size: 15px;
+  color: #888;
+  margin: 0;
+}
+
+/* 아이콘 공통 */
+.peopleIcon,
+.hotelIcon,
+.ticketIcon,
+.busIcon,
+.calendarIcon {
+  width: 20px;
+  height: 20px;
+  color: #0085ff;
+  flex-shrink: 0;
+}
+
+/* 드롭다운 */
+.subProductInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.subProductTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #202020;
+  margin: 5px 0 0 0;
+}
+
+.productSelect {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #333;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' fill='gray' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+
+  &:focus {
+    outline: none;
+    border-color: #0085ff;
+    box-shadow: 0 0 0 2px rgba(0, 133, 255, 0.2);
+  }
+}
+
+/* 수량 선택 영역 */
+.selectionSection {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.productItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.productLabel {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #202020;
+}
+
+.productControl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.productPrice {
+  font-size: 14px;
+  color: #202020;
+  width: 80px;
+  text-align: right;
+}
+
+.removeButton {
+  font-size: 18px;
+  background: none;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  transition:
+    color 0.3s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    color: #e60023;
+    transform: scale(1.1);
+  }
+}
+
+.personItem {
+  @extend .productItem;
+  margin-top: 8px;
+
+  .productLabel {
+    font-size: 18px;
+    font-weight: 700;
+    color: #202020;
+  }
+
+  .productPrice {
+    font-weight: 700;
+    color: #202020;
+    width: 105px;
+  }
+}
+
+/* 총합 가격 */
+.totalprice {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+  padding: 0;
+
+  .totalPriceCnt {
+    font-size: 14px;
+    color: #202020;
+  }
+
+  .totalPrice {
+    font-size: 18px;
+    font-weight: 700;
+    color: #e60023;
+    transition: all 0.3s ease-in-out;
+  }
+}
+
+/* 버튼 */
+.buttonSection {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+
+  button {
+    flex: 1 1 0;
+    padding: 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .cartButton {
+    background-color: #f0f0f0;
+    color: #333;
+
+    &:hover {
+      background-color: #e0e0e0;
+    }
+  }
+
+  .reserveButton {
+    background-color: #0085ff;
+    color: white;
+
+    &:hover {
+      background-color: #0070e0;
+    }
+  }
+}
+
+.soldOutMessage {
+  color: #e63946;
+  font-weight: 600;
+  font-size: 18px;
+  text-align: center;
+  margin-top: 16px;
+}

@@ -3,26 +3,55 @@ import styles from "./Find.module.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { logo } from "../../../assets";
 import backIcon from "../../../assets/icons/back.svg";
+import { authApi } from "../../../api/login/authApi";
+
+// 한글 제거 함수
+function removeKorean(text: string) {
+  return text.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, "");
+}
 
 const FindId: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [foundId, setFoundId] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [tab, setTab] = useState(0);
 
   const handleTab = (idx: number) => {
     setTab(idx);
     if (idx === 1) {
-      navigate("/find-pw"); // 비밀번호 찾기 경로로 이동 (수정 필요시 경로 변경)
+      navigate("/find-pw");
     }
   };
 
-  const handleFindId = () => {
-    if (email === "test@example.com") {
-      setFoundId("user1234");
-    } else {
-      setFoundId("일치하는 사용자가 없습니다");
+  const handleFindId = async () => {
+    if (!email.trim()) {
+      setError("이메일을 입력해주세요.");
+      return;
     }
+
+    setIsLoading(true);
+    setFoundId("");
+    setError("");
+
+    try {
+      const memberId = await authApi.findId({ memberEmail: email });
+      setFoundId(memberId);
+    } catch (err) {
+      setError("일치하는 사용자가 없습니다.");
+      console.error("아이디 찾기 오류:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // spacebar, 한글 방지: 이메일 필드에서 공백 및 한글 제거
+    const processedValue = removeKorean(e.target.value.replace(/\s/g, ""));
+    setEmail(processedValue);
+    setFoundId("");
+    setError("");
   };
 
   return (
@@ -40,13 +69,20 @@ const FindId: React.FC = () => {
             style={{ width: 28, height: 28 }}
           />
         </button>
-        <img src={logo} alt="로고" className={styles.logo} />
+        <img
+          src={logo}
+          alt="로고"
+          className={styles.logo}
+          onClick={() => navigate("/")}
+        />
         <div className={styles.tabs}>
           <div
             className={
               tab === 0 ? `${styles.tab} ${styles.active}` : styles.tab
             }
             onClick={() => handleTab(0)}
+            role="button"
+            tabIndex={0}
           >
             아이디 찾기
           </div>
@@ -55,6 +91,8 @@ const FindId: React.FC = () => {
               tab === 1 ? `${styles.tab} ${styles.active}` : styles.tab
             }
             onClick={() => handleTab(1)}
+            role="button"
+            tabIndex={0}
           >
             비밀번호 찾기
           </div>
@@ -73,8 +111,10 @@ const FindId: React.FC = () => {
               type="email"
               placeholder="이메일을 입력하세요"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={handleEmailChange}
+              className={error ? styles.inputError : ""}
             />
+            {error && <div className={styles.errorText}>{error}</div>}
           </div>
           {foundId && (
             <div className={styles.inputGroup}>
@@ -82,8 +122,8 @@ const FindId: React.FC = () => {
               <div className={styles["id-box"]}>{foundId}</div>
             </div>
           )}
-          <button className={styles.button} type="submit">
-            아이디 찾기
+          <button className={styles.button} type="submit" disabled={isLoading}>
+            {isLoading ? "확인 중..." : "아이디 찾기"}
           </button>
         </form>
         <div className={styles["bottom-text"]}>

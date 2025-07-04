@@ -1,9 +1,12 @@
 package solid.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Comment;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -19,7 +22,7 @@ public class Member {
     @Comment("회원명")
     private String memberName;
 
-    @Column(name = "member_pw", nullable = false, length = 30)
+    @Column(name = "member_pw", nullable = false, length = 100)
     @Comment("회원 비밀번호")
     private String memberPassword;
 
@@ -35,6 +38,10 @@ public class Member {
     @Comment("회원 생년월일")
     private LocalDate memberBirth;
 
+    @Column(name = "member_img", length = 500)
+    @Comment("회원 이미지")
+    private String memberImg;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_id", nullable = false)
     @Comment("권한 코드")
@@ -45,19 +52,27 @@ public class Member {
      *  양방향 관련 코드 * 현재 다대일 단방향으로 설정해놓음
      */
 
-//    @OneToMany(mappedBy = "member")
-//    @JsonIgnore
-//    private List<Auth> authList = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "member")
-//    @JsonIgnore
-//    private List<Payment> paymentList = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "member")
-//    @JsonIgnore
-//    private List<OrderTravel> orderTravelList = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "member")
-//    @JsonIgnore
-//    private List<OrderProduct> orderProductList = new ArrayList<>();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Orders> orders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Basket> baskets = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Payment> paymentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<OrderTravel> orderTravelList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<OrderProduct> orderProductList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Review> reviews = new ArrayList<>();
 }

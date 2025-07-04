@@ -1,0 +1,159 @@
+.cartContentWrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+  margin-top: 0;
+}
+
+.productList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.productSection {
+  display: flex;
+  gap: 32px;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #fdfdfd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  align-items: flex-start;
+}
+
+.leftSection {
+  width: 200px;
+  height: 200px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+}
+
+.rightSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.travelInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.travelInfo {
+  .title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 5px 0;
+  }
+
+  .days {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  .date {
+    font-size: 14px;
+    color: #666;
+    margin: 2px 0 10px 0;
+  }
+
+  .personBox {
+    background-color: #0085ff;
+    color: white;
+    margin-top: 10px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    height: 50px;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: bold;
+
+    .price {
+      margin-left: auto;
+    }
+  }
+}
+
+.extra {
+  width: 220px;
+  flex-shrink: 0;
+
+  .extraTitle {
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .extraItemWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .extraItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    padding: 4px 0;
+    gap: 8px;
+  }
+
+  .name {
+    flex: 1;
+  }
+
+  .unit {
+    width: 40px;
+    text-align: right;
+    font-weight: bold;
+  }
+
+  .price {
+    width: 80px;
+    text-align: right;
+    color: #333;
+  }
+}
+
+.summary {
+  width: 100%;
+  border-top: 1px solid #ccc;
+  padding-top: 8px;
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  p {
+    font-weight: bold;
+  }
+
+  .totalPrice {
+    font-size: 20px;
+    font-weight: bold;
+    color: #cd2e3a;
+  }
+}

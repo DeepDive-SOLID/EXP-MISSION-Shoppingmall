@@ -22,6 +22,7 @@
 .logo {
   width: 210px;
   height: auto;
+  cursor: pointer;
 }
 
 .title {
@@ -66,6 +67,22 @@
   &::placeholder {
     color: #999;
   }
+}
+
+.inputError {
+  border-color: #ef4444 !important;
+
+  &:focus {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+}
+
+.fieldError {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-left: 2px;
+  margin-top: 0.25rem;
 }
 
 .input[type="date"]::-webkit-input-placeholder {
@@ -120,17 +137,29 @@
   }
 }
 
+.agreeGroup {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  width: auto;
+}
+
 .agreeLabel {
   display: flex;
   align-items: center;
   font-size: 0.92rem;
   color: #374151;
+  white-space: nowrap;
+  font-weight: 500;
 }
 
 .agreeLabel input[type="checkbox"] {
   position: relative;
   top: 1.9px;
-  margin-right: 0.3rem;
+  margin-right: 0.5rem;
 }
 
 .inputGroup:last-of-type {
@@ -175,9 +204,49 @@
 }
 
 .idSuccess {
-  color: #6b7280;
+  color: #10b981;
   font-size: 0.85rem;
   margin-left: 2px;
+  font-weight: 500;
+}
+
+.emailInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.emailCheckBtn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  height: 27px;
+  min-width: 60px;
+  background: #0085ff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.2s;
+  z-index: 2;
+  &:hover {
+    background: #0074d9;
+  }
+}
+
+.emailError {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-left: 2px;
+}
+
+.emailSuccess {
+  color: #10b981;
+  font-size: 0.85rem;
+  margin-left: 2px;
+  font-weight: 500;
 }
 
 .passwordInputWrapper {
@@ -204,4 +273,15 @@
   color: #ef4444;
   font-size: 0.85rem;
   margin-left: 2px;
+}
+
+.submitError {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-left: 2px;
+  text-align: center;
+  padding: 0.5rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
 }

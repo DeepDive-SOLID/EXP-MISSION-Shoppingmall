@@ -3,8 +3,12 @@ import Header from "../../../components/common/Header_dash/Header";
 import Sidebar from "../../../components/common/Sidebar/Sidebar";
 import styles from "./ManageOrder.module.scss";
 import { FiSearch } from "react-icons/fi";
-import { orderApi } from "../../../api/admin/orderApi";
-import { getOrderStatusClass } from "../../../utils/orderUtils";
+import { orderApi } from "../../../api";
+import {
+  getOrderStatusText,
+  getOrderStatusClass,
+} from "../../../utils/orderUtils";
+
 import { Order, OrderSearchType } from "../../../types/admin/order";
 
 const ManageOrder = () => {
@@ -232,8 +236,8 @@ const ManageOrder = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {currentItems.map(order => (
-                      <tr key={order.orderId}>
+                    {currentItems.map((order, index) => (
+                      <tr key={`${order.orderId}-${index}`}>
                         <td>{order.orderId}</td>
                         <td>{order.travelName || "-"}</td>
                         <td>{order.productName || "-"}</td>
@@ -281,9 +285,9 @@ const ManageOrder = () => {
                 이전
               </button>
 
-              {getPageNumbers().map(number => (
+              {getPageNumbers().map((number, index) => (
                 <button
-                  key={number}
+                  key={`page-${number}-${index}`}
                   className={`${styles.pageButton} ${
                     currentPage === number ? styles.active : ""
                   }`}

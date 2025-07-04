@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./SignUp.module.scss";
 import { logo } from "../../../assets/index";
+import { authApi } from "../../../api/login/authApi";
+import { useNavigate } from "react-router-dom";
 
 const EyeIcon = ({ visible }: { visible: boolean }) =>
   visible ? (
@@ -44,85 +46,292 @@ function isValidPassword(password: string) {
   );
 }
 
+// 전화번호 형식 검증 함수
+function isValidPhoneNumber(phone: string) {
+  const phoneRegex = /^010-\d{4}-\d{4}$/;
+  return phoneRegex.test(phone);
+}
+
+// 생년월일 검증 함수
+function isValidBirthDate(birth: string) {
+  const selectedDate = new Date(birth);
+  const today = new Date();
+  today.setHours(23, 59, 59, 999); // 오늘 날짜의 마지막 시간으로 설정
+  return selectedDate <= today;
+}
+
+// 한글 제거 함수
+function removeKorean(text: string) {
+  return text.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, "");
+}
+
 const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    id: "",
-    password: "",
-    email: "",
-    phone: "",
-    birthDate: "",
+    memberName: "",
+    memberId: "",
+    memberPw: "",
+    memberEmail: "",
+    memberPhone: "",
+    memberBirth: "",
+    authId: "USER", // 기본 권한 설정
   });
   const [agree, setAgree] = useState(false);
   const [idChecked, setIdChecked] = useState(false);
   const [idError, setIdError] = useState("");
   const [idSuccess, setIdSuccess] = useState(false);
+  const [emailChecked, setEmailChecked] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [emailSuccess, setEmailSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingId, setIsCheckingId] = useState(false);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  const passwordValid = isValidPassword(formData.password);
+  // 필드별 에러 상태 추가
+  const [fieldErrors, setFieldErrors] = useState({
+    memberName: "",
+    memberId: "",
+    memberPw: "",
+    memberEmail: "",
+    memberPhone: "",
+    memberBirth: "",
+  });
+
+  const passwordValid = isValidPassword(formData.memberPw);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    // spacebar, 한글 방지: 아이디, 비밀번호, 이메일, 전화번호 필드에서 공백 및 한글 제거
+    const processedValue =
+      name === "memberId" ||
+      name === "memberPw" ||
+      name === "memberEmail" ||
+      name === "memberPhone"
+        ? removeKorean(value.replace(/\s/g, ""))
+        : value;
+
     setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [name]: processedValue,
     }));
-    if (name === "id") {
+
+    // 필드 에러 초기화
+    setFieldErrors(prev => ({
+      ...prev,
+      [name]: "",
+    }));
+
+    if (name === "memberId") {
       setIdChecked(false);
       setIdError("");
       setIdSuccess(false);
     }
-  };
 
-  // 임시 중복확인 로직 ("testuser"는 중복)
-  const handleIdCheck = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!formData.id) return;
-    if (formData.id === "testuser") {
-      setIdChecked(false);
-      setIdError("이미 등록된 아이디 입니다.");
-      setIdSuccess(false);
-    } else {
-      setIdChecked(true);
-      setIdError("");
-      setIdSuccess(true);
+    if (name === "memberEmail") {
+      setEmailChecked(false);
+      setEmailError("");
+      setEmailSuccess(false);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // 아이디 중복 확인
+  const handleIdCheck = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!agree || !idChecked || !passwordValid) return;
-    // TODO: Implement signup logic
-    console.log("Form submitted:", formData);
+    if (!formData.memberId) return;
+
+    setIsCheckingId(true);
+    setIdError("");
+    setIdSuccess(false);
+
+    try {
+      const isDuplicate = await authApi.checkId({
+        memberId: formData.memberId,
+      });
+
+      if (isDuplicate) {
+        setIdChecked(false);
+        setIdError("이미 등록된 아이디 입니다.");
+        setIdSuccess(false);
+      } else {
+        setIdChecked(true);
+        setIdError("");
+        setIdSuccess(true);
+        setFieldErrors(prev => ({
+          ...prev,
+          memberId: "",
+        }));
+      }
+    } catch (error) {
+      console.error("아이디 중복 확인 오류:", error);
+      setIdError("아이디 중복 확인 중 오류가 발생했습니다.");
+      setIdSuccess(false);
+    } finally {
+      setIsCheckingId(false);
+    }
   };
+
+  // 이메일 중복 확인
+  const handleEmailCheck = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!formData.memberEmail) return;
+
+    setIsCheckingEmail(true);
+    setEmailError("");
+    setEmailSuccess(false);
+
+    try {
+      const isDuplicate = await authApi.checkEmail({
+        memberEmail: formData.memberEmail,
+      });
+
+      if (isDuplicate) {
+        setEmailChecked(false);
+        setEmailError("이미 등록된 이메일 입니다.");
+        setEmailSuccess(false);
+      } else {
+        setEmailChecked(true);
+        setEmailError("");
+        setEmailSuccess(true);
+        setFieldErrors(prev => ({
+          ...prev,
+          memberEmail: "",
+        }));
+      }
+    } catch (error) {
+      console.error("이메일 중복 확인 오류:", error);
+      setEmailError("이메일 중복 확인 중 오류가 발생했습니다.");
+      setEmailSuccess(false);
+    } finally {
+      setIsCheckingEmail(false);
+    }
+  };
+
+  // 폼 유효성 검사 함수
+  const validateForm = () => {
+    const errors = {
+      memberName: "",
+      memberId: "",
+      memberPw: "",
+      memberEmail: "",
+      memberPhone: "",
+      memberBirth: "",
+    };
+
+    if (!formData.memberName.trim()) {
+      errors.memberName = "이름을 입력해주세요";
+    }
+
+    if (!formData.memberId.trim()) {
+      errors.memberId = "아이디를 입력해주세요";
+    } else if (!idChecked) {
+      errors.memberId = "아이디 중복확인을 해주세요";
+    }
+
+    if (!formData.memberPw) {
+      errors.memberPw = "비밀번호를 입력해주세요";
+    } else if (!passwordValid) {
+      errors.memberPw =
+        "비밀번호는 최소 8자 이상, 숫자와 특수문자를 포함해야 합니다";
+    }
+
+    if (!formData.memberEmail.trim()) {
+      errors.memberEmail = "이메일을 입력해주세요";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.memberEmail)) {
+      errors.memberEmail = "올바른 이메일 형식을 입력해주세요";
+    } else if (!emailChecked) {
+      errors.memberEmail = "이메일 중복확인을 해주세요";
+    }
+
+    if (!formData.memberPhone.trim()) {
+      errors.memberPhone = "전화번호를 입력해주세요";
+    } else if (!isValidPhoneNumber(formData.memberPhone)) {
+      errors.memberPhone =
+        "올바른 전화번호 형식을 입력해주세요 (010-XXXX-XXXX)";
+    }
+
+    if (!formData.memberBirth) {
+      errors.memberBirth = "생년월일을 선택해주세요";
+    } else if (!isValidBirthDate(formData.memberBirth)) {
+      errors.memberBirth = "올바른 생년월일을 선택해주세요";
+    }
+
+    setFieldErrors(errors);
+    return !Object.values(errors).some(error => error !== "");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // 폼 유효성 검사
+    if (!validateForm()) {
+      return;
+    }
+
+    if (!agree) {
+      alert("이용약관에 동의해주세요.");
+      return;
+    }
+
+    setIsLoading(true);
+    setSubmitError("");
+
+    try {
+      const response = await authApi.signUp(formData);
+
+      if (response === "SUCCESS") {
+        alert("회원가입이 완료되었습니다!");
+        // 로그인 페이지로 이동
+        window.location.href = "/login";
+      } else {
+        setSubmitError(response || "회원가입에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("회원가입 오류:", error);
+      setSubmitError("회원가입 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const navigate = useNavigate();
 
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.signUpContainer}>
-        <img src={logo} alt="로고" className={styles.logo} />
+        <img
+          src={logo}
+          alt="로고"
+          className={styles.logo}
+          onClick={() => navigate("/")}
+        />
         <h1 className={styles.title}>계정을 만들어 시작하세요</h1>
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>
             <label className={styles.label}>이름</label>
             <input
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.memberName ? styles.inputError : ""}`}
               type="text"
-              name="name"
+              name="memberName"
               placeholder="이름을 입력해주세요"
-              value={formData.name}
+              value={formData.memberName}
               onChange={handleChange}
               required
             />
+            {fieldErrors.memberName && (
+              <div className={styles.fieldError}>{fieldErrors.memberName}</div>
+            )}
           </div>
           <div className={styles.inputGroup}>
             <label className={styles.label}>ID</label>
             <div className={styles.idInputWrapper}>
               <input
-                className={`${styles.input} ${styles.inputWithButton}`}
+                className={`${styles.input} ${styles.inputWithButton} ${fieldErrors.memberId ? styles.inputError : ""}`}
                 type="text"
-                name="id"
+                name="memberId"
                 placeholder="ID를 입력해주세요"
-                value={formData.id}
+                value={formData.memberId}
                 onChange={handleChange}
                 required
               />
@@ -130,25 +339,61 @@ const SignUp: React.FC = () => {
                 type="button"
                 className={styles.idCheckBtn}
                 onClick={handleIdCheck}
-                disabled={!formData.id}
+                disabled={!formData.memberId || isCheckingId}
               >
-                중복확인
+                {isCheckingId ? "확인중..." : "중복확인"}
               </button>
             </div>
+            {fieldErrors.memberId && !idError && (
+              <div className={styles.fieldError}>{fieldErrors.memberId}</div>
+            )}
             {idError && <div className={styles.idError}>{idError}</div>}
             {idSuccess && (
               <div className={styles.idSuccess}>사용 가능한 아이디 입니다.</div>
             )}
           </div>
           <div className={styles.inputGroup}>
+            <label className={styles.label}>이메일</label>
+            <div className={styles.emailInputWrapper}>
+              <input
+                className={`${styles.input} ${styles.inputWithButton} ${fieldErrors.memberEmail ? styles.inputError : ""}`}
+                type="email"
+                name="memberEmail"
+                placeholder="이메일을 입력해주세요"
+                value={formData.memberEmail}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                className={styles.emailCheckBtn}
+                onClick={handleEmailCheck}
+                disabled={!formData.memberEmail || isCheckingEmail}
+              >
+                {isCheckingEmail ? "확인중..." : "중복확인"}
+              </button>
+            </div>
+            {fieldErrors.memberEmail && !emailError && (
+              <div className={styles.fieldError}>{fieldErrors.memberEmail}</div>
+            )}
+            {emailError && (
+              <div className={styles.emailError}>{emailError}</div>
+            )}
+            {emailSuccess && (
+              <div className={styles.emailSuccess}>
+                사용 가능한 이메일 입니다.
+              </div>
+            )}
+          </div>
+          <div className={styles.inputGroup}>
             <label className={styles.label}>비밀번호</label>
             <div className={styles.passwordInputWrapper}>
               <input
-                className={styles.input}
+                className={`${styles.input} ${fieldErrors.memberPw ? styles.inputError : ""}`}
                 type={showPassword ? "text" : "password"}
-                name="password"
+                name="memberPw"
                 placeholder="비밀번호를 입력하세요"
-                value={formData.password}
+                value={formData.memberPw}
                 onChange={handleChange}
                 required
               />
@@ -162,68 +407,60 @@ const SignUp: React.FC = () => {
                 <EyeIcon visible={showPassword} />
               </button>
             </div>
-            {!passwordValid && formData.password && (
+            {fieldErrors.memberPw && (
+              <div className={styles.fieldError}>{fieldErrors.memberPw}</div>
+            )}
+            {!passwordValid && formData.memberPw && !fieldErrors.memberPw && (
               <div className={styles.passwordError}>
                 최소 8자 이상, 숫자와 특수문자 포함
               </div>
             )}
           </div>
           <div className={styles.inputGroup}>
-            <label className={styles.label}>이메일</label>
-            <input
-              className={styles.input}
-              type="email"
-              name="email"
-              placeholder="이메일을 입력해주세요"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className={styles.inputGroup}>
             <label className={styles.label}>전화번호</label>
             <input
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.memberPhone ? styles.inputError : ""}`}
               type="tel"
-              name="phone"
-              placeholder="전화번호를 입력해주세요"
-              value={formData.phone}
+              name="memberPhone"
+              placeholder="010-XXXX-XXXX"
+              value={formData.memberPhone}
               onChange={handleChange}
               required
             />
+            {fieldErrors.memberPhone && (
+              <div className={styles.fieldError}>{fieldErrors.memberPhone}</div>
+            )}
           </div>
           <div className={styles.inputGroup}>
             <label className={styles.label}>생년월일</label>
             <input
-              className={styles.input}
+              className={`${styles.input} ${fieldErrors.memberBirth ? styles.inputError : ""}`}
               type="date"
-              name="birthDate"
-              value={formData.birthDate}
+              name="memberBirth"
+              value={formData.memberBirth}
               onChange={handleChange}
               required
             />
+            {fieldErrors.memberBirth && (
+              <div className={styles.fieldError}>{fieldErrors.memberBirth}</div>
+            )}
           </div>
-          <div
-            className={styles.inputGroup}
-            style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
-          >
+          <div className={`${styles.inputGroup} ${styles.agreeGroup}`}>
             <label className={styles.agreeLabel}>
               <input
                 type="checkbox"
                 checked={agree}
                 onChange={e => setAgree(e.target.checked)}
-                style={{ marginRight: "0.5rem" }}
                 required
               />
               이용약관과 개인정보 처리방침에 동의합니다
             </label>
           </div>
-          <button
-            className={styles.button}
-            type="submit"
-            disabled={!agree || !idChecked || !passwordValid}
-          >
-            가입하기
+          {submitError && (
+            <div className={styles.submitError}>{submitError}</div>
+          )}
+          <button className={styles.button} type="submit" disabled={isLoading}>
+            {isLoading ? "가입중..." : "가입하기"}
           </button>
         </form>
         <div className={styles.loginLink}>
