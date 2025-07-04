@@ -163,3 +163,17 @@
     4) 사용자관리 : 서비스에 가입한 사용자 정보 확인 가능, 사용자 권한 변경 가능
     5) 상품관리 - 물품 관리 : 여행 상품 추가 물품 등록 및 정보 수정, 삭제 가능
     6) 상품관리 - 물품 관리 : 여행 상품 등록 및 정보 수정, 삭제 가능
+
+
+### 초기 설계
+
+| 로그인 | 홈 |
+|:-------------:|:-------------:|
+| ![image 2](https://github.com/user-attachments/assets/e9f5d781-816c-4742-8afc-ccfcdd7882de) | ![image 3](https://github.com/user-attachments/assets/6cd217c8-eed4-4b85-a326-a2f471368b7b) |
+| 상세페이지 & 주문페이지 | 마이페이지 |
+|![image 4](https://github.com/user-attachments/assets/e57e3538-6d5b-4ae1-aaca-0ca5febce6e1)| ![image 5](https://github.com/user-attachments/assets/a37e3bb4-aa5c-4248-9426-5ebd273387ad) |
+| 관리자 페이지 |
+| ![image 6](https://github.com/user-attachments/assets/b0f85176-cb0c-4037-91c0-a19ca2b3843d) |
+
+
+![image 7](https://github.com/user-attachments/assets/84da0a81-f4e7-4b6b-bbb5-24f995b00e80)
