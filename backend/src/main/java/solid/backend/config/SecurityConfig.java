@@ -25,10 +25,10 @@ public class SecurityConfig {
                         .requestMatchers("/solid/**").permitAll() // 상품 이미지 파일 경로.
 
                         // 관리자 권한일 때
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN") // ADMIN 권한일 때 모든 ADMIN api 호출 가능
-                        // 상품 관리자 권한일 때 (여행 상품 관리, 물품 관리, 주문 관리, 대시보드 api 호출 가능)
-                        .requestMatchers("/admin/member/travel/**", "/admin/member/product/**",
-                                         "/admin/dashboard/**", "/admin/orders/**").hasAuthority("MANAGER")
+                        .requestMatchers("/admin/member/**").hasAuthority("ADMIN") // ADMIN 권한일 때 모든 ADMIN api 호출 가능
+                        // 관리자 또는 상품 관리자 권한일 때 (여행 상품 관리, 물품 관리, 주문 관리, 대시보드 api 호출 가능)
+                        .requestMatchers("/admin/travel/**", "/admin/product/**",
+                                "/admin/dashboard/**", "/admin/orders/**").hasAnyAuthority("MANAGER", "ADMIN")
 
                         // 일반 사용자 권한일 때 (/admin 접근 불가능)
                         .requestMatchers("/mypage/**").hasAuthority("USER") // 마이페이지
