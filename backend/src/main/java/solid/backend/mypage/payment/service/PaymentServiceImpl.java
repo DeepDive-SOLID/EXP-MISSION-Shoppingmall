@@ -2,6 +2,7 @@ package solid.backend.mypage.payment.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import solid.backend.common.AESUtil;
 import solid.backend.common.FileManager;
@@ -28,6 +29,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final CardRepository cardRepository;
     private final FileManager fileManager;
     private final AESUtil aesUtil;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     /**
      * 설명 : 결제 수단 리스트 조회
@@ -83,8 +85,8 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setMember(member);
         payment.setPaymentName(paymentDto.getPaymentName());
         payment.setPaymentNum(aesUtil.encrypt(paymentDto.getPaymentNum()));
-        payment.setPaymentSecurity(aesUtil.encrypt(paymentDto.getPaymentSecurity()));
-        payment.setPaymentPw(aesUtil.encrypt(paymentDto.getPaymentPw()));
+        payment.setPaymentSecurity(passwordEncoder.encode(paymentDto.getPaymentSecurity()));
+        payment.setPaymentPw(passwordEncoder.encode(paymentDto.getPaymentPw()));
         payment.setPaymentEndDt(paymentDto.getPaymentEndDt());
         payment.setPaymentOwner(paymentDto.getPaymentOwner());
         paymentRepository.save(payment);
