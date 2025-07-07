@@ -2,6 +2,7 @@ package solid.backend.payment.payment.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import solid.backend.common.AESUtil;
 import solid.backend.common.FileManager;
@@ -28,6 +29,7 @@ public class PaymentOrderServiceImpl implements PaymentOrderService {
     private final CardRepository cardRepository;
     private final FileManager fileManager;
     private final AESUtil aesUtil;
+    private final BCryptPasswordEncoder passwordEncoder;
 
 
     /**
@@ -121,8 +123,8 @@ public class PaymentOrderServiceImpl implements PaymentOrderService {
         payment.setMember(member);
         payment.setPaymentName(paymentCardAddDto.getPaymentName());
         payment.setPaymentNum(aesUtil.encrypt(paymentCardAddDto.getPaymentNum()));
-        payment.setPaymentSecurity(aesUtil.encrypt(paymentCardAddDto.getPaymentSecurity()));
-        payment.setPaymentPw(aesUtil.encrypt(paymentCardAddDto.getPaymentPw()));
+        payment.setPaymentSecurity(passwordEncoder.encode(paymentCardAddDto.getPaymentSecurity()));
+        payment.setPaymentPw(passwordEncoder.encode(paymentCardAddDto.getPaymentPw()));
         payment.setPaymentEndDt(paymentCardAddDto.getPaymentEndDt());
         payment.setPaymentOwner(paymentCardAddDto.getPaymentOwner());
         paymentRepository.save(payment);
