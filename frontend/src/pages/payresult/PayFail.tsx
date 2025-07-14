@@ -1,6 +1,6 @@
 import Header from "../../components/common/Header/Header";
 import { FaTimesCircle } from "react-icons/fa";
-import styles from "./payResult.module.scss";
+import styles from "./PayResult.module.scss";
 import { home_banner } from "../../assets";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
