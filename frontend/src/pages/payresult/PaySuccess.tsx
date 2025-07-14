@@ -1,7 +1,7 @@
 import Header from "../../components/common/Header/Header";
 import { home_banner } from "../../assets";
 import { FaCheckCircle } from "react-icons/fa";
-import styles from "./payResult.module.scss";
+import styles from "./PayResult.module.scss";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
