@@ -11,7 +11,6 @@ const MainDashboard = () => {
         <div className={styles.card}>
           <MonthlyTx />
         </div>
-
         <div className={styles.card}>
           <CategoryStats />
         </div>
